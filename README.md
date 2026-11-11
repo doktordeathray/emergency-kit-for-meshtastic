@@ -22,7 +22,10 @@ Before opening it, compare its SHA-256 fingerprint with the one in the release n
 
 **Before: while you still have internet**
 
-1. Unzip the kit and double-click the setup file for your computer: `SETUP-WINDOWS.bat`, `SETUP-MAC.command` (the first time, right-click it and choose Open) or `SETUP-LINUX.sh`.
+1. Unzip the kit and run the setup file for your computer:
+   - **Windows:** double-click `SETUP-WINDOWS.bat`.
+   - **Mac:** macOS blocks double-clicking downloaded scripts ("may contain malware"). Open Terminal, type `bash` and a space, drag `SETUP-MAC.command` into the window, and press Enter. Setup removes the block from everything it installs, so `START-HERE-MAC.command` then opens with a double-click.
+   - **Linux / Raspberry Pi:** right-click `SETUP-LINUX.sh` → Run as a Program, or run `bash SETUP-LINUX.sh`.
 2. Choose **where** (a USB drive, this computer, or this Raspberry Pi) and **what**: the standard kit (about 1.5 GB), or the standard kit plus extras you pick.
 3. Setup downloads the current releases from their official sources. To make more drives, run setup on a finished drive. It copies what it has, with no download needed.
 

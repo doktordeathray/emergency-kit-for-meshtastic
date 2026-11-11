@@ -49,7 +49,7 @@
   </ol>
   <div class="caution">Use <b>Google Chrome</b>, <b>Microsoft Edge</b> or <b>Chromium</b> (Brave and Opera also work). Safari and Firefox can't connect to radios.
   Every Windows PC has Edge. On a Mac or Linux computer without one, the launcher offers to install the free <b>Chromium</b> browser from this drive. You can also type <b>C</b> in the black window.</div>
-  <div class="tip">Windows: a "Windows protected your PC" box may appear. Click <b>More info → Run anyway</b>. Mac: if it says the file "can't be opened", right-click it, choose <b>Open</b>, then click <b>Open</b> again.</div>
+  <div class="tip">Windows: a "Windows protected your PC" box may appear. Click <b>More info → Run anyway</b>. Mac: if it says the file "may contain malware" or "can't be opened", open <b>Terminal</b>, type <code>bash</code> and a space, drag the file into the window and press Enter. (Drives made by setup don't have this problem.)</div>
 </section>
 
 <section id="flash">
@@ -144,10 +144,10 @@
   <h2>Troubleshooting</h2>
   <table>
     <tr><th>Problem</th><th>Fix</th></tr>
-    <tr><td>Nothing happens when I double-click the start file</td><td>Windows: right-click → <b>Run as administrator</b> isn't needed, but try right-click → <b>Open</b>. Mac: right-click → <b>Open</b> → <b>Open</b>. Linux: open a Terminal, type <code>bash </code>, drag the file in, and press Enter.</td></tr>
+    <tr><td>Nothing happens when I double-click the start file</td><td>Windows: right-click → <b>Run as administrator</b> isn't needed, but try right-click → <b>Open</b>. Mac and Linux: open a Terminal, type <code>bash </code> (with a space), drag the file in, and press Enter. This also gets round the Mac's "may contain malware" message.</td></tr>
     <tr><td>Browser shows "This site can't be reached"</td><td>The black window was closed. Start it again.</td></tr>
     <tr><td>"This browser can't talk to radios"</td><td>Use Chrome, Edge or Chromium. No such browser? Type <b>C</b> in the black window to install Chromium from this drive (Mac/Linux).</td></tr>
-    <tr><td>Chromium won't open on a Mac</td><td>Right-click Chromium in Applications → <b>Open</b> → <b>Open</b>. (It's the open-source build, so it isn't signed by Apple.)</td></tr>
+    <tr><td>Chromium won't open on a Mac</td><td>Try to open it once, then go to <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>.</td></tr>
     <tr><td>No radio in the port list</td><td>Try a different USB cable (many are charge-only) and a different USB port. Windows: install drivers (black window option <b>6</b>). Linux: run <code>sudo usermod -aG dialout $USER</code>, then log out and in.</td></tr>
     <tr><td>Flashing fails part-way</td><td>Hold the <b>BOOT</b> button while plugging in, then flash again with <b>Full Erase</b>. Close any other app using the radio (the desktop app, Arduino, etc.).</td></tr>
     <tr><td>The map is empty</td><td>Map pictures come from the internet, so they're blank offline. Node positions and distances still work.</td></tr>

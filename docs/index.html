@@ -113,6 +113,7 @@ code { font-size: .86em; background: var(--tint); padding: 1px 5px; overflow-wra
 .filelist div { display: flex; gap: 16px; }
 .filelist span:first-child { min-width: 17ch; font-weight: 600; }
 .filelist span:last-child { color: var(--ink-2); }
+.macnote { margin-top: 12px; border-left: 4px solid var(--safety); padding-left: 12px; font-size: .95rem; }
 .menu { margin-top: 12px; display: grid; gap: 2px; font: 400 .9rem/1.5 var(--mono); }
 .menu div { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); }
 .menu b { font-weight: 600; }
@@ -345,9 +346,10 @@ footer b { color: var(--ink); }
             <p>It's 5.2 MB. Before you open it, <a href="#check">check it's genuine</a>, which takes about a minute. Then double-click the setup file for the computer you're on.</p>
             <div class="filelist">
               <div><span>SETUP-WINDOWS.bat</span><span>Windows 10 / 11</span></div>
-              <div><span>SETUP-MAC.command</span><span>macOS. The first time, right-click it and choose Open.</span></div>
+              <div><span>SETUP-MAC.command</span><span>macOS. Don't double-click it: run it from Terminal (see below).</span></div>
               <div><span>SETUP-LINUX.sh</span><span>Linux and Raspberry Pi</span></div>
             </div>
+            <p class="macnote"><b>On a Mac:</b> macOS won't let you double-click a downloaded script. Instead, open <b>Terminal</b> (Cmd + Space, type Terminal, press Enter), type <code>bash</code> and a space, drag <code>SETUP-MAC.command</code> into the window, and press Enter. You only need to do this once.</p>
           </div>
         </li>
         <li>
@@ -465,8 +467,8 @@ footer b { color: var(--ink); }
         </div>
         <div class="fingerprint">
           <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup.zip</span>
-          <code id="sha">97f5acfaf3d5d83ecd6e9549d185d669fffe83016e1d8d9f57c26ed184d2964d</code>
-          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,247,404 bytes · SHA-256</span></div>
+          <code id="sha">e32268a7da83649dddf2f7f1ab67e208a11eebc8291e26d7b54548c6e8543765</code>
+          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,247,648 bytes · SHA-256</span></div>
         </div>
       </div>
 
@@ -584,8 +586,8 @@ footer b { color: var(--ink); }
           <p>4 GB or more for the standard kit, 8 GB or more with extras. Format it as exFAT so Windows, Mac and Linux can all read it.</p>
         </div>
         <div>
-          <h3>My Mac says the setup file can't be opened</h3>
-          <p>macOS blocks downloaded scripts the first time. Right-click <code>SETUP-MAC.command</code>, choose Open, then Open again. Setup clears this flag on everything it installs.</p>
+          <h3>My Mac says the file "may contain malware"</h3>
+          <p>macOS blocks double-clicking any script downloaded from the internet unless it's signed with a paid Apple developer certificate, which this kit isn't. Run it from Terminal instead: open <b>Terminal</b> (Cmd + Space, type Terminal, press Enter), type <code>bash</code> and a space, drag <code>SETUP-MAC.command</code> into the window, and press Enter. Setup removes the block from everything it installs, so <code>START-HERE-MAC.command</code> on your finished drive opens with a normal double-click.</p>
         </div>
         <div class="wide">
           <h3>Are the Windows USB drivers safe?</h3>

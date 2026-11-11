@@ -7,8 +7,14 @@ FIRST TIME? If you downloaded the small setup kit (a few MB), run SETUP first
 or a Raspberry Pi - and downloads everything:
 
    Windows ......  SETUP-WINDOWS.bat
-   Mac ..........  SETUP-MAC.command    (first time: right-click > Open > Open)
+   Mac ..........  SETUP-MAC.command    (see MAC NOTE below)
    Linux / Pi ...  SETUP-LINUX.sh       (right-click > Run as a Program)
+
+MAC NOTE: macOS blocks double-clicking scripts downloaded from the internet
+("may contain malware"). Instead: open Terminal (Cmd+Space, type Terminal,
+press Enter), type  bash  and a space, drag SETUP-MAC.command into the window,
+and press Enter. Setup removes the block from everything it installs, so
+START-HERE-MAC.command then opens with a normal double-click.
 
 SETUP on a finished drive also copies it to another USB drive - no internet needed
 for the parts it already has.

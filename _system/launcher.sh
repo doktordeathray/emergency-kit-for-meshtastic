@@ -51,7 +51,8 @@ get_miniserve() {
   local src="$SYS/bin/miniserve-$PLAT"
   if [ ! -f "$src" ]; then
     if ! ls "$SYS/bin/"miniserve-* >/dev/null 2>&1; then
-      fail "This kit isn't set up yet. Close this window and double-click SETUP-MAC.command"
+      fail "This kit isn't set up yet. Run SETUP first: in Terminal type  bash  and a space,"
+      fail "drag SETUP-MAC.command into the window and press Enter"
       fail "(or SETUP-LINUX.sh on Linux) - it downloads everything (needs internet once)."
     else
       fail "This computer type ($OS $ARCH) isn't supported by the built-in server."
