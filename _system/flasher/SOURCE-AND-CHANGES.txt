@@ -1,0 +1,21 @@
+MESHTASTIC WEB FLASHER - SOURCE AND CHANGES
+============================================
+
+This folder holds a build of the Meshtastic Web Flasher, licensed under the
+GNU General Public License v3.0 (full text: LICENSE.txt in this folder).
+
+Original source:  https://github.com/meshtastic/web-flasher
+Version used:     commit 6b3b34722106f282eb66162164dd40f1729e7826
+                  https://github.com/meshtastic/web-flasher/tree/6b3b34722106f282eb66162164dd40f1729e7826
+
+Changes made for offline use (nothing else was altered):
+  1. stores/store.ts: API requests read local files under /api/ instead of
+     api.meshtastic.org.
+  2. utils/firmwareUrl.ts: firmware is read from /release/ on this drive
+     instead of release.meshtastic.org (and /nightly instead of nightly.meshtastic.org).
+  3. Removed plugins/analytics.clients.ts and plugins/datadog-rum.client.ts
+     (usage tracking, which can't work offline).
+
+The exact changes are applied by _system/maintenance/build_usb.py
+(see FLASHER_PATCHES and FLASHER_DELETE), which rebuilds this folder from the
+original source when run on a computer with git and Node.js.

@@ -1,0 +1,44 @@
+MESHTASTIC EMERGENCY USB
+========================
+Everything on this drive works with NO internet.
+
+FIRST TIME? If you downloaded the small setup kit (a few MB), run SETUP first
+(needs internet once). It asks where to install - a USB drive, this computer,
+or a Raspberry Pi - and downloads everything:
+
+   Windows ......  SETUP-WINDOWS.bat
+   Mac ..........  SETUP-MAC.command    (first time: right-click > Open > Open)
+   Linux / Pi ...  SETUP-LINUX.sh       (right-click > Run as a Program)
+
+SETUP on a finished drive also copies it to another USB drive - no internet needed
+for the parts it already has.
+
+TO START - double-click the file for your computer:
+
+   Windows ......  START-HERE-WINDOWS.bat
+   Mac ..........  START-HERE-MAC.command
+   Linux ........  START-HERE-LINUX.sh   (right-click > Run as a Program)
+
+A black window opens, then your web browser opens the start page.
+KEEP THE BLACK WINDOW OPEN while you use Meshtastic.
+
+Use Google Chrome, Microsoft Edge or Chromium. (Safari/Firefox can't talk to radios.)
+No Chrome/Edge on a Mac or Linux computer? Type C in the black window to
+install the free Chromium browser from this drive.
+
+From the black window you can also:
+   2  Install the Meshtastic app on this computer
+   3  Put the Meshtastic app on an Android phone
+   4  Make a Raspberry Pi SD card
+   5  Open the full help guide  (or double-click READ-ME-FIRST.html)
+   6  (Windows) Install USB drivers if your radio isn't detected
+   C  (Mac/Linux) Install the Chromium browser from this drive
+   U  Update this drive (needs internet)
+
+FOLDERS
+   1-Desktop-App           Meshtastic app installers (Windows, Mac, Linux)
+   2-Android-Phone         Meshtastic Android app (.apk)
+   3-Raspberry-Pi          SD card writer + Pi images
+   4-Chromium-Browser      Free Chromium browser (Mac, Linux)
+   5-Windows-USB-Drivers   CP210x / CH340 radio drivers
+   _system                 Web app, flasher, firmware - don't move or rename

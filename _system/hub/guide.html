@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meshtastic USB Guide</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 100 55" aria-hidden="true"><path d="M5 50 L30 5 L55 50 M45 50 L70 5 L95 50" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>
+        <h1>Meshtastic Emergency USB: Guide</h1>
+        <p class="sub"><a href="index.html" id="home">← Back to the start page</a></p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap guide">
+<nav class="toc">
+  <a href="#start">Quick start</a>
+  <a href="#flash">Flash a radio</a>
+  <a href="#phone">Phones</a>
+  <a href="#desktop">Desktop app</a>
+  <a href="#pi">Raspberry Pi</a>
+  <a href="#help">Troubleshooting</a>
+  <a href="#drive">About this drive / setup</a>
+</nav>
+
+<div>
+<section id="start">
+  <h2>Quick start</h2>
+  <ol>
+    <li>Plug this USB drive into a computer.</li>
+    <li>Open the drive and double-click the start file for your computer:
+      <table>
+        <tr><th>Windows</th><td><code>START-HERE-WINDOWS.bat</code></td></tr>
+        <tr><th>Mac</th><td><code>START-HERE-MAC.command</code></td></tr>
+        <tr><th>Linux</th><td><code>START-HERE-LINUX.sh</code>: right-click it and choose <b>Run as a Program</b> (or <b>Run in Terminal</b>)</td></tr>
+      </table>
+    </li>
+    <li>A black window opens, then your browser opens the start page. <b>Leave the black window open.</b></li>
+    <li>Brand-new radio? Click <b>Flash or update a radio</b> first. Already running Meshtastic? Click <b>Use Meshtastic</b>.</li>
+    <li>In the web app, click <b>Add Connection</b>, choose <b>Serial</b> (USB cable) or <b>Bluetooth</b>, and pick your radio.</li>
+    <li>Set your <b>region</b> (e.g. US, EU_868, ANZ) in <i>Settings → LoRa</i>. The radio won't transmit until you do.</li>
+  </ol>
+  <div class="caution">Use <b>Google Chrome</b>, <b>Microsoft Edge</b> or <b>Chromium</b> (Brave and Opera also work). Safari and Firefox can't connect to radios.
+  Every Windows PC has Edge. On a Mac or Linux computer without one, the launcher offers to install the free <b>Chromium</b> browser from this drive. You can also type <b>C</b> in the black window.</div>
+  <div class="tip">Windows: a "Windows protected your PC" box may appear. Click <b>More info → Run anyway</b>. Mac: if it says the file "can't be opened", right-click it, choose <b>Open</b>, then click <b>Open</b> again.</div>
+</section>
+
+<section id="flash">
+  <h2>Flash (install or update) a radio</h2>
+  <p>First find which kind of radio you have:</p>
+  <table>
+    <tr><th>Radio family</th><th>Examples</th><th>How</th></tr>
+    <tr><td><b>ESP32</b></td><td>Heltec V3/V4, Heltec Wireless Tracker / Paper, LILYGO T-Beam, T-Deck, T3S3, Station G2, Seeed XIAO ESP32-S3</td><td>Web flasher (A)</td></tr>
+    <tr><td><b>nRF52</b></td><td>RAK4631 / WisBlock, RAK WisMesh, LILYGO T-Echo, Seeed T1000-E, SenseCAP, XIAO nRF52840, Heltec T114</td><td>Drag &amp; drop (B)</td></tr>
+    <tr><td><b>RP2040 / RP2350</b></td><td>Raspberry Pi Pico + LoRa, RAK11310</td><td>Drag &amp; drop (B)</td></tr>
+  </table>
+
+  <h3>A. ESP32 radios: web flasher</h3>
+  <ol>
+    <li>Plug the radio into the computer with a <b>data</b> USB cable (some cables only charge; if nothing happens, try another).</li>
+    <li>Start page → <b>Flash or update a radio</b>.</li>
+    <li><b>1 Device</b>: pick your radio (or click <b>Auto-detect</b> if it already runs Meshtastic).</li>
+    <li><b>2 Firmware</b>: pick the version marked <b>Beta</b> (stable). <i>Alpha</i> is newer but experimental.</li>
+    <li><b>3 Flash</b>: choose <b>Update</b> to keep settings, or tick <b>Full Erase and Install</b> for a new or broken radio. Click <b>Flash</b>, choose the radio's port in the pop-up, and wait for 100%.</li>
+  </ol>
+  <div class="tip">Port doesn't appear? Hold the radio's <b>BOOT</b> (or PRG) button while plugging it in, then try again. On Windows, install the USB driver: menu option <b>6</b> in the black window.</div>
+
+  <h3>B. nRF52 and RP2040 radios: drag and drop</h3>
+  <ol>
+    <li>Plug the radio in, then <b>double-press its reset button</b> quickly. A new drive appears (named like <code>RAK4631</code>, <code>TECHOBOOT</code>, <code>T1000-E</code> or <code>RPI-RP2</code>). On a Pico, hold <b>BOOTSEL</b> while plugging it in.</li>
+    <li>Start page → <b>Firmware files</b> → open the version folder, and download the file named <code>firmware-<i>your-radio</i>-<i>version</i>.uf2</code>. (You can also use the web flasher: it lets you download the right file.)</li>
+    <li>Drag that <code>.uf2</code> file onto the new drive. The radio reboots by itself when it's done. A "disk not ejected" warning is normal.</li>
+  </ol>
+  <div class="tip">nRF52 radio acting strangely after an update? Copy <code>Meshtastic_nRF52_factory_erase_v3_S140_*.uf2</code> (same folder) the same way, then copy the firmware again.</div>
+
+  <h3>C. Backup method: command line (ESP32)</h3>
+  <p>For experts, if the browser flasher can't be used: <code>esptool</code> for every OS is in <code>_system/tools/esptool</code>, and each firmware folder contains Meshtastic's <code>device-install</code> / <code>device-update</code> scripts.</p>
+</section>
+
+<section id="phone">
+  <h2>Phones</h2>
+  <h3>Android</h3>
+  <p>The Android app is on this drive in <code>2-Android-Phone</code>. In the black window choose <b>3</b>, then:</p>
+  <ul>
+    <li><b>Over Wi-Fi (easiest):</b> phone and computer on the same Wi-Fi or the phone's hotspot. Scan the QR code, tap the <code>.apk</code>, then allow "install unknown apps".</li>
+    <li><b>USB cable:</b> needs "USB debugging" turned on in the phone's Developer options (instructions are on screen).</li>
+    <li><b>Copy the file:</b> copy the <code>.apk</code> to the phone any way you like (USB file transfer, SD card, another phone), then tap it in the Files app.</li>
+  </ul>
+  <p>Once the app is on one phone, it can be shared to other phones with any file-sharing app, or the phone's "Nearby Share / Quick Share".</p>
+  <h3>iPhone / iPad</h3>
+  <p>Apple doesn't allow installing apps from files. iPhone users need the Meshtastic app from the App Store (install it <i>before</i> an emergency!). They can also use a computer with this drive.</p>
+</section>
+
+<section id="desktop">
+  <h2>Desktop app (optional)</h2>
+  <p class="muted">An optional extra. If this kit was set up without it, the menu tells you how to add it.</p>
+  <p>The web app on the start page does everything you need. For a stand-alone app, choose <b>2</b> in the black window. It installs the official Meshtastic Desktop app:</p>
+  <ul>
+    <li><b>Windows:</b> a normal installer opens. Click through it. Then find "Meshtastic" in the Start menu.</li>
+    <li><b>Mac:</b> copied to Applications automatically. (Built for Apple-chip Macs; on older Intel Macs use the web app.)</li>
+    <li><b>Linux:</b> copied to <code>~/Applications</code> and added to your app menu (64-bit Intel/AMD and ARM).</li>
+  </ul>
+  <p>The installers are also in <code>1-Desktop-App</code> if you'd rather run them yourself.</p>
+</section>
+
+<section id="pi">
+  <h2>Raspberry Pi</h2>
+  <p class="muted">An optional extra. If this kit was set up without it, the menu tells you how to add it.</p>
+  <p>Turns a Raspberry Pi with a LoRa radio HAT (or a USB radio) into a Meshtastic node. Works on <b>Pi 3, 4, 5, 400, 500 and Zero 2 W</b> (64-bit models). You need a microSD card of <b>8 GB or larger</b> and a card reader.</p>
+  <div class="caution">Writing the card <b>erases everything on it</b>. Double-check you pick the SD card, not this USB drive or another disk.</div>
+
+  <h3>Option A: Ready-made Meshtastic image (mPWRD-OS)</h3>
+  <p>Everything is preinstalled. Note: this project is still new (alpha).</p>
+  <ol>
+    <li>Black window → <b>4</b> → <b>1</b> opens <b>Raspberry Pi Imager</b>.</li>
+    <li>Choose your <b>Raspberry Pi model</b>. Under <b>Operating System</b>, scroll to the bottom and choose <b>Use custom</b>. Open the drive's <code>3-Raspberry-Pi/Option-A-…</code> folder and pick the <code>.img.xz</code> file.</li>
+    <li>Choose your SD card. If asked about customisation, choose <b>No</b> (this image does its own setup). Write.</li>
+    <li>Put the card in the Pi, connect a network cable (or keyboard + screen), and power it on.</li>
+    <li>Log in as <code>root</code>, password <code>1234</code>. You'll be asked to choose a new password. Then type <code>mpwrd-menu</code> to pick your radio and settings.</li>
+  </ol>
+
+  <h3>Option B: Official Raspberry Pi OS + Meshtastic</h3>
+  <ol>
+    <li>Black window → <b>4</b> → <b>1</b> opens <b>Raspberry Pi Imager</b>.</li>
+    <li>Choose your Pi model → <b>Use custom</b> → the <code>.img.xz</code> in <code>3-Raspberry-Pi/Option-B-…</code>.</li>
+    <li>Choose the SD card. When asked to <b>customise</b>, say <b>Yes / Edit settings</b> and set:
+      a <b>username and password</b>, your <b>Wi-Fi</b> (optional), and turn on <b>SSH</b>. Write.</li>
+    <li>When it finishes, take the card out and put it back in. Then in the black window choose <b>4</b> → <b>2</b>. This copies the Meshtastic package onto the card and switches on the radio HAT connections.</li>
+    <li>Put the card in the Pi and power it on. Wait 2-3 minutes, then log in with keyboard + screen, or from another computer with <code>ssh <i>username</i>@<i>pi-address</i></code>.</li>
+    <li>Type: <pre>sudo bash /boot/firmware/meshtastic/install.sh</pre> It installs Meshtastic (no internet needed), asks which radio you have, and starts it.</li>
+    <li>When it's done it shows an address like <code>https://192.168.1.50:9443</code>. Open it in a browser on any device on the same network to use the Pi's own web app (accept the security warning; the Pi uses a self-signed certificate). The phone and desktop apps can also connect to the Pi over the network.</li>
+  </ol>
+  <div class="tip">Imager will show a "Use custom" option even without internet. The list of other operating systems needs internet, so ignore it.</div>
+</section>
+
+<section id="help">
+  <h2>Troubleshooting</h2>
+  <table>
+    <tr><th>Problem</th><th>Fix</th></tr>
+    <tr><td>Nothing happens when I double-click the start file</td><td>Windows: right-click → <b>Run as administrator</b> isn't needed, but try right-click → <b>Open</b>. Mac: right-click → <b>Open</b> → <b>Open</b>. Linux: open a Terminal, type <code>bash </code>, drag the file in, and press Enter.</td></tr>
+    <tr><td>Browser shows "This site can't be reached"</td><td>The black window was closed. Start it again.</td></tr>
+    <tr><td>"This browser can't talk to radios"</td><td>Use Chrome, Edge or Chromium. No such browser? Type <b>C</b> in the black window to install Chromium from this drive (Mac/Linux).</td></tr>
+    <tr><td>Chromium won't open on a Mac</td><td>Right-click Chromium in Applications → <b>Open</b> → <b>Open</b>. (It's the open-source build, so it isn't signed by Apple.)</td></tr>
+    <tr><td>No radio in the port list</td><td>Try a different USB cable (many are charge-only) and a different USB port. Windows: install drivers (black window option <b>6</b>). Linux: run <code>sudo usermod -aG dialout $USER</code>, then log out and in.</td></tr>
+    <tr><td>Flashing fails part-way</td><td>Hold the <b>BOOT</b> button while plugging in, then flash again with <b>Full Erase</b>. Close any other app using the radio (the desktop app, Arduino, etc.).</td></tr>
+    <tr><td>The map is empty</td><td>Map pictures come from the internet, so they're blank offline. Node positions and distances still work.</td></tr>
+    <tr><td>Radio won't send messages</td><td>Set the <b>Region</b> in Settings → LoRa. All radios must use the same region and channel settings.</td></tr>
+    <tr><td>Pi: the copy step can't find the SD card</td><td>Take the card out and put it back in. Look for a drive named <b>bootfs</b>. Windows: if it asks to format a disk, click <b>Cancel</b>.</td></tr>
+  </table>
+</section>
+
+<section id="drive">
+  <h2>About this drive</h2>
+  <table>
+    <tr><th>Folder</th><th>What's in it</th></tr>
+    <tr><td><code>1-Desktop-App</code></td><td>Meshtastic Desktop installers for Windows, Mac and Linux</td></tr>
+    <tr><td><code>2-Android-Phone</code></td><td>The Android app (.apk)</td></tr>
+    <tr><td><code>3-Raspberry-Pi</code></td><td>SD card writer + two ready-to-write Pi images + offline Meshtastic package</td></tr>
+    <tr><td><code>4-Chromium-Browser</code></td><td>Free, open-source Chromium browser for Mac and Linux</td></tr>
+    <tr><td><code>5-Windows-USB-Drivers</code></td><td>CP210x and CH340 drivers for radios on Windows</td></tr>
+    <tr><td><code>_system</code></td><td>The web app, flasher, firmware files, tools. Don't move or rename things in here.</td></tr>
+  </table>
+  <h3>Making more drives (or installing on a computer / Raspberry Pi)</h3>
+  <p>Double-click <code>SETUP-WINDOWS.bat</code>, <code>SETUP-MAC.command</code> or <code>SETUP-LINUX.sh</code>. It asks <b>where</b> (a USB drive, this computer, or a Raspberry Pi) and <b>what</b>: the <b>standard kit</b> (~1.5 GB: web app, flasher + firmware, Android app, browser), optionally <b>plus extras</b> you pick, such as the desktop apps or Raspberry Pi images. Parts this drive already has are copied, so making a copy needs no internet. Anything else is downloaded.</p>
+  <p>To share the kit with others, send the small setup zip (a few MB) instead of a whole drive. They run SETUP once with internet.</p>
+  <h3>Keeping it up to date</h3>
+  <p>Whenever you have internet, plug the drive in, start it as usual, and type <b>U</b> in the black window. It shows what's new, asks once, then downloads straight onto the drive (10-30 minutes; don't unplug it while it runs). Works on Windows, Mac and Linux. Nothing needs installing: the drive carries its own copy of Python.</p>
+  <p>The start page also checks by itself when the computer is online, and shows a green banner if there's something newer.</p>
+  <p>Format the drive as <b>exFAT</b> (works on Windows, Mac and Linux) and use one of <b>4 GB or more</b> (8 GB or more if you add extras or want room for updates).</p>
+  <p class="muted" id="ver"></p>
+</section>
+</div>
+</main>
+<script src="versions.js"></script>
+<script>
+  if (location.protocol === 'file:') {
+    document.getElementById('home').textContent = '← Start Meshtastic with the START-HERE file for your computer';
+    document.getElementById('home').removeAttribute('href');
+  }
+  if (window.MESH_VERSIONS) document.getElementById('ver').textContent =
+    'This drive was last updated ' + (window.MESH_VERSIONS.built || '?') + '.';
+</script>
+</body>
+</html>

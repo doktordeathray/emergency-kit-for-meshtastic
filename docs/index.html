@@ -1,0 +1,760 @@
+<title>Emergency Kit for Meshtastic</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800;900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a public-information preparedness leaflet. One wide column on a 12-col grid,
+   heavy black rules, safety-yellow blocks, square corners. Sections follow the
+   leaflet convention: BEFORE (while you have internet) / DURING (no internet). */
+:root {
+  --paper: #ffffff;
+  --ink: #111111;
+  --ink-2: #555550;       /* secondary text */
+  --hair: #dcdcd4;        /* light rules */
+  --safety: #ffd400;      /* safety yellow: blocks, highlight bars */
+  --on-safety: #111111;
+  --tint: #f4f3ec;        /* faint panel */
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d0d0c; --ink: #f1f0ea; --ink-2: #a8a79f; --hair: #2f2f2b;
+    --safety: #ffd400; --on-safety: #111111; --tint: #181816;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d0d0c; --ink: #f1f0ea; --ink-2: #a8a79f; --hair: #2f2f2b;
+  --safety: #ffd400; --on-safety: #111111; --tint: #181816;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; }
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--safety); }
+a:focus-visible, button:focus-visible, input:focus-visible + span { outline: 3px solid var(--safety); outline-offset: 3px; }
+code, .mono { font-family: var(--mono); }
+code { font-size: .86em; background: var(--tint); padding: 1px 5px; overflow-wrap: anywhere; }
+.hl { background: linear-gradient(transparent 12%, var(--safety) 12%, var(--safety) 92%, transparent 92%);
+  color: var(--on-safety); padding: 0 .12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* ---- masthead ---- */
+.mast { border-bottom: 6px solid var(--ink); }
+.mast .wrap { display: flex; align-items: stretch; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-block: 14px; }
+.wordmark { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.wordmark .box { background: var(--safety); color: var(--on-safety); font: 900 1rem/1 var(--display);
+  padding: 8px 9px; letter-spacing: .02em; }
+.wordmark b { font: 800 1.15rem/1.1 var(--display); letter-spacing: -.01em; }
+.wordmark small { display: block; font: 500 .78rem/1.3 var(--mono); color: var(--ink-2); letter-spacing: .02em; }
+.mast nav { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; font-weight: 500; font-size: .95rem; }
+.mast nav a { text-decoration: none; }
+.mast nav a:hover { text-decoration: underline; text-decoration-color: var(--safety); text-decoration-thickness: 3px; }
+
+/* ---- hero ---- */
+.hero { padding-block: clamp(36px, 6vw, 72px) clamp(36px, 5vw, 56px); border-bottom: 2px solid var(--ink); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 56px); align-items: end; }
+.hero h1 { font-size: clamp(2.8rem, 7.2vw, 5.6rem); font-weight: 900; line-height: .95; letter-spacing: -.035em; }
+.hero .lede { margin-top: 26px; font-size: 1.17rem; max-width: 33em; }
+.actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer;
+  font: 800 1.08rem/1 var(--display); letter-spacing: -.005em; padding: 17px 22px; border: 3px solid var(--ink); }
+.btn-dl { background: var(--safety); color: var(--on-safety); border-color: var(--safety); box-shadow: 5px 5px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
+.btn-dl:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); text-decoration: none; }
+.btn-dl:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+.btn-dl.soon { box-shadow: none; opacity: .75; cursor: default; transform: none; }
+.btn-line { background: transparent; color: var(--ink); }
+.btn-line:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+.btn svg { width: 20px; height: 20px; flex: none; }
+.dl-meta { margin-top: 16px; font: 400 .8rem/1.5 var(--mono); color: var(--ink-2); }
+.dl-status { margin-top: 8px; min-height: 1.5em; font-weight: 600; font-size: .95rem; }
+
+.figure { border: 3px solid var(--ink); background: var(--tint); aspect-ratio: 5 / 4; max-width: 100%; position: relative; }
+.figure svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.figure .cap { position: absolute; left: 0; bottom: 0; background: var(--ink); color: var(--paper);
+  font: 500 .72rem/1 var(--mono); padding: 7px 10px; letter-spacing: .04em; }
+.fig-ink { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.fig-fill-ink { fill: var(--ink); }
+.fig-fill-safety { fill: var(--safety); }
+.fig-fill-paper { fill: var(--paper); }
+.fig-text { font: 800 15px var(--display); fill: var(--on-safety); letter-spacing: .02em; }
+.fig-small { font: 500 11px var(--mono); fill: var(--ink-2); }
+
+/* ---- statement ---- */
+.statement { padding-block: clamp(44px, 6vw, 80px); border-bottom: 2px solid var(--ink); }
+.statement .wrap { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: clamp(24px, 4vw, 56px); }
+.statement p.big { font: 700 clamp(1.5rem, 3vw, 2.15rem)/1.22 var(--display); letter-spacing: -.02em; }
+.statement aside { border-left: 3px solid var(--ink); padding-left: 18px; display: grid; gap: 12px; align-content: start; color: var(--ink-2); }
+.statement aside b { color: var(--ink); }
+
+/* ---- before / during ---- */
+.phase { padding-block: clamp(44px, 6vw, 72px); border-bottom: 2px solid var(--ink); }
+.phase-head { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(20px, 4vw, 56px); align-items: start; }
+.tag { display: inline-block; font: 900 .95rem/1 var(--display); letter-spacing: .08em; text-transform: uppercase; padding: 9px 12px; }
+.tag.before { background: var(--safety); color: var(--on-safety); }
+.tag.during { background: var(--ink); color: var(--paper); }
+.phase h2 { margin-top: 16px; font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 3px solid var(--ink); }
+.steps > li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 18px; padding-block: 22px; border-bottom: 1px solid var(--hair); }
+.steps .n { font: 900 2.6rem/0.9 var(--display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.steps h3 { font-size: 1.3rem; font-weight: 800; letter-spacing: -.01em; margin-bottom: 6px; }
+.steps p { color: var(--ink-2); max-width: 38em; }
+.filelist { margin-top: 12px; display: grid; gap: 4px; font: 400 .85rem/1.4 var(--mono); }
+.filelist div { display: flex; gap: 16px; }
+.filelist span:first-child { min-width: 17ch; font-weight: 600; }
+.filelist span:last-child { color: var(--ink-2); }
+.menu { margin-top: 12px; display: grid; gap: 2px; font: 400 .9rem/1.5 var(--mono); }
+.menu div { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); }
+.menu b { font-weight: 600; }
+
+/* ---- kit contents ---- */
+.kit { padding-block: clamp(44px, 6vw, 72px); border-bottom: 2px solid var(--ink); }
+.kit h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.kit .intro { margin-top: 12px; color: var(--ink-2); max-width: 40em; }
+.kit-grid { margin-top: 32px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; border: 3px solid var(--ink); }
+.kit-col { padding: 24px; display: grid; gap: 14px; align-content: start; }
+.kit-col + .kit-col { border-left: 3px solid var(--ink); }
+.kit-col.std { background: var(--safety); color: var(--on-safety); }
+.kit-col h3 { font-size: 1.45rem; font-weight: 900; letter-spacing: -.02em; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.kit-col h3 span { font: 600 .85rem var(--mono); letter-spacing: 0; }
+.kit-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
+.kit-col li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding-block: 9px; border-top: 1px solid currentColor; border-top-color: color-mix(in srgb, currentColor 25%, transparent); }
+.kit-col li:first-child { border-top: 0; }
+.kit-col li .mono { font-size: .8rem; white-space: nowrap; padding-top: 3px; }
+.kit-col .note { font-size: .92rem; }
+.kit-col.extra .note, .kit-col.extra li .mono { color: var(--ink-2); }
+
+/* ---- tables ---- */
+.table-scroll { overflow-x: auto; margin-top: 28px; border-top: 3px solid var(--ink); }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: .95rem; }
+th, td { text-align: left; padding: 11px 14px 11px 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+thead th { font: 600 .74rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); padding-top: 14px; }
+tbody th { font-weight: 600; white-space: nowrap; }
+.yes::before { content: "■ "; color: var(--ink); }
+.no { color: var(--ink-2); }
+
+/* ---- pack list ---- */
+.pack { padding-block: clamp(44px, 6vw, 72px); border-bottom: 2px solid var(--ink); }
+.pack .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(20px, 4vw, 56px); }
+.pack h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.pack .intro { margin-top: 12px; color: var(--ink-2); }
+.pack .count { margin-top: 18px; font: 600 .9rem var(--mono); }
+.checks { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--ink); }
+.checks li { border-bottom: 1px solid var(--hair); }
+.checks label { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 14px; padding-block: 13px; cursor: pointer; align-items: start; }
+.checks input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.checks .box { width: 26px; height: 26px; border: 3px solid var(--ink); display: grid; place-items: center; margin-top: 1px; }
+.checks input:checked + .box { background: var(--safety); border-color: var(--ink); }
+.checks input:checked + .box::after { content: ""; width: 12px; height: 7px; border-left: 3px solid var(--on-safety); border-bottom: 3px solid var(--on-safety); transform: rotate(-45deg) translate(1px, -2px); }
+.checks input:checked ~ .txt b { text-decoration: line-through; text-decoration-thickness: 2px; }
+.checks .txt b { display: block; font-weight: 600; }
+.checks .txt span { color: var(--ink-2); font-size: .93rem; }
+
+/* ---- check your download ---- */
+.verify { padding-block: clamp(44px, 6vw, 72px); border-bottom: 2px solid var(--ink); }
+.verify h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.verify .explain { margin-top: 18px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(20px, 4vw, 48px); align-items: start; }
+.verify .explain p { max-width: 36em; }
+.verify .explain p + p { margin-top: 10px; color: var(--ink-2); }
+.fingerprint { border: 3px solid var(--ink); padding: 16px 18px; display: grid; gap: 10px; }
+.fingerprint .label { font: 600 .74rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.fingerprint code { background: none; padding: 0; font-size: .86rem; line-height: 1.5; word-break: break-all; }
+.fingerprint .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: .85rem; color: var(--ink-2); }
+.way { margin-top: 36px; }
+.way-title { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; border-top: 3px solid var(--ink); padding-top: 14px; }
+.way-title .tag { font-size: .8rem; padding: 7px 10px; }
+.way-title h3 { font-size: 1.35rem; font-weight: 800; letter-spacing: -.01em; }
+.way-title span.sub { color: var(--ink-2); font-size: .95rem; }
+.drop { margin-top: 16px; border: 3px dashed var(--ink); padding: clamp(20px, 4vw, 32px); display: grid; gap: 12px; justify-items: start; cursor: pointer; background: var(--tint); }
+.drop.over { background: var(--safety); color: var(--on-safety); border-style: solid; }
+.drop b { font: 800 1.2rem var(--display); }
+.drop p { color: var(--ink-2); font-size: .95rem; }
+.drop.over p { color: var(--on-safety); }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.pick { font: 700 .95rem var(--body); border: 3px solid var(--ink); background: var(--paper); color: var(--ink); padding: 9px 16px; cursor: pointer; }
+.pick:hover { background: var(--ink); color: var(--paper); }
+.verdict { margin-top: 14px; padding: 16px 18px; border: 3px solid var(--ink); display: grid; gap: 6px; }
+.verdict[hidden] { display: none; }
+.verdict b { font: 900 1.25rem var(--display); }
+.verdict.good { background: var(--safety); color: var(--on-safety); }
+.verdict.good p, .verdict.good code { color: var(--on-safety); }
+.verdict.bad { background: var(--ink); color: var(--paper); }
+.verdict.bad p { color: var(--paper); }
+.verdict code { background: none; padding: 0; font-size: .78rem; word-break: break-all; }
+.os { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 3px solid var(--ink); }
+.os > div { padding: 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.os > div + div { border-left: 3px solid var(--ink); }
+.os h4 { margin: 0; font: 900 1.15rem var(--display); letter-spacing: -.01em; }
+.os ol { margin: 0; padding-left: 1.25em; display: grid; gap: 8px; font-size: .95rem; min-width: 0; }
+.os ol > li { min-width: 0; }
+.os li::marker { font-weight: 700; }
+.cmd { display: flex; align-items: stretch; border: 2px solid var(--ink); margin-top: 6px; width: 100%; min-width: 0; }
+.cmd code { flex: 1; min-width: 0; background: var(--tint); padding: 8px 10px; font-size: .8rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cmd button { border: 0; border-left: 2px solid var(--ink); background: var(--paper); color: var(--ink); font: 600 .78rem var(--body); padding: 0 10px; cursor: pointer; }
+.cmd button:hover { background: var(--ink); color: var(--paper); }
+.os .note { font-size: .88rem; color: var(--ink-2); }
+.paste { margin-top: 16px; display: grid; gap: 10px; max-width: 760px; }
+.paste label { font-weight: 600; }
+.paste textarea { width: 100%; min-height: 84px; font: 400 .85rem var(--mono); padding: 10px 12px; border: 3px solid var(--ink); background: var(--paper); color: var(--ink); resize: vertical; }
+.paste textarea:focus-visible { outline: 3px solid var(--safety); outline-offset: 2px; }
+.badnews { margin-top: 28px; border-left: 6px solid var(--safety); padding: 6px 0 6px 16px; max-width: 46em; display: grid; gap: 6px; }
+.badnews b { font: 800 1.05rem var(--display); }
+.badnews p { color: var(--ink-2); }
+
+/* ---- faq ---- */
+.faq { padding-block: clamp(44px, 6vw, 72px); border-bottom: 6px solid var(--ink); }
+.faq h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.qa { margin-top: 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; border-top: 3px solid var(--ink); }
+.qa > div { padding-block: 20px; border-bottom: 1px solid var(--hair); display: grid; gap: 8px; align-content: start; min-width: 0; }
+.qa > div.wide { grid-column: 1 / -1; }
+.qa h3 { font-size: 1.12rem; font-weight: 800; letter-spacing: -.01em; }
+.qa p { color: var(--ink-2); }
+.vt { min-width: 760px; font-size: .9rem; margin-top: 4px; }
+.vt code { font-size: .72rem; word-break: break-all; display: inline-block; max-width: 24em; background: none; padding: 0; }
+.sha { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.sha code { font-size: .76rem; padding: 6px 8px; }
+.copy { font: 600 .82rem var(--body); border: 2px solid var(--ink); background: transparent; color: var(--ink); padding: 5px 12px; cursor: pointer; }
+.copy:hover { background: var(--ink); color: var(--paper); }
+
+/* ---- footer ---- */
+footer { padding-block: 36px 56px; }
+footer .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; font-size: .9rem; color: var(--ink-2); }
+footer .credits { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+footer b { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) { .btn-dl { transition: none; } }
+@media (max-width: 860px) {
+  .hero .wrap, .statement .wrap, .phase-head, .pack .wrap, footer .wrap { grid-template-columns: minmax(0, 1fr); }
+  .kit-grid, .qa, .os, .verify .explain { grid-template-columns: minmax(0, 1fr); }
+  .os > div + div { border-left: 0; border-top: 3px solid var(--ink); }
+  .kit-col + .kit-col { border-left: 0; border-top: 3px solid var(--ink); }
+  .mast nav { display: none; }
+  .figure { max-width: 420px; }
+}
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .steps > li { grid-template-columns: 44px minmax(0, 1fr); gap: 12px; }
+  .steps .n { font-size: 2rem; }
+  .btn { width: 100%; justify-content: center; }
+  .filelist span:first-child { min-width: 0; }
+}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="wordmark" href="#top">
+      <span class="box" aria-hidden="true">EK</span>
+      <span><b>Emergency Kit for Meshtastic</b><small>Unofficial community project</small></span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#before">Before</a>
+      <a href="#during">No internet</a>
+      <a href="#kit">The kit</a>
+      <a href="#check">Check download</a>
+      <a href="#pack">Pack list</a>
+      <a href="#faq">Questions</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Set up Meshtastic when there's <span class="hl">no internet.</span></h1>
+        <p class="lede">Flash new radios and install the Meshtastic app on phones and computers, with optional extras for building a Raspberry Pi node. This kit downloads what those jobs need onto a USB drive while you still have a connection, so you can do them anywhere later.</p>
+        <div class="actions">
+          <a class="btn btn-dl dl" id="dl-btn" href="#before" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12M6 10l6 6 6-6M4 20h16"/></svg>
+            <span class="dl-label">Download the setup kit</span>
+          </a>
+          <a class="btn btn-line" href="#before">How it works</a>
+        </div>
+        <p class="dl-meta">Meshtastic-Emergency-Kit-Setup.zip · 5.2 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi</p>
+        <p class="dl-status" id="dl-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="figure" role="img" aria-label="Drawing: a USB drive labelled MESH KIT plugged into a laptop, with a LoRa radio connected by cable">
+        <svg viewBox="0 0 500 400" aria-hidden="true">
+          <!-- laptop -->
+          <rect x="70" y="70" width="230" height="150" class="fig-fill-paper"/>
+          <rect x="70" y="70" width="230" height="150" class="fig-ink"/>
+          <rect x="88" y="88" width="194" height="114" class="fig-ink" style="stroke-width:2"/>
+          <rect x="102" y="104" width="90" height="14" class="fig-fill-safety"/>
+          <rect x="102" y="128" width="150" height="6" class="fig-fill-ink" opacity=".35"/>
+          <rect x="102" y="142" width="130" height="6" class="fig-fill-ink" opacity=".35"/>
+          <rect x="102" y="156" width="140" height="6" class="fig-fill-ink" opacity=".35"/>
+          <rect x="102" y="176" width="64" height="14" class="fig-fill-ink"/>
+          <path d="M40 220 H330 L310 246 H60 Z" class="fig-fill-paper"/>
+          <path d="M40 220 H330 L310 246 H60 Z" class="fig-ink"/>
+          <!-- usb drive in the laptop side -->
+          <rect x="330" y="186" width="24" height="18" class="fig-fill-paper"/>
+          <rect x="330" y="186" width="24" height="18" class="fig-ink" style="stroke-width:2.5"/>
+          <rect x="354" y="172" width="104" height="46" class="fig-fill-safety"/>
+          <rect x="354" y="172" width="104" height="46" class="fig-ink"/>
+          <text x="406" y="200" text-anchor="middle" class="fig-text">MESH KIT</text>
+          <!-- cable to radio -->
+          <path d="M300 232 C 330 300, 250 310, 230 300" class="fig-ink"/>
+          <!-- radio board -->
+          <rect x="120" y="282" width="112" height="70" class="fig-fill-paper"/>
+          <rect x="120" y="282" width="112" height="70" class="fig-ink"/>
+          <rect x="134" y="296" width="48" height="26" class="fig-fill-ink"/>
+          <circle cx="206" cy="309" r="7" class="fig-ink" style="stroke-width:2.5"/>
+          <rect x="134" y="330" width="84" height="8" class="fig-fill-ink" opacity=".35"/>
+          <!-- antenna + signal arcs -->
+          <path d="M226 282 V214" class="fig-ink" style="stroke-width:4"/>
+          <path d="M240 222 A20 20 0 0 1 240 196" class="fig-ink" style="stroke-width:2.5"/>
+          <path d="M252 230 A34 34 0 0 1 252 188" class="fig-ink" style="stroke-width:2.5"/>
+        </svg>
+        <span class="cap">FIG. 1 · FLASHING A RADIO, NO NETWORK</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="big">Meshtastic radios talk to each other without the internet. Getting them set up does need it: the flasher, the firmware and the apps all download at the moment you use them. When the network is down, or you're out of range, a new radio is a blank circuit board.</p>
+      <aside>
+        <p><b>What this kit does about it:</b> it saves the official tools and releases onto a USB drive ahead of time, and runs them from the drive.</p>
+        <p><b>What it changes:</b> nothing in the firmware or apps. They're official releases, used as published. The one exception is Meshtastic's web flasher, which is rebuilt with small changes so it reads firmware from the drive instead of the internet.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="phase" id="before">
+    <div class="wrap phase-head">
+      <div>
+        <span class="tag before">Before</span>
+        <h2>While you still have internet</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="n">1</span>
+          <div>
+            <h3>Download the setup kit and unzip it</h3>
+            <p>It's 5.2 MB. Before you open it, <a href="#check">check it's genuine</a>, which takes about a minute. Then double-click the setup file for the computer you're on.</p>
+            <div class="filelist">
+              <div><span>SETUP-WINDOWS.bat</span><span>Windows 10 / 11</span></div>
+              <div><span>SETUP-MAC.command</span><span>macOS. The first time, right-click it and choose Open.</span></div>
+              <div><span>SETUP-LINUX.sh</span><span>Linux and Raspberry Pi</span></div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="n">2</span>
+          <div>
+            <h3>Answer two questions</h3>
+            <p><b>Where:</b> a USB drive (setup lists the ones plugged in), this computer, or this Raspberry Pi. <b>What:</b> the standard kit, or the standard kit plus extras you pick. Setup then downloads the current releases from their official sources. That takes 15 to 60 minutes, depending on your connection.</p>
+          </div>
+        </li>
+        <li>
+          <span class="n">3</span>
+          <div>
+            <h3>Make copies</h3>
+            <p>Run setup on a finished drive to copy it to another USB stick. Parts it already has are copied, so no download is needed. Give one to everyone in your group.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="phase" id="during">
+    <div class="wrap phase-head">
+      <div>
+        <span class="tag during">No internet</span>
+        <h2>When there's no connection</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="n">1</span>
+          <div>
+            <h3>Plug the drive into any computer and double-click START-HERE</h3>
+            <p>A small window opens with a menu like this, then your browser opens. Leave the window open while you work.</p>
+            <div class="menu" aria-label="Start window menu">
+              <div><b>1</b><span>Open Meshtastic in the browser</span></div>
+              <div><b>2</b><span>Install the Meshtastic app on this computer</span></div>
+              <div><b>3</b><span>Put the Meshtastic app on an Android phone</span></div>
+              <div><b>4</b><span>Make a Raspberry Pi SD card</span></div>
+              <div><b>6</b><span>Install USB drivers for radios (Windows)</span></div>
+              <div><b>C</b><span>Install a browser that works with radios (Mac, Linux)</span></div>
+              <div><b>U</b><span>Update this drive (when you're online again)</span></div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="n">2</span>
+          <div>
+            <h3>Flash the radio</h3>
+            <p>Plug the radio in with a data cable and pick it in the flasher, which runs from the drive. Boards such as the Heltec V3 and T-Beam flash in the browser. RAK4631, T-Echo and Pico boards take a .uf2 file dropped onto them.</p>
+          </div>
+        </li>
+        <li>
+          <span class="n">3</span>
+          <div>
+            <h3>Set the region, then get phones on</h3>
+            <p>A radio won't transmit until its region is set (US, EU_868, ANZ and others). Then phones on the same Wi-Fi or hotspot scan a QR code to install the Android app from the drive.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="kit" id="kit">
+    <div class="wrap">
+      <h2>What the kit holds</h2>
+      <p class="intro">The standard kit fits on a 4 GB USB drive. Extras are optional: pick them during setup, or add them later by running setup again on the same drive.</p>
+      <div class="kit-grid">
+        <div class="kit-col std">
+          <h3>Standard kit <span>≈ 1.5 GB</span></h3>
+          <ul>
+            <li><span>Official web flasher, with stable firmware for every supported board</span><span class="mono">600 MB</span></li>
+            <li><span>Meshtastic web client: messages, nodes and settings over USB, Bluetooth or Wi-Fi</span><span class="mono">8 MB</span></li>
+            <li><span>Android app, F-Droid build (no Google services needed)</span><span class="mono">65 MB</span></li>
+            <li><span>Chromium browser, for Macs and Linux PCs without Chrome or Edge</span><span class="mono">610 MB</span></li>
+            <li><span>Device pictures for the flasher, the local web server and the updater</span><span class="mono">300 MB</span></li>
+            <li><span>Windows USB driver helper. You save the two drivers from the makers' sites yourself (about a minute; links included). Each is signature-checked before it installs.</span><span class="mono">1 MB</span></li>
+          </ul>
+        </div>
+        <div class="kit-col extra">
+          <h3>Extras <span>pick any</span></h3>
+          <ul>
+            <li><span>Meshtastic Desktop apps for Windows, Mac and Linux</span><span class="mono">840 MB</span></li>
+            <li><span>Raspberry Pi image A: mPWRD-OS, Meshtastic preinstalled</span><span class="mono">470 MB</span></li>
+            <li><span>Raspberry Pi image B: Raspberry Pi OS, plus a one-command offline install</span><span class="mono">630 MB</span></li>
+            <li><span>Raspberry Pi Imager for writing SD cards (added with any Pi image)</span><span class="mono">70 MB</span></li>
+            <li><span>Newest alpha firmware alongside stable</span><span class="mono">760 MB</span></li>
+            <li><span>esptool command-line flasher, as a backup</span><span class="mono">330 MB</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Computer</th><th>Web client</th><th>Flash radios</th><th>Desktop app (extra)</th><th>Browser for radios</th><th>Updates itself</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Windows 10 / 11</th><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Edge (built in)</td><td class="yes">Yes</td></tr>
+            <tr><th scope="row">Mac, Apple chip</th><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Chromium, from the drive</td><td class="yes">Yes</td></tr>
+            <tr><th scope="row">Mac, Intel</th><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">Use the web client</td><td>Chromium, from the drive</td><td class="yes">Yes</td></tr>
+            <tr><th scope="row">Linux PC (64-bit)</th><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Chromium, from the drive</td><td class="yes">Yes</td></tr>
+            <tr><th scope="row">Raspberry Pi 4 / 5</th><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Chromium, from the drive</td><td class="yes">Yes</td></tr>
+            <tr><th scope="row">Android phone</th><td colspan="5">Install the Meshtastic app from the drive: QR code over Wi-Fi, a USB cable, or copying the file.</td></tr>
+            <tr><th scope="row">iPhone / iPad</th><td colspan="5" class="no">Apple only allows installs from the App Store. Install the Meshtastic app before you need it.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="verify" id="check">
+    <div class="wrap">
+      <h2>Check your download is genuine</h2>
+      <div class="explain">
+        <div>
+          <p>Every file has a fingerprint, a long code called a <b>SHA-256 checksum</b>, worked out from every byte inside it. If even one byte changes, whether from a broken download or from someone tampering with it, the fingerprint comes out completely different.</p>
+          <p>So if your file's fingerprint matches the one published here, you have exactly the file we published. This takes about a minute and you only need one of the three ways below.</p>
+        </div>
+        <div class="fingerprint">
+          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup.zip</span>
+          <code id="sha">97f5acfaf3d5d83ecd6e9549d185d669fffe83016e1d8d9f57c26ed184d2964d</code>
+          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,247,404 bytes · SHA-256</span></div>
+        </div>
+      </div>
+
+      <div class="way">
+        <div class="way-title"><span class="tag before">Easiest</span><h3>Drop the file here</h3><span class="sub">No typing. Works in any modern browser.</span></div>
+        <label class="drop" id="drop" for="file">
+          <input type="file" id="file" accept=".zip,application/zip">
+          <b>Drag the downloaded zip onto this box</b>
+          <p>Or click to choose it. It's usually in your Downloads folder. The file never leaves your computer; your browser works out the fingerprint itself.</p>
+          <span class="pick" aria-hidden="true">Choose the file…</span>
+        </label>
+        <div class="verdict" id="verdict" hidden role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="way">
+        <div class="way-title"><span class="tag during">Or</span><h3>Use your computer's built-in tools</h3><span class="sub">Each computer can make a fingerprint by itself.</span></div>
+        <div class="os">
+          <div>
+            <h4>Windows</h4>
+            <ol>
+              <li>Open your <b>Downloads</b> folder in File Explorer.</li>
+              <li>Click in the address bar at the top, type <b>powershell</b> and press <b>Enter</b>. A blue or black window opens in that folder.</li>
+              <li>Paste this and press <b>Enter</b>:
+                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup.zip">Copy</button></div>
+              </li>
+              <li>The long code under <b>Hash</b> is the fingerprint. Capital letters don't matter.</li>
+            </ol>
+          </div>
+          <div>
+            <h4>Mac</h4>
+            <ol>
+              <li>Press <b>Cmd + Space</b>, type <b>Terminal</b> and press <b>Enter</b>.</li>
+              <li>Paste this, with the space at the end, but <b>don't press Enter yet</b>:
+                <div class="cmd"><code>shasum -a 256 </code><button type="button" data-copy="shasum -a 256 ">Copy</button></div>
+              </li>
+              <li>Drag the zip from your Downloads folder into the Terminal window. Its location fills in. Now press <b>Enter</b>.</li>
+              <li>The long code at the start of the line is the fingerprint.</li>
+            </ol>
+          </div>
+          <div>
+            <h4>Linux / Raspberry Pi</h4>
+            <ol>
+              <li>Open your Downloads folder, right-click an empty spot and choose <b>Open in Terminal</b>. (Or open a terminal and type <b>cd ~/Downloads</b>.)</li>
+              <li>Paste this and press <b>Enter</b>:
+                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup.zip">Copy</button></div>
+              </li>
+              <li>The long code at the start of the line is the fingerprint.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="paste">
+          <label for="pasted">Then paste what your computer printed here and we'll compare it:</label>
+          <textarea id="pasted" spellcheck="false" placeholder="Paste the whole output, or just the long code"></textarea>
+          <div class="verdict" id="verdict-2" hidden role="status" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="badnews">
+        <b>If it doesn't match</b>
+        <p>Don't open the file. Delete it, download it again from this page, and check again. A download that was cut short is the usual cause. If a fresh download still doesn't match, it isn't the published file, so don't use it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pack" id="pack">
+    <div class="wrap">
+      <div>
+        <h2>Pack list</h2>
+        <p class="intro">The kit only helps if the rest of the setup is with it. Tick items off as you pack. Your ticks are saved in this browser.</p>
+        <p class="count" id="pack-count" aria-live="polite">0 of 8 packed</p>
+      </div>
+      <ul class="checks" id="checks">
+        <li><label><input type="checkbox" id="p-drive"><span class="box"></span><span class="txt"><b>USB drive with the kit on it</b><span>Tested once on each kind of computer you might use.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-radios"><span class="box"></span><span class="txt"><b>Radios, with antennas attached</b><span>Never power a LoRa radio on without its antenna. It can damage the radio.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-cables"><span class="box"></span><span class="txt"><b>USB data cables, USB-C and micro-USB</b><span>Charge-only cables can't flash anything. Label the ones that carry data.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-power"><span class="box"></span><span class="txt"><b>Power bank and chargers</b><span>One power bank keeps a node running for days.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-phone"><span class="box"></span><span class="txt"><b>Phones with the Meshtastic app already installed</b><span>Essential for iPhones, which can't install it from the drive.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-settings"><span class="box"></span><span class="txt"><b>Printed channel settings</b><span>Your region, channel name and key, or the QR code, on paper.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-adapter"><span class="box"></span><span class="txt"><b>USB-A to USB-C adapter</b><span>For laptops that only have USB-C ports.</span></span></label></li>
+        <li><label><input type="checkbox" id="p-sd"><span class="box"></span><span class="txt"><b>Spare microSD card (8 GB or more)</b><span>Only if you use the Raspberry Pi extras.</span></span></label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="faq" id="faq">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <div class="qa">
+        <div>
+          <h3>Is this an official Meshtastic product?</h3>
+          <p>No. It's an independent community project, not made or endorsed by Meshtastic LLC. Setup downloads official Meshtastic firmware and apps from Meshtastic's own releases and uses them unchanged. The web flasher is Meshtastic's, rebuilt to work offline (see below).</p>
+        </div>
+        <div>
+          <h3>When do I need internet?</h3>
+          <p>Once, to prepare the drive, and later only if you want updates. Flashing radios and installing the apps works from the drive with no connection. Meshtastic itself never needs it.</p>
+        </div>
+        <div>
+          <h3>Why is the download so small?</h3>
+          <p>The setup kit holds the launchers, guides and scripts, plus one piece from another project: Meshtastic's web flasher, rebuilt for offline use. Firmware, apps, the browser and the Raspberry Pi images download on your own computer from each official source.</p>
+        </div>
+        <div>
+          <h3>What was changed in the web flasher?</h3>
+          <p>Three things, all to make it work offline: it reads firmware and the board list from the drive instead of Meshtastic's servers, and its usage tracking is removed. The flasher is GPL-3.0 licensed. Its licence, the exact source version and a list of the changes are in the kit's <code>_system/flasher</code> folder.</p>
+        </div>
+        <div>
+          <h3>Is it finished?</h3>
+          <p>It's an early release. Everything has been built and tested on a Mac. Windows, Linux and Raspberry Pi have been checked by reading the scripts, not yet on real machines, so try your drive on each kind of computer you plan to use. <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues" rel="noopener">Report problems on GitHub</a>.</p>
+        </div>
+        <div>
+          <h3>How do I keep it current?</h3>
+          <p>Plug the drive into any computer that's online, start it and press U. It lists what's new, asks once, then downloads straight onto the drive.</p>
+        </div>
+        <div>
+          <h3>What size and format of USB drive?</h3>
+          <p>4 GB or more for the standard kit, 8 GB or more with extras. Format it as exFAT so Windows, Mac and Linux can all read it.</p>
+        </div>
+        <div>
+          <h3>My Mac says the setup file can't be opened</h3>
+          <p>macOS blocks downloaded scripts the first time. Right-click <code>SETUP-MAC.command</code>, choose Open, then Open again. Setup clears this flag on everything it installs.</p>
+        </div>
+        <div class="wide">
+          <h3>Are the Windows USB drivers safe?</h3>
+          <p>Before installing a driver, the kit checks its <b>digital signature</b>, the maker's tamper-proof seal. The CH340 driver must be signed by its maker, WCH (Nanjing Qinheng Microelectronics). The CP210x driver must carry Microsoft's WHQL certification, and Windows refuses any driver file that doesn't match it. If a check fails, the kit won't install the file. This works for whatever version the makers release, so there's nothing to keep up to date.</p>
+          <p>For extra reassurance, the versions current in November 2026 were also looked up on VirusTotal: <a href="https://www.virustotal.com/gui/file/458c37bdafbe4ce3cd0baf728c232b4b765b36d7463956e9b94cdf099212cad1" rel="noopener">CH340 driver, 0 of 70 scanners flagged it</a>, and <a href="https://www.virustotal.com/gui/file/6d9259475219c8c6cc19512053e96d435ebbada3d90457fba7d49ee8d524ba98" rel="noopener">CP210x driver, 0 of 47</a>.</p>
+        </div>
+        <div class="wide">
+          <h3>How do I check the setup kit is genuine?</h3>
+          <p>Compare its fingerprint (SHA-256 checksum) with the published one. The <a href="#check">Check your download</a> section shows three ways, including one where you just drag the file onto the page.</p>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:40px">
+        <a class="btn btn-dl dl" id="dl-btn-2" href="#before" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12M6 10l6 6 6-6M4 20h16"/></svg>
+          <span class="dl-label">Download the setup kit · 5.2 MB</span>
+        </a>
+      </div>
+      <p class="dl-status" id="dl-status-2" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>Emergency Kit for Meshtastic</b> is an independent community project. <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">Source code and releases on GitHub</a> (GPL-3.0). Meshtastic® is a registered trademark of Meshtastic LLC. This project is not affiliated with or endorsed by Meshtastic LLC.</p>
+    <div>
+      <p style="margin-bottom:8px">Built on these open-source projects:</p>
+      <div class="credits">
+        <a href="https://github.com/meshtastic" rel="noopener">Meshtastic</a>
+        <a href="https://github.com/meshtastic/web-flasher" rel="noopener">Meshtastic Web Flasher (GPL-3.0)</a>
+        <a href="https://github.com/ungoogled-software" rel="noopener">ungoogled-chromium</a>
+        <a href="https://github.com/svenstaro/miniserve" rel="noopener">miniserve</a>
+        <a href="https://github.com/astral-sh/python-build-standalone" rel="noopener">python-build-standalone</a>
+        <a href="https://github.com/espressif/esptool" rel="noopener">esptool</a>
+        <a href="https://github.com/raspberrypi/rpi-imager" rel="noopener">Raspberry Pi Imager</a>
+        <a href="https://github.com/mPWRD-OS/mPWRD-OS" rel="noopener">mPWRD-OS</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Where the setup zip is hosted (e.g. a GitHub release asset). Empty = not published yet.
+  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest/download/Meshtastic-Emergency-Kit-Setup.zip";
+  document.querySelectorAll("a.dl").forEach(function (a, i) {
+    var status = document.getElementById(i === 0 ? "dl-status" : "dl-status-2");
+    if (DOWNLOAD_URL) {
+      a.href = DOWNLOAD_URL;
+      a.target = "_blank";
+    } else {
+      a.classList.add("soon");
+      a.setAttribute("aria-disabled", "true");
+      a.querySelector(".dl-label").textContent = "Download coming soon";
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        status.textContent = "The public download isn't up yet. Check back soon.";
+      });
+    }
+  });
+
+  // Pack list: ticks remembered in this browser only
+  var KEY = "mesh-kit-pack";
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("#checks input"));
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  function count() {
+    var n = boxes.filter(function (b) { return b.checked; }).length;
+    document.getElementById("pack-count").textContent =
+      n === boxes.length ? "All " + n + " packed. Ready." : n + " of " + boxes.length + " packed";
+  }
+  boxes.forEach(function (b) {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", function () {
+      saved[b.id] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      count();
+    });
+  });
+  count();
+
+  var EXPECTED = document.getElementById("sha").textContent.trim().toLowerCase();
+
+  function showVerdict(el, found, fileName) {
+    el.hidden = false;
+    if (!found) {
+      el.className = "verdict bad";
+      el.innerHTML = "<b>No fingerprint found</b><p>Paste the long code of letters and numbers your computer printed (64 characters).</p>";
+      return;
+    }
+    var ok = found.toLowerCase() === EXPECTED;
+    el.className = "verdict " + (ok ? "good" : "bad");
+    el.innerHTML = ok
+      ? "<b>✓ Matches. This is the genuine file.</b><p>Go ahead: unzip it and double-click the SETUP file for your computer.</p>"
+      : "<b>✗ Doesn't match.</b><p>Don't open this file. Delete it, download it again, and check again.</p>";
+    var detail = document.createElement("p");
+    detail.innerHTML = (fileName ? "<span></span><br>" : "") + "Your file: <code></code>";
+    if (fileName) detail.querySelector("span").textContent = fileName;
+    detail.querySelector("code").textContent = found.toLowerCase();
+    el.appendChild(detail);
+  }
+
+  // 1) drop or pick the file: SHA-256 worked out in the browser
+  var drop = document.getElementById("drop"), fileInput = document.getElementById("file"), verdict = document.getElementById("verdict");
+  async function checkFile(file) {
+    if (!file) return;
+    verdict.hidden = false; verdict.className = "verdict"; verdict.innerHTML = "<b>Checking…</b>";
+    try {
+      if (!(window.crypto && crypto.subtle)) throw new Error("no crypto");
+      var buf = await file.arrayBuffer();
+      var hash = await crypto.subtle.digest("SHA-256", buf);
+      var hex = Array.prototype.map.call(new Uint8Array(hash), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+      showVerdict(verdict, hex, file.name + " · " + file.size.toLocaleString() + " bytes");
+    } catch (e) {
+      verdict.className = "verdict bad";
+      verdict.innerHTML = "<b>This browser can't check files.</b><p>Use your computer's built-in tools below instead.</p>";
+    }
+  }
+  fileInput.addEventListener("change", function () { checkFile(fileInput.files[0]); });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function (e) { if (e.dataTransfer && e.dataTransfer.files[0]) checkFile(e.dataTransfer.files[0]); });
+
+  // 3) paste the output of the computer's own tool
+  var pasted = document.getElementById("pasted"), verdict2 = document.getElementById("verdict-2");
+  pasted.addEventListener("input", function () {
+    var t = pasted.value.trim();
+    if (!t) { verdict2.hidden = true; return; }
+    var m = t.match(/[0-9a-fA-F]{64}/);
+    showVerdict(verdict2, m ? m[0] : null);
+  });
+
+  // copy buttons for the commands
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.getAttribute("data-copy");
+      var code = btn.previousElementSibling;
+      function selectIt() {
+        var r = document.createRange(); r.selectNodeContents(code);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        btn.textContent = "Ctrl/Cmd+C";
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = "Copied";
+          setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+        }, selectIt);
+      } else selectIt();
+    });
+  });
+
+  var copyBtn = document.getElementById("copy-sha");
+  copyBtn.addEventListener("click", function () {
+    var el = document.getElementById("sha");
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      copyBtn.textContent = "Selected. Press Ctrl/Cmd+C";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(el.textContent).then(function () {
+        copyBtn.textContent = "Copied";
+        setTimeout(function () { copyBtn.textContent = "Copy"; }, 2000);
+      }, selectIt);
+    } else selectIt();
+  });
+})();
+</script>

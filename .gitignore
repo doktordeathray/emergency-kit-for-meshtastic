@@ -1,0 +1,22 @@
+# Everything setup downloads stays out of the repository
+_system/.update-cache/
+_system/bin/
+_system/tools/
+_system/webclient/
+_system/flasher/release/
+_system/flasher/api/
+_system/flasher/models/
+_system/settings.json
+1-Desktop-App/
+2-Android-Phone/
+3-Raspberry-Pi/**/*.img.xz
+3-Raspberry-Pi/SD-Card-Writer/
+3-Raspberry-Pi/**/packages/
+4-Chromium-Browser/**/*.dmg
+4-Chromium-Browser/**/*.tar.xz
+5-Windows-USB-Drivers/*.EXE
+5-Windows-USB-Drivers/*.exe
+5-Windows-USB-Drivers/*.zip
+*.zip
+__pycache__/
+.DS_Store

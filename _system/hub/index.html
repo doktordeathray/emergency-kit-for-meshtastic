@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meshtastic Emergency USB</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 100 55" aria-hidden="true"><path d="M5 50 L30 5 L55 50 M45 50 L70 5 L95 50" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>
+        <h1>Meshtastic Emergency USB</h1>
+        <p class="sub">Everything runs from this drive. No internet needed.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="browser-warn" class="banner warn" hidden>
+    <strong>This browser can't talk to radios over USB.</strong>
+    Open this page in <b>Google Chrome</b> or <b>Microsoft Edge</b> (Brave/Opera/Chromium also work).
+    Safari and Firefox can only read the guides.<br>
+    <b>No Chrome or Edge on this computer?</b> Go to the Meshtastic window and type <kbd>C</kbd>
+    to install the free Chromium browser from this drive (Mac and Linux; Windows already has Edge).
+    <div class="mono" id="this-url"></div>
+  </div>
+
+  <div id="update-banner" class="banner update" hidden>
+    <strong>Updates are available for this drive:</strong> <span id="update-list"></span><br>
+    To get them: go to the <b>Meshtastic Emergency USB</b> window and type <kbd>U</kbd> then Enter.
+  </div>
+
+  <section class="big">
+    <a class="card primary" id="go-client" href="#">
+      <span class="num">1</span>
+      <span class="ttl">Use Meshtastic</span>
+      <span class="desc">Send messages, see nodes and the map, change radio settings. Connect by USB cable, Bluetooth or Wi-Fi.</span>
+      <span class="go">Open the web app →</span>
+    </a>
+    <a class="card" id="go-flasher" href="#">
+      <span class="num">2</span>
+      <span class="ttl">Flash or update a radio</span>
+      <span class="desc">Install Meshtastic firmware on a new radio, or update one. Plug the radio in by USB first.</span>
+      <span class="go">Open the flasher →</span>
+    </a>
+  </section>
+
+  <section class="small">
+    <a class="tile" href="guide.html#start"><b>First time?</b><span>5-minute quick start</span></a>
+    <a class="tile" href="guide.html#flash"><b>How to flash</b><span>Step by step, every radio type</span></a>
+    <a class="tile" id="go-files" href="#"><b>Firmware files</b><span>For drag-and-drop radios (RAK, T-Echo, Pico)</span></a>
+    <a class="tile" href="guide.html#phone"><b>Phones</b><span>Android app on this drive</span></a>
+    <a class="tile" href="guide.html#pi"><b>Raspberry Pi</b><span>Make a Meshtastic SD card</span></a>
+    <a class="tile" href="guide.html#help"><b>Something wrong?</b><span>Troubleshooting</span></a>
+  </section>
+
+  <section class="note">
+    <h2>Other things this drive can do</h2>
+    <p>Go back to the <b>Meshtastic Emergency USB</b> window (the black window that opened first) and type a number:</p>
+    <ul class="menu">
+      <li><kbd>2</kbd> Install the Meshtastic app on this computer (Windows, Mac, Linux)</li>
+      <li><kbd>3</kbd> Put the Meshtastic app on an Android phone</li>
+      <li><kbd>4</kbd> Make a Raspberry Pi SD card</li>
+      <li class="win-only"><kbd>6</kbd> Radio not detected on Windows? Install USB drivers</li>
+      <li class="nonwin-only"><kbd>C</kbd> Install the Chromium browser (if this computer has no Chrome or Edge)</li>
+      <li><kbd>U</kbd> Update this drive with the newest firmware and apps (needs internet)</li>
+    </ul>
+    <p class="muted">Closing that window stops the apps on this page.</p>
+  </section>
+
+  <footer class="muted" id="versions"></footer>
+</main>
+
+<script src="versions.js" onerror="window.MESH_VERSIONS=null"></script>
+<script>
+  var h = location.hostname || 'localhost';
+  function url(port, path) { return 'http://' + h + ':' + port + (path || '/'); }
+  document.getElementById('go-client').href = url(8471);
+  document.getElementById('go-flasher').href = url(8472);
+  document.getElementById('go-files').href = url(8472, '/release/');
+
+  if (!('serial' in navigator)) {
+    document.getElementById('browser-warn').hidden = false;
+    document.getElementById('this-url').textContent = location.href;
+  }
+  if (!/Win/.test(navigator.platform || '')) {
+    document.querySelectorAll('.win-only').forEach(function (e) { e.style.display = 'none'; });
+  } else {
+    document.querySelectorAll('.nonwin-only').forEach(function (e) { e.style.display = 'none'; });
+  }
+
+  var v = window.MESH_VERSIONS;
+  if (v) {
+    var fw = v.firmware || {};
+    var bits = [];
+    if (fw.stable) bits.push('Firmware ' + fw.stable.join(', ') + ' (stable)');
+    if (fw.alpha) bits.push(fw.alpha.join(', ') + ' (alpha)');
+    if (v.webclient) bits.push('Web app ' + v.webclient);
+    if (v.android) bits.push('Android/Desktop ' + v.android);
+    if (v.built) bits.push('Drive updated ' + v.built);
+    document.getElementById('versions').textContent = bits.join(' · ');
+  }
+
+  // If this computer happens to be online, quietly check for newer versions.
+  (function checkUpdates() {
+    if (!v || !window.fetch || navigator.onLine === false) return;
+    function get(u) {
+      var c = new AbortController(); setTimeout(function () { c.abort(); }, 6000);
+      return fetch(u, { signal: c.signal, cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; });
+    }
+    var found = [];
+    var checks = [
+      get('https://api.meshtastic.org/github/firmware/list').then(function (d) {
+        var s = d && d.releases && (d.releases.stable || []).filter(function (r) { return !/revoked/i.test(r.title || ''); })[0];
+        var have = (v.firmware && v.firmware.stable || [])[0];
+        if (s && have && s.id !== have) found.push('firmware ' + s.id.replace(/^v/, ''));
+      }),
+      get('https://api.github.com/repos/meshtastic/web/releases/latest').then(function (d) {
+        if (d && v.webclient && d.tag_name !== v.webclient) found.push('web app ' + d.tag_name);
+      }),
+      get('https://api.github.com/repos/meshtastic/Meshtastic-Android/releases/latest').then(function (d) {
+        if (d && v.android && d.tag_name !== v.android) found.push('Android & desktop apps ' + d.tag_name);
+      })
+    ].map(function (p) { return p.catch(function () {}); });
+    Promise.all(checks).then(function () {
+      if (!found.length) return;
+      document.getElementById('update-list').textContent = found.join(', ') + '.';
+      document.getElementById('update-banner').hidden = false;
+    });
+  })();
+</script>
+</body>
+</html>

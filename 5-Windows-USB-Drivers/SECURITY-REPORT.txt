@@ -1,0 +1,38 @@
+WINDOWS USB DRIVERS - SECURITY REPORT
+=====================================
+
+HOW THE KIT PROTECTS YOU
+Before installing a driver, the START-HERE window checks its digital signature:
+  - CH340 driver: must be validly signed by Nanjing Qinheng Microelectronics (WCH).
+  - CP210x driver: its catalog must be validly signed by Microsoft (WHQL-certified),
+    and Windows refuses any driver file that doesn't match that catalog.
+A file that fails is not installed. This works for any version the makers release.
+
+VIRUSTOTAL (background information)
+The versions below were looked up on VirusTotal by SHA-256 checksum (files were not
+uploaded). A newer version simply shows as not looked up; it is still signature-checked.
+
+CH341SER.EXE
+------------
+  What:        CH340 / CH341 / CH9102 USB-serial driver installer
+  From:        WCH (Nanjing Qinheng Microelectronics Co., Ltd.)  (https://www.wch-ic.com/downloads/CH341SER_EXE.html)
+  SHA-256:     458c37bdafbe4ce3cd0baf728c232b4b765b36d7463956e9b94cdf099212cad1
+  Size:        799,096 bytes
+  Signed by:   Nanjing Qinheng Microelectronics Co., Ltd.
+  VirusTotal:  0 / 70 security vendors flagged it  (analysis 2026-11-11 10:57 UTC, checked 2026-11-11)
+  Report:      https://www.virustotal.com/gui/file/458c37bdafbe4ce3cd0baf728c232b4b765b36d7463956e9b94cdf099212cad1
+
+CP210x_Universal_Windows_Driver.zip
+-----------------------------------
+  What:        CP210x USB-serial Universal Windows Driver v11.6.0.420
+  From:        Silicon Labs  (https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers)
+  SHA-256:     6d9259475219c8c6cc19512053e96d435ebbada3d90457fba7d49ee8d524ba98
+  Size:        292,464 bytes
+  Signed by:   Silicon Laboratories Inc. (driver); Microsoft Windows Hardware Compatibility Publisher (WHQL catalog)
+  VirusTotal:  0 / 47 security vendors flagged it  (analysis 2026-11-05 22:46 UTC, checked 2026-11-11)
+  Report:      https://www.virustotal.com/gui/file/6d9259475219c8c6cc19512053e96d435ebbada3d90457fba7d49ee8d524ba98
+
+To check a file yourself:
+  Windows:    certutil -hashfile CH341SER.EXE SHA256
+  Mac/Linux:  shasum -a 256 CH341SER.EXE
+then compare with the SHA-256 above and open the Report link.

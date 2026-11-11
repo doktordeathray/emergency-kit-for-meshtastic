@@ -1,0 +1,24 @@
+{
+  "CH341SER.EXE": {
+    "what": "CH340 / CH341 / CH9102 USB-serial driver installer",
+    "publisher": "WCH (Nanjing Qinheng Microelectronics Co., Ltd.)",
+    "source": "https://www.wch-ic.com/downloads/CH341SER_EXE.html",
+    "sha256": "458c37bdafbe4ce3cd0baf728c232b4b765b36d7463956e9b94cdf099212cad1",
+    "bytes": 799096,
+    "signed_by": "Nanjing Qinheng Microelectronics Co., Ltd.",
+    "virustotal": "0 / 70 security vendors flagged it",
+    "virustotal_analysis": "2026-11-11 10:57 UTC",
+    "checked": "2026-11-11"
+  },
+  "CP210x_Universal_Windows_Driver.zip": {
+    "what": "CP210x USB-serial Universal Windows Driver v11.6.0.420",
+    "publisher": "Silicon Labs",
+    "source": "https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers",
+    "sha256": "6d9259475219c8c6cc19512053e96d435ebbada3d90457fba7d49ee8d524ba98",
+    "bytes": 292464,
+    "signed_by": "Silicon Laboratories Inc. (driver); Microsoft Windows Hardware Compatibility Publisher (WHQL catalog)",
+    "virustotal": "0 / 47 security vendors flagged it",
+    "virustotal_analysis": "2026-11-05 22:46 UTC",
+    "checked": "2026-11-11"
+  }
+}

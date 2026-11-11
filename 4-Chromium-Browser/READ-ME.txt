@@ -1,0 +1,14 @@
+CHROMIUM BROWSER (free, open-source)
+====================================
+Flashing radios and connecting by USB/Bluetooth needs a Chromium-family browser
+(Chrome, Edge, Brave, Chromium). Safari and Firefox can't do it.
+
+Windows already has Microsoft Edge - nothing needed.
+Mac / Linux without Chrome: start the drive and type C in the black window.
+It installs from here with no internet and no admin password.
+
+  Mac:    *_arm64-macos.dmg  (Apple chip)   *_x86_64-macos.dmg  (Intel)
+  Linux:  *-x86_64_linux.tar.xz (normal PCs)   *-arm64_linux.tar.xz (Pi 4/5, ARM)
+
+This is "ungoogled-chromium" (https://github.com/ungoogled-software), BSD-licensed:
+Chromium without Google services. It may be copied and shared freely.

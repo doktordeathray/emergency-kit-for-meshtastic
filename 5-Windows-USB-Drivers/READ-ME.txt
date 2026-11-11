@@ -1,0 +1,22 @@
+WINDOWS USB DRIVERS FOR RADIOS
+==============================
+Many ESP32 radios use a USB chip that needs a driver on Windows. Windows usually
+downloads it automatically - but not when there's no internet. So keep both here.
+
+  CH340 / CH9102  (Heltec V3/V4, many cheap boards)  ->  CH341SER.EXE
+  CP210x          (T-Beam, LILYGO, Station G2)        ->  CP210x_Universal_Windows_Driver.zip
+
+Radios with built-in USB (RAK4631, T-Echo, Pico, ESP32-S3 boards on their native
+USB port) don't need a driver.
+
+TO INSTALL: in the START-HERE-WINDOWS window, choose 6.
+
+SAFETY: before installing, the START-HERE window checks each driver's digital
+signature (WCH for CH340, Microsoft WHQL for CP210x) and refuses one that fails.
+That works for any version. VirusTotal results and checksums: SECURITY-REPORT.txt
+
+IF THIS FOLDER IS MISSING A FILE, download it (while you have internet) and save it here
+with exactly the name shown above:
+  CH340:  https://www.wch-ic.com/downloads/CH341SER_EXE.html
+  CP210x: https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers
+          (choose "CP210x Universal Windows Driver")
