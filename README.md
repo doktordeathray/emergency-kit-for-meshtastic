@@ -78,6 +78,10 @@ Nothing from those projects is stored in this repository. Each person's computer
 
 Early release. Built and tested on macOS. Windows, Linux and Raspberry Pi have been checked by reading the scripts, not yet on real machines. Please try your drive on each kind of computer you plan to use, and [report problems](https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues).
 
+## How this was made
+
+This project is a collaboration between [doktordeathray](https://github.com/doktordeathray) and [Claude Code](https://claude.com/claude-code), Anthropic's AI coding assistant. AI was used throughout: it wrote most of the scripts, the offline guide, the web page and this README, with a person deciding what to build, testing it and reviewing the results. Treat it like any early-release software and check it on your own computers before you rely on it.
+
 ## Licence
 
 GPL-3.0 (see `LICENSE`), the same licence as the Meshtastic Web Flasher included here. Downloaded parts keep their own licences.
