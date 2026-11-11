@@ -65,7 +65,8 @@ Nothing from those projects is stored in this repository. Each person's computer
 
 ## What's in this repository
 
-- `SETUP-*`, `START-HERE-*`: the files people double-click
+- `SETUP-*`: sets up a drive. Double-click on Windows; on a Mac run it from Terminal (see above); on Linux run it as a program or with `bash`
+- `START-HERE-*`: starts the kit on a finished drive (double-click on every computer)
 - `_system/launcher.sh`, `_system/launcher.ps1`: the menus (Mac/Linux and Windows)
 - `_system/maintenance/setup.py`: asks where and what, then copies or downloads
 - `_system/maintenance/build_usb.py`: downloads and updates every part (also used by `U`)
