@@ -76,7 +76,7 @@ code { font-size: .86em; background: var(--tint); padding: 1px 5px; overflow-wra
 .btn-line { background: transparent; color: var(--ink); }
 .btn-line:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
 .btn svg { width: 20px; height: 20px; flex: none; }
-.dl-meta { margin-top: 16px; font: 400 .8rem/1.5 var(--mono); color: var(--ink-2); }
+.dl-meta { margin-top: 16px; font: 400 .8rem/1.5 var(--mono); color: var(--ink-2); overflow-wrap: anywhere; }
 .dl-status { margin-top: 8px; min-height: 1.5em; font-weight: 600; font-size: .95rem; }
 
 .figure { border: 3px solid var(--ink); background: var(--tint); aspect-ratio: 5 / 4; max-width: 100%; position: relative; }
@@ -220,6 +220,8 @@ tbody th { font-weight: 600; white-space: nowrap; }
 .qa > div.wide { grid-column: 1 / -1; }
 .qa h3 { font-size: 1.12rem; font-weight: 800; letter-spacing: -.01em; }
 .qa p { color: var(--ink-2); }
+.qa ul.ticks { color: var(--ink-2); padding-left: 1.2em; display: grid; gap: 4px; }
+.qa ul.ticks li::marker { color: var(--ink); }
 .vt { min-width: 760px; font-size: .9rem; margin-top: 4px; }
 .vt code { font-size: .72rem; word-break: break-all; display: inline-block; max-width: 24em; background: none; padding: 0; }
 .sha { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -232,6 +234,7 @@ footer { padding-block: 36px 56px; }
 footer .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; font-size: .9rem; color: var(--ink-2); }
 footer .credits { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 footer b { color: var(--ink); }
+footer .wrap > p { overflow-wrap: anywhere; }
 
 @media (prefers-reduced-motion: reduce) { .btn-dl { transition: none; } }
 @media (max-width: 860px) {
@@ -264,6 +267,7 @@ footer b { color: var(--ink); }
       <a href="#check">Check download</a>
       <a href="#pack">Pack list</a>
       <a href="#faq">Questions</a>
+      <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">GitHub</a>
     </nav>
   </div>
 </header>
@@ -281,7 +285,7 @@ footer b { color: var(--ink); }
           </a>
           <a class="btn btn-line" href="#before">How it works</a>
         </div>
-        <p class="dl-meta">Meshtastic-Emergency-Kit-Setup.zip · 5.2 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi</p>
+        <p class="dl-meta">Meshtastic-Emergency-Kit-Setup.zip · 5.2 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
         <p class="dl-status" id="dl-status" role="status" aria-live="polite"></p>
       </div>
 
@@ -594,6 +598,17 @@ footer b { color: var(--ink); }
           <p>Before installing a driver, the kit checks its <b>digital signature</b>, the maker's tamper-proof seal. The CH340 driver must be signed by its maker, WCH (Nanjing Qinheng Microelectronics). The CP210x driver must carry Microsoft's WHQL certification, and Windows refuses any driver file that doesn't match it. If a check fails, the kit won't install the file. This works for whatever version the makers release, so there's nothing to keep up to date.</p>
           <p>For extra reassurance, the versions current in November 2026 were also looked up on VirusTotal: <a href="https://www.virustotal.com/gui/file/458c37bdafbe4ce3cd0baf728c232b4b765b36d7463956e9b94cdf099212cad1" rel="noopener">CH340 driver, 0 of 70 scanners flagged it</a>, and <a href="https://www.virustotal.com/gui/file/6d9259475219c8c6cc19512053e96d435ebbada3d90457fba7d49ee8d524ba98" rel="noopener">CP210x driver, 0 of 47</a>.</p>
         </div>
+        <div class="wide" id="problems">
+          <h3>Found a problem, or have an idea?</h3>
+          <p>Open an issue on GitHub: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic/issues</a>. You'll need a free GitHub account. Click <b>New issue</b> and tell us:</p>
+          <ul class="ticks">
+            <li>which computer you used (Windows, Mac, Linux or Raspberry Pi, and the version if you know it)</li>
+            <li>which step you were on, and what you clicked or typed</li>
+            <li>what you expected, and what happened instead, with any error message copied in or a screenshot</li>
+            <li>your radio model, if it's about flashing</li>
+          </ul>
+          <p>Reports from Windows, Linux and Raspberry Pi are especially useful, since those haven't been tested on real machines yet. Please check the <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues?q=is%3Aissue" rel="noopener">existing issues</a> first in case someone has already reported it.</p>
+        </div>
         <div class="wide">
           <h3>How do I check the setup kit is genuine?</h3>
           <p>Compare its fingerprint (SHA-256 checksum) with the published one. The <a href="#check">Check your download</a> section shows three ways, including one where you just drag the file onto the page.</p>
@@ -604,6 +619,7 @@ footer b { color: var(--ink); }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12M6 10l6 6 6-6M4 20h16"/></svg>
           <span class="dl-label">Download the setup kit · 5.2 MB</span>
         </a>
+        <a class="btn btn-line" href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues" rel="noopener">Report a problem</a>
       </div>
       <p class="dl-status" id="dl-status-2" role="status" aria-live="polite"></p>
     </div>
@@ -612,7 +628,7 @@ footer b { color: var(--ink); }
 
 <footer>
   <div class="wrap">
-    <p><b>Emergency Kit for Meshtastic</b> is an independent community project. <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">Source code and releases on GitHub</a> (GPL-3.0). Meshtastic® is a registered trademark of Meshtastic LLC. This project is not affiliated with or endorsed by Meshtastic LLC.</p>
+    <p><b>Emergency Kit for Meshtastic</b> is an independent community project. Source code and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a> (GPL-3.0). <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues" rel="noopener">Report a problem</a>. Meshtastic® is a registered trademark of Meshtastic LLC. This project is not affiliated with or endorsed by Meshtastic LLC.</p>
     <div>
       <p style="margin-bottom:8px">Built on these open-source projects:</p>
       <div class="credits">
