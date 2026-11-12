@@ -48,3 +48,9 @@ FOLDERS
    4-Chromium-Browser      Free Chromium browser (Mac, Linux)
    5-Windows-USB-Drivers   CP210x / CH340 radio drivers
    _system                 Web app, flasher, firmware - don't move or rename
+
+ABOUT THIS KIT
+   Made by doktordeathray in collaboration with Claude Code, Anthropic's AI
+   coding assistant. AI was used to write the scripts, the guide and this
+   text, with a person directing, testing and reviewing the work.
+   Independent community project, not made or endorsed by Meshtastic LLC.

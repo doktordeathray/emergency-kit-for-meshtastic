@@ -31,7 +31,7 @@ Before opening it, compare its SHA-256 fingerprint with the one in the release n
 
 **When there's no connection**
 
-Plug the drive into any computer and double-click `START-HERE-WINDOWS.bat`, `START-HERE-MAC.command` or `START-HERE-LINUX.sh`. A menu opens and your browser shows the web flasher and web client, served from the drive.
+Plug the drive into any computer and double-click `START-HERE-WINDOWS.bat` or `START-HERE-MAC.command`. On Linux, right-click `START-HERE-LINUX.sh` and choose Run as a Program. A menu opens and your browser shows the web flasher and web client, served from the drive.
 
 | Key | What it does |
 |---|---|
@@ -66,7 +66,7 @@ Nothing from those projects is stored in this repository. Each person's computer
 ## What's in this repository
 
 - `SETUP-*`: sets up a drive. Double-click on Windows; on a Mac run it from Terminal (see above); on Linux run it as a program or with `bash`
-- `START-HERE-*`: starts the kit on a finished drive (double-click on every computer)
+- `START-HERE-*`: starts the kit on a finished drive. Double-click on Windows and Mac; on Linux run it as a program
 - `_system/launcher.sh`, `_system/launcher.ps1`: the menus (Mac/Linux and Windows)
 - `_system/maintenance/setup.py`: asks where and what, then copies or downloads
 - `_system/maintenance/build_usb.py`: downloads and updates every part (also used by `U`)

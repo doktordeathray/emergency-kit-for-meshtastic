@@ -1,0 +1,62 @@
+name: Report a problem
+description: Something in the kit didn't work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying the kit. The more of this you fill in, the faster the problem can be found.
+        Problems with Meshtastic itself (firmware, the app, radios) belong with the [Meshtastic project](https://github.com/meshtastic).
+  - type: dropdown
+    id: computer
+    attributes:
+      label: Which computer?
+      options:
+        - Windows
+        - Mac
+        - Linux PC
+        - Raspberry Pi
+        - Android phone
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version of that system, if you know it
+      placeholder: e.g. Windows 11, macOS 27, Ubuntu 24.04, Raspberry Pi OS trixie
+  - type: dropdown
+    id: step
+    attributes:
+      label: What were you doing?
+      options:
+        - Downloading or checking the setup kit
+        - Running SETUP (making a drive)
+        - Starting the drive (START-HERE)
+        - Web client
+        - Flashing a radio
+        - Installing the Android app
+        - Installing the desktop app
+        - Making a Raspberry Pi SD card
+        - Installing Windows USB drivers
+        - Installing Chromium
+        - Updating the drive (U)
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you clicked or typed, what you expected, and what happened instead. Paste any error message, or drag in a screenshot.
+    validations:
+      required: true
+  - type: input
+    id: radio
+    attributes:
+      label: Radio model (if it's about flashing or connecting)
+      placeholder: e.g. Heltec V3, RAK4631, T-Beam
+  - type: input
+    id: kit
+    attributes:
+      label: Kit version
+      placeholder: e.g. v0.1.2 (from the release you downloaded)

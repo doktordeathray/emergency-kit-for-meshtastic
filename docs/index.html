@@ -347,11 +347,11 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <span class="n">1</span>
           <div>
             <h3>Download the setup kit and unzip it</h3>
-            <p>It's 5.2 MB. Before you open it, <a href="#check">check it's genuine</a>, which takes about a minute. Then double-click the setup file for the computer you're on.</p>
+            <p>It's 5.2 MB. Before you open it, <a href="#check">check it's genuine</a>, which takes about a minute. Then run the setup file for the computer you're on.</p>
             <div class="filelist">
-              <div><span>SETUP-WINDOWS.bat</span><span>Windows 10 / 11</span></div>
+              <div><span>SETUP-WINDOWS.bat</span><span>Windows 10 / 11. Double-click it.</span></div>
               <div><span>SETUP-MAC.command</span><span>macOS. Don't double-click it: run it from Terminal (see below).</span></div>
-              <div><span>SETUP-LINUX.sh</span><span>Linux and Raspberry Pi</span></div>
+              <div><span>SETUP-LINUX.sh</span><span>Linux and Raspberry Pi. Right-click it and choose Run as a Program, or type <code>bash SETUP-LINUX.sh</code> in a terminal.</span></div>
             </div>
             <p class="macnote"><b>On a Mac:</b> macOS won't let you double-click a downloaded script. Instead, open <b>Terminal</b> (Cmd + Space, type Terminal, press Enter), type <code>bash</code> and a space, drag <code>SETUP-MAC.command</code> into the window, and press Enter. You only need to do this once.</p>
           </div>
@@ -384,8 +384,8 @@ footer .wrap > p { overflow-wrap: anywhere; }
         <li>
           <span class="n">1</span>
           <div>
-            <h3>Plug the drive into any computer and double-click START-HERE</h3>
-            <p>A small window opens with a menu like this, then your browser opens. Leave the window open while you work.</p>
+            <h3>Plug the drive into any computer and open START-HERE</h3>
+            <p>Double-click <code>START-HERE-WINDOWS.bat</code> or <code>START-HERE-MAC.command</code>. On Linux, right-click <code>START-HERE-LINUX.sh</code> and choose Run as a Program. A small window opens with a menu like this, then your browser opens. Leave the window open while you work.</p>
             <div class="menu" aria-label="Start window menu">
               <div><b>1</b><span>Open Meshtastic in the browser</span></div>
               <div><b>2</b><span>Install the Meshtastic app on this computer</span></div>
@@ -471,8 +471,8 @@ footer .wrap > p { overflow-wrap: anywhere; }
         </div>
         <div class="fingerprint">
           <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup.zip</span>
-          <code id="sha">e32268a7da83649dddf2f7f1ab67e208a11eebc8291e26d7b54548c6e8543765</code>
-          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,247,648 bytes · SHA-256</span></div>
+          <code id="sha">d4cb4d69d68395a84b0b6138735d3b4da2252bbf0296cc5fb63937db4f36120f</code>
+          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,247,918 bytes · SHA-256</span></div>
         </div>
       </div>
 
@@ -566,6 +566,10 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <p>No. It's an independent community project, not made or endorsed by Meshtastic LLC. Setup downloads official Meshtastic firmware and apps from Meshtastic's own releases and uses them unchanged. The web flasher is Meshtastic's, rebuilt to work offline (see below).</p>
         </div>
         <div>
+          <h3>Who made this?</h3>
+          <p>It's a collaboration between <a href="https://github.com/doktordeathray" rel="noopener">doktordeathray</a> and <a href="https://claude.com/claude-code" rel="noopener">Claude Code</a>, Anthropic's AI coding assistant. AI wrote most of the scripts, the offline guide and this page, with a person deciding what to build, testing it and reviewing the results.</p>
+        </div>
+        <div>
           <h3>When do I need internet?</h3>
           <p>Once, to prepare the drive, and later only if you want updates. Flashing radios and installing the apps works from the drive with no connection. Meshtastic itself never needs it.</p>
         </div>
@@ -628,7 +632,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
 
 <footer>
   <div class="wrap">
-    <p><b>Emergency Kit for Meshtastic</b> is an independent community project. Source code and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a> (GPL-3.0). <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues" rel="noopener">Report a problem</a>. Meshtastic® is a registered trademark of Meshtastic LLC. This project is not affiliated with or endorsed by Meshtastic LLC.</p>
+    <p><b>Emergency Kit for Meshtastic</b> is an independent community project. Source code and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a> (GPL-3.0). <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic/issues" rel="noopener">Report a problem</a>. Meshtastic® is a registered trademark of Meshtastic LLC. This project is not affiliated with or endorsed by Meshtastic LLC. Made by doktordeathray with Claude Code (AI-assisted).</p>
     <div>
       <p style="margin-bottom:8px">Built on these open-source projects:</p>
       <div class="credits">
@@ -697,7 +701,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
     var ok = found.toLowerCase() === EXPECTED;
     el.className = "verdict " + (ok ? "good" : "bad");
     el.innerHTML = ok
-      ? "<b>✓ Matches. This is the genuine file.</b><p>Go ahead: unzip it and double-click the SETUP file for your computer.</p>"
+      ? "<b>✓ Matches. This is the genuine file.</b><p>Go ahead: unzip it and run the SETUP file for your computer (on a Mac, from Terminal: see Before, step 1).</p>"
       : "<b>✗ Doesn't match.</b><p>Don't open this file. Delete it, download it again, and check again.</p>";
     var detail = document.createElement("p");
     detail.innerHTML = (fileName ? "<span></span><br>" : "") + "Your file: <code></code>";
