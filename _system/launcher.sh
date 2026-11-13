@@ -53,7 +53,9 @@ server_runs() {   # quietly: does the prepared web server start at all?
   bash -c '"$0" --version; exit $?' "$MINISERVE" >/dev/null 2>&1
 }
 get_miniserve() {
-  [ -n "$MINISERVE" ] && return 0
+  # Reuse the prepared copy only while it's still there (macOS clears temporary folders).
+  [ -n "$MINISERVE" ] && [ -x "$MINISERVE" ] && return 0
+  MINISERVE=""
   local src="$SYS/bin/miniserve-$PLAT"
   if [ ! -f "$src" ]; then
     if ! ls "$SYS/bin/"miniserve-* >/dev/null 2>&1; then

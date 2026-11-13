@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.1.9 (2026-11-13)
+
+- Fixed: if the start window had been open a while, sending the Android app over Wi-Fi (or reopening the browser pages) could fail with `miniserve-mac-arm64: No such file or directory`. macOS clears temporary folders, and the start window kept using a copy of the web server that was gone. It now checks the copy is still there and makes a new one if not.
+
 ## 0.1.8 (2026-11-13)
 
 - Fixed: on a Mac, choosing 1 in the start window could fail with `Killed: 9` and no browser page. The start window copies the web server program to a temporary folder before running it, and replaced an older copy there in place, which macOS refuses to run. It now swaps in a fresh copy instead, and if a copy left by an older version won't start, it replaces it automatically.
