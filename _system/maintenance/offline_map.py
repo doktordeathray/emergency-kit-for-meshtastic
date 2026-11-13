@@ -197,7 +197,8 @@ d.id='mk-osm';d.textContent='Map © OpenStreetMap contributors, Protomaps';
 d.style.cssText='position:fixed;right:6px;bottom:4px;z-index:5;font:11px sans-serif;color:#333;background:rgba(255,255,255,.75);padding:1px 6px;border-radius:3px;pointer-events:none';
 document.body.appendChild(d);}
 function upd(){var m=document.querySelector('.maplibregl-map');var d=document.getElementById('mk-osm');
-if(m&&!d)add();if(!m&&d)d.remove();}
+var a=[].some.call(document.querySelectorAll('.maplibregl-ctrl-attrib'),function(e){return /OpenStreetMap/.test(e.textContent)});
+var need=m&&!a;if(need&&!d)add();if(!need&&d)d.remove();}
 setInterval(upd,1000);})();
 """
 

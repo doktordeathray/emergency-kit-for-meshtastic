@@ -2,6 +2,11 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.2 (2026-11-13)
+
+- Sending the Android app over Wi-Fi: the screen with the QR codes now ends with "press Enter to stop and go back to the menu". The server's own "Quit by pressing CTRL-C" message is gone, and pressing Ctrl+C (or Esc on Windows) also just stops sharing and goes back to the menu, instead of closing the whole start window.
+- Offline map: the "Map © OpenStreetMap contributors" credit is no longer shown twice. The web app shows its own credit on the map, so the kit's extra one (which covered the page footer) only appears if that's missing.
+
 ## 0.2.1 (2026-11-13)
 
 - U now updates the kit itself too: the start windows, setup, the updater and the guides. It downloads the newest release, checks it against the SHA-256 fingerprint GitHub publishes (and refuses it if it doesn't match), replaces only the kit's own files that changed, keeps this drive's settings and downloads, shows what's new, then updates the parts with the new updater.

@@ -231,11 +231,26 @@ function Android-Wifi {
         foreach ($ip in $ips) { Write-Host "   http://${ip}:$SHARE_PORT" -ForegroundColor Cyan }
     } else { Warn "This computer isn't on any network. Join Wi-Fi (or the phone's hotspot) first." }
     Say ''
-    Say 'When the phone has the app, come back here and press Enter to stop sharing.'; Say ''
     $sp = Start-Process -FilePath $script:Miniserve -NoNewWindow -PassThru -ArgumentList @(
         '-i', '0.0.0.0', '-p', "$SHARE_PORT", '--qrcode', '-t', '"Meshtastic app"', "`"$(Join-Path $USB '2-Android-Phone')`"")
     Start-Sleep 2
-    Read-Host | Out-Null
+    Say ''
+    Write-Host 'Sharing. When the phone has the app, press Enter to stop and go back to the menu.' -ForegroundColor Green
+    # Ctrl+C (which the server's own message suggests) would close this whole window, so while
+    # sharing it's read as a key instead: Enter, Esc or Ctrl+C all stop sharing.
+    $oldCtrlC = [Console]::TreatControlCAsInput
+    try {
+        [Console]::TreatControlCAsInput = $true
+        while ($true) {
+            $k = [Console]::ReadKey($true)
+            if ($k.Key -eq 'Enter' -or $k.Key -eq 'Escape' -or
+                ($k.Key -eq 'C' -and ($k.Modifiers -band [ConsoleModifiers]::Control))) { break }
+        }
+    } catch {
+        Read-Host | Out-Null      # no console keys available: fall back to Enter
+    } finally {
+        [Console]::TreatControlCAsInput = $oldCtrlC
+    }
     try { Stop-Process -Id $sp.Id -Force -ErrorAction SilentlyContinue } catch {}
     Ok 'Stopped sharing.'
     Pause-Menu

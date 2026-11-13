@@ -300,7 +300,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
           </a>
           <a class="btn btn-line" href="#before">How it works</a>
         </div>
-        <p class="dl-meta"><span class="kitver">Version 0.2.1</span> · <a href="#changes">what's new</a><br>Meshtastic-Emergency-Kit-Setup-v0.2.1.zip · 5.3 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
+        <p class="dl-meta"><span class="kitver">Version 0.2.2</span> · <a href="#changes">what's new</a><br>Meshtastic-Emergency-Kit-Setup-v0.2.2.zip · 5.3 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
         <p class="dl-status" id="dl-status" role="status" aria-live="polite"></p>
       </div>
 
@@ -486,9 +486,9 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <p>So if your file's fingerprint matches the one published here, you have exactly the file we published. This takes about a minute and you only need one of the three ways below.</p>
         </div>
         <div class="fingerprint">
-          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup-v0.2.1.zip</span>
-          <code id="sha">b49515b0effdb856cde6de02e3e82723a82388be452c3ca066b7ec8dbcf65f8c</code>
-          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,280,824 bytes · SHA-256</span></div>
+          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup-v0.2.2.zip</span>
+          <code id="sha">158c134bc512713d565e6b88414ffdbb6ab09eabb2aed6a28676e96ad67db43d</code>
+          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,281,502 bytes · SHA-256</span></div>
         </div>
       </div>
 
@@ -512,7 +512,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
               <li>Open your <b>Downloads</b> folder in File Explorer.</li>
               <li>Click in the address bar at the top, type <b>powershell</b> and press <b>Enter</b>. A blue or black window opens in that folder.</li>
               <li>Paste this and press <b>Enter</b>:
-                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.1.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.1.zip">Copy</button></div>
+                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.2.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.2.zip">Copy</button></div>
               </li>
               <li>The long code under <b>Hash</b> is the fingerprint. Capital letters don't matter.</li>
             </ol>
@@ -533,7 +533,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
             <ol>
               <li>Open your Downloads folder, right-click an empty spot and choose <b>Open in Terminal</b>. (Or open a terminal and type <b>cd ~/Downloads</b>.)</li>
               <li>Paste this and press <b>Enter</b>:
-                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.1.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.1.zip">Copy</button></div>
+                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.2.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.2.zip">Copy</button></div>
               </li>
               <li>The long code at the start of the line is the fingerprint.</li>
             </ol>
@@ -579,10 +579,14 @@ footer .wrap > p { overflow-wrap: anywhere; }
       <p class="intro">Every version of the setup kit. The same list is in <code>CHANGELOG.md</code> inside the kit, and the kit's version is in its <code>VERSION</code> file.</p>
       <!-- CHANGELOG:START -->
       <div class="rel">
-        <h3>Version 0.2.1 <small>2026-11-13</small></h3>
-        <ul><li>U now updates the kit itself too: the start windows, setup, the updater and the guides. It downloads the newest release, checks it against the SHA-256 fingerprint GitHub publishes (and refuses it if it doesn't match), replaces only the kit's own files that changed, keeps this drive's settings and downloads, shows what's new, then updates the parts with the new updater.</li><li>The start page's update notice also says when a newer kit is out.</li><li>Drives made with a kit older than 0.2.1 can't do this yet: download the newest kit once, run its setup and pick the drive. From then on, U keeps the kit current.</li></ul>
+        <h3>Version 0.2.2 <small>2026-11-13</small></h3>
+        <ul><li>Sending the Android app over Wi-Fi: the screen with the QR codes now ends with "press Enter to stop and go back to the menu". The server's own "Quit by pressing CTRL-C" message is gone, and pressing Ctrl+C (or Esc on Windows) also just stops sharing and goes back to the menu, instead of closing the whole start window.</li><li>Offline map: the "Map © OpenStreetMap contributors" credit is no longer shown twice. The web app shows its own credit on the map, so the kit's extra one (which covered the page footer) only appears if that's missing.</li></ul>
       </div>
       <details class="older"><summary>Older versions</summary>
+        <div class="rel">
+          <h3>Version 0.2.1 <small>2026-11-13</small></h3>
+          <ul><li>U now updates the kit itself too: the start windows, setup, the updater and the guides. It downloads the newest release, checks it against the SHA-256 fingerprint GitHub publishes (and refuses it if it doesn't match), replaces only the kit's own files that changed, keeps this drive's settings and downloads, shows what's new, then updates the parts with the new updater.</li><li>The start page's update notice also says when a newer kit is out.</li><li>Drives made with a kit older than 0.2.1 can't do this yet: download the newest kit once, run its setup and pick the drive. From then on, U keeps the kit current.</li></ul>
+        </div>
         <div class="rel">
           <h3>Version 0.2.0 <small>2026-11-13</small></h3>
           <ul><li>New optional extra: <b>offline map</b>. In setup, type a town or city (or coordinates) and how far around it; setup shows the size, then saves a map of that area on the drive. The web app then shows your nodes on that map with no internet. Pressing U refreshes the map every few months. Map data © OpenStreetMap contributors, via Protomaps.</li><li>Fixed the web app's map, with or without the offline map: the Meshtastic web client release (v2.7.2) bundles MapLibre 6 but leaves out the worker files it needs, so its map couldn't draw anything. Setup and U now add the official MapLibre files for that exact version. The changes are listed in <code>_system/webclient/CHANGES-BY-THE-KIT.txt</code> on the drive.</li><li>The web app's own offline cache is switched off on the drive, so it always uses the files on the drive.</li></ul>
@@ -735,7 +739,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
 <script>
 (function () {
   // Where the setup zip is hosted (e.g. a GitHub release asset). Empty = not published yet.
-  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.1/Meshtastic-Emergency-Kit-Setup-v0.2.1.zip";
+  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.2/Meshtastic-Emergency-Kit-Setup-v0.2.2.zip";
   document.querySelectorAll("a.dl").forEach(function (a, i) {
     var status = document.getElementById(i === 0 ? "dl-status" : "dl-status-2");
     if (DOWNLOAD_URL) {

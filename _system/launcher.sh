@@ -331,8 +331,6 @@ android_wifi() {
   say "3. Tap the .apk file to download it, open it, and allow 'install unknown apps'."
   say "   ${Y}If your computer asks to allow incoming connections, click Allow.${N}"
   say
-  say "When the phone has the app, come back here and press ${B}Enter${N} to stop sharing."
-  say
   local ips
   if [ "$OS" = "Darwin" ]; then ips="$(ifconfig 2>/dev/null | awk '/inet /{print $2}')"
   else ips="$(hostname -I 2>/dev/null | tr ' ' '\n'; ip -4 -o addr 2>/dev/null | awk '{print $4}' | cut -d/ -f1)"; fi
@@ -344,10 +342,19 @@ android_wifi() {
     warn "This computer isn't on any network. Join Wi-Fi (or the phone's hotspot) first."
   fi
   say
-  "$MINISERVE" -i 0.0.0.0 -p $SHARE_PORT --qrcode -t "Meshtastic app" "$USB/2-Android-Phone" &
-  local sp=$!
-  sleep 1
-  read -r _
+  # Show the server's QR codes, but not its "Quit by pressing CTRL-C" line: here Ctrl+C
+  # (like Enter) just stops sharing and goes back to the menu.
+  "$MINISERVE" -i 0.0.0.0 -p $SHARE_PORT --qrcode -t "Meshtastic app" "$USB/2-Android-Phone" \
+      > >(grep --line-buffered -viE 'ctrl-c|quit by' || true) 2>&1 &
+  local sp=$! stop=""
+  sleep 2
+  say
+  say "${G}${B}Sharing.${N} When the phone has the app, press ${B}Enter${N} to stop and go back to the menu."
+  trap 'stop=1' INT
+  while [ -z "$stop" ]; do
+    read -r -t 1 _ && break
+  done
+  trap 'stop_all; exit 0' INT
   kill $sp 2>/dev/null; wait $sp 2>/dev/null
   say; ok "Stopped sharing."; pause
 }
