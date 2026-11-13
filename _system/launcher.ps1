@@ -1,5 +1,6 @@
 # Meshtastic Emergency USB - launcher for Windows 10/11.
 # Started by START-HERE-WINDOWS.bat. Works fully offline. PowerShell 5.1 compatible.
+param([string]$RestartedFrom = '')
 
 $ErrorActionPreference = 'Continue'
 $SYS = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -431,6 +432,12 @@ function Do-Update {
     & $py $script --update-kit
     if ($LASTEXITCODE -eq 0) { Ok 'This drive is up to date.' }
     else { Fail 'Some parts did not update (see above). Run the update again to retry - the drive still works.' }
+    $now = ''
+    try { $now = ((Get-Content (Join-Path $USB 'VERSION') -TotalCount 1 -ErrorAction Stop) -replace '[^0-9.]', '') } catch { }
+    if ($now -and $now -ne $KitVer) {
+        $a = Read-Host "`nThe kit was updated to v$now. Restart this window now to use it? [Y/n]"
+        if ($a -notmatch '^(n|no)$') { $script:Restart = $true; return }
+    }
     Pause-Menu
 }
 
@@ -449,14 +456,20 @@ function Show-Menu {
     Say '   5  Help guide'
     Say '   6  Radio not detected? Install USB drivers'
     Say '   U  Update this drive  (needs internet)'
+    Say '   R  Restart this window  (use after an update)'
     Say '   Q  Quit'
     Write-Host ''
     Write-Host '   Keep this window open while you use Meshtastic. Closing it stops everything.' -ForegroundColor Yellow
 }
 
 try {
-    Say 'Starting Meshtastic...'
-    Do-Open
+    if ($RestartedFrom -and $RestartedFrom -eq $KitVer) {
+        Say 'Restarted. Your browser tabs keep working (reload a page if it shows an error).'
+        Start-All | Out-Null
+    } else {
+        Say 'Starting Meshtastic...'
+        Do-Open
+    }
     Start-Sleep 1
     while ($true) {
         Show-Menu
@@ -470,10 +483,20 @@ try {
             '5' { if (Start-All) { Open-Url "http://localhost:$HUB_PORT/guide.html" } }
             '6' { Do-Drivers }
             'u' { Do-Update }
+            'r' { $script:Restart = $true }
             { $_ -in 'q', 'Q' } { Say 'Stopping Meshtastic. Bye!'; break }
         }
         if ($choice -in 'q', 'Q') { break }
+        if ($script:Restart) { break }
     }
 } finally {
     Stop-All
+}
+# Restart: start the launcher again from the drive, in this same window, so an updated kit
+# takes effect. The browser is only reopened if the kit's version changed.
+if ($script:Restart) {
+    Say ''; Say 'Restarting...'
+    Start-Sleep 1
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $SYS 'launcher.ps1') -RestartedFrom $KitVer
+    exit $LASTEXITCODE
 }

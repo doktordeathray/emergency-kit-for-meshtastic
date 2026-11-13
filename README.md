@@ -8,7 +8,7 @@ Meshtastic radios talk to each other without the internet. Setting them up usual
 
 ## Download
 
-**[Meshtastic-Emergency-Kit-Setup-v0.2.6.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.6/Meshtastic-Emergency-Kit-Setup-v0.2.6.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
+**[Meshtastic-Emergency-Kit-Setup-v0.2.7.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.7/Meshtastic-Emergency-Kit-Setup-v0.2.7.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
 
 Before opening it, compare its SHA-256 fingerprint with the one in the release notes:
 
@@ -42,6 +42,7 @@ Plug the drive into any computer and double-click `START-HERE-WINDOWS.bat` or `S
 | 6 | Install USB drivers for radios (Windows) |
 | C | Install a browser that works with radios (Mac, Linux) |
 | U | Update the drive, when you're online again: the kit itself and every part on it |
+| R | Restart the start window, e.g. after an update, without closing it |
 
 ## What setup downloads
 

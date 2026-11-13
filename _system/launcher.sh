@@ -522,6 +522,17 @@ get_python() {   # prints a runnable python3, using the copy on the drive if pos
   return 1
 }
 
+# Restart: stop this window's servers and start the launcher again from the drive, so an
+# updated kit takes effect without closing the window. The browser is only reopened when the
+# kit's version changed (then it shows the new start page); otherwise its tabs keep working.
+do_restart() {
+  say; say "Restarting..."
+  stop_all; PIDS=""
+  sleep 1
+  trap - INT TERM HUP EXIT
+  exec /bin/bash "$SYS/launcher.sh" --restarted "$KITVER"
+}
+
 do_update() {
   clear
   say "${B}Update this drive${N}  (needs internet)"
@@ -543,6 +554,11 @@ do_update() {
   else
     fail "Some parts didn't update (see above). Run the update again to retry - the drive still works."
   fi
+  local now; now="$(head -1 "$USB/VERSION" 2>/dev/null | tr -cd '0-9.')"
+  if [ -n "$now" ] && [ "$now" != "$KITVER" ]; then
+    say; printf '%s' "The kit was updated to v$now. Restart this window now to use it? [Y/n] "; read -r a
+    case "$a" in n|N|no|No) ;; *) do_restart ;; esac
+  fi
   pause
 }
 
@@ -562,6 +578,7 @@ menu() {
   say "  ${C}5${N}  Help guide"
   say "  ${C}C${N}  Install the Chromium browser  (if this computer has no Chrome/Edge)"
   say "  ${C}U${N}  Update this drive  (needs internet)"
+  say "  ${C}R${N}  Restart this window  (use after an update)"
   say "  ${C}Q${N}  Quit"
   say
   say "  ${Y}Keep this window open while you use Meshtastic. Closing it stops everything.${N}"
@@ -569,8 +586,13 @@ menu() {
 }
 
 clear
-say "Starting Meshtastic..."
-do_open
+if [ "$1" = "--restarted" ] && [ "$2" = "$KITVER" ]; then
+  say "Restarted. Your browser tabs keep working (reload a page if it shows an error)."
+  start_all
+else
+  say "Starting Meshtastic..."
+  do_open
+fi
 sleep 1
 while true; do
   menu
@@ -582,6 +604,7 @@ while true; do
     4) do_pi ;;
     5) start_all && open_url "http://localhost:$HUB_PORT/guide.html" ;;
     u|U) do_update ;;
+    r|R) do_restart ;;
     c|C) start_all; do_chromium ;;
     q|Q) say "Stopping Meshtastic. Bye!"; exit 0 ;;
   esac

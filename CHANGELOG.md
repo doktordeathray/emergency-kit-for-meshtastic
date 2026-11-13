@@ -2,6 +2,11 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.7 (2026-11-13)
+
+- New in the start window's menu: **R  Restart this window**. It stops the start window's servers and starts it again from the drive, in the same window, so an updated kit takes over without closing the window and running the start file again. Browser tabs keep working; the browser only opens the start page again when the kit's version changed.
+- After **U** updates the kit itself, the start window offers to restart straight away.
+
 ## 0.2.6 (2026-11-13)
 
 - Fixed: after an update, the browser could keep showing an old copy of the start page for days, so changes (like opening the web app in a new tab) didn't appear. The kit's local web server now tells the browser to always check for a newer page, and the start window opens the start page at an address that includes the kit version.

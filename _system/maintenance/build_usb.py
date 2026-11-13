@@ -1040,8 +1040,8 @@ def main():
             env = dict(os.environ, MESH_KIT_UPDATED="1")
             argv = [a for a in sys.argv[1:] if a != "--update-kit"]
             rc = subprocess.run([sys.executable, "-u", str(Path(__file__).resolve()), *argv], env=env).returncode
-            print(f"\n\033[1;33m  The kit was updated to v{new}. Close this window and start the drive again "
-                  "to use the new start window.\033[0m")
+            print(f"\n\033[1;33m  The kit was updated to v{new}. To use the new start window, restart it: "
+                  "press R in its menu (or close the window and start the drive again).\033[0m")
             sys.exit(rc)
 
     # This drive's parts, in a sensible order (flasher rebuild only if it was chosen).
