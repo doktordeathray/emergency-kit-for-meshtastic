@@ -342,14 +342,15 @@ android_wifi() {
     warn "This computer isn't on any network. Join Wi-Fi (or the phone's hotspot) first."
   fi
   say
-  # Show the server's QR codes, but not its "Quit by pressing CTRL-C" line: here Ctrl+C
-  # (like Enter) just stops sharing and goes back to the menu.
-  "$MINISERVE" -i 0.0.0.0 -p $SHARE_PORT --qrcode -t "Meshtastic app" "$USB/2-Android-Phone" \
-      > >(grep --line-buffered -viE 'ctrl-c|quit by' || true) 2>&1 &
+  # The server writes straight to this window: it only draws the QR codes when it does.
+  # Its last line says "Quit by pressing CTRL-C"; here Ctrl+C (like Enter) only stops
+  # sharing and goes back to the menu, so the line below says so.
+  "$MINISERVE" -i 0.0.0.0 -p $SHARE_PORT --qrcode -t "Meshtastic app" "$USB/2-Android-Phone" &
   local sp=$! stop=""
   sleep 2
   say
-  say "${G}${B}Sharing.${N} When the phone has the app, press ${B}Enter${N} to stop and go back to the menu."
+  say "${G}${B}Sharing.${N} When the phone has the app, press ${B}Enter${N} (or Ctrl+C) to stop sharing"
+  say "and go back to the menu. This window stays open."
   trap 'stop=1' INT
   while [ -z "$stop" ]; do
     read -r -t 1 _ && break

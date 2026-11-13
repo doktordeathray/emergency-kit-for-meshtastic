@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.3 (2026-11-13)
+
+- Fixed (Mac and Linux): in 0.2.2, sending the Android app over Wi-Fi didn't show the QR codes. They're back. The server's own "Quit by pressing CTRL-C" line shows again too, but Ctrl+C (like Enter) still only stops sharing and goes back to the menu, and the last line says so.
+
 ## 0.2.2 (2026-11-13)
 
 - Sending the Android app over Wi-Fi: the screen with the QR codes now ends with "press Enter to stop and go back to the menu". The server's own "Quit by pressing CTRL-C" message is gone, and pressing Ctrl+C (or Esc on Windows) also just stops sharing and goes back to the menu, instead of closing the whole start window.
