@@ -26,7 +26,7 @@ Before opening it, compare its SHA-256 fingerprint with the one in the release n
    - **Windows:** double-click `SETUP-WINDOWS.bat`.
    - **Mac:** macOS blocks double-clicking downloaded scripts ("may contain malware"). Open Terminal, type `bash` and a space, drag `SETUP-MAC.command` into the window, and press Enter. Setup removes the block from everything it installs, so `START-HERE-MAC.command` then opens with a double-click.
    - **Linux / Raspberry Pi:** right-click `SETUP-LINUX.sh` → Run as a Program, or run `bash SETUP-LINUX.sh`.
-2. Choose **where** (a USB drive, this computer, or this Raspberry Pi) and **what**: the standard kit (about 1.5 GB), or the standard kit plus extras you pick.
+2. Choose **where** (a USB drive, this computer, or this Raspberry Pi) and **what**: the standard kit (about 1.5 GB), or the standard kit plus extras you pick. If the USB drive isn't exFAT, setup offers to erase it and format it as exFAT so every computer can read it. It only erases after you type ERASE.
 3. Setup downloads the current releases from their official sources. To make more drives, run setup on a finished drive. It copies what it has, with no download needed.
 
 **When there's no connection**
@@ -69,6 +69,7 @@ Nothing from those projects is stored in this repository. Each person's computer
 - `START-HERE-*`: starts the kit on a finished drive. Double-click on Windows and Mac; on Linux run it as a program
 - `_system/launcher.sh`, `_system/launcher.ps1`: the menus (Mac/Linux and Windows)
 - `_system/maintenance/setup.py`: asks where and what, then copies or downloads
+- `_system/maintenance/drives.py`: finds USB drives and formats one as exFAT (only after the person types ERASE)
 - `_system/maintenance/build_usb.py`: downloads and updates every part (also used by `U`)
 - `_system/maintenance/make_setup_kit.py`: builds the release zip from a full drive
 - `_system/hub/`: the start page and offline guide

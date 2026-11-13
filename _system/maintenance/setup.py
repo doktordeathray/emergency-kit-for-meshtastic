@@ -19,6 +19,7 @@ if os.name == "nt":
 KIT = Path(__file__).resolve().parents[2]          # folder this setup runs from
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_usb as B                              # PARTS / PROFILES live there
+import drives as D                                 # find USB drives, erase as exFAT
 
 G, Y, R, C, BOLD, N = "\033[1;32m", "\033[1;33m", "\033[1;31m", "\033[1;36m", "\033[1m", "\033[0m"
 def ok(t): print(f"{G}✔ {t}{N}")
@@ -123,12 +124,81 @@ def find_drives():
     return out
 
 
+# ---- USB drive: check the format, offer to erase as exFAT --------------------------------
+def disk_label(d):
+    if not d.vols or not any(v.fs or v.mount for v in d.vols):
+        fmt = "not formatted"
+    elif d.ready():
+        fmt = "exFAT, ready to use"
+    elif len(d.vols) > 1:
+        fmt = f"{len(d.vols)} parts: " + ", ".join(D.fs_name(v.fs) for v in d.vols)
+    else:
+        fmt = D.fs_name(d.vols[0].fs)
+    name = next((v.label for v in d.vols if v.label), "") or d.name
+    return f"USB drive: {name}  ({d.size_text()}, {fmt})"
+
+
+def prepare_disk(d):
+    """Return the folder to install into on this drive, or None to choose again."""
+    if d.ready():
+        return Path(d.usable_vols()[0].mount)
+    print()
+    if len(d.vols) > 1:
+        warn(f"This drive is split into {len(d.vols)} parts, so not every computer will show the kit.")
+    else:
+        warn(f"This drive's format is {D.fs_name(d.vols[0].fs)}. {D.fs_problem(d.vols[0].fs)}")
+    print("  exFAT works on Windows, Mac, Linux and Raspberry Pi, so it's the best format for this kit.")
+    names, count, used = D.contents_summary(d)
+    if count or used > 50 << 20:
+        print(f"\n  {BOLD}Currently on the drive{N} ({used/1e9:.1f} GB used):")
+        for n in names:
+            print(f"     {n}")
+        if count > len(names):
+            print(f"     ...and {count - len(names)} more")
+    usable = d.usable_vols()
+    print(f"\n  {C}1{N}  Erase the drive and format it as exFAT  (recommended; {R}deletes everything on it{N})")
+    if usable:
+        print(f"  {C}2{N}  Keep it as it is and install anyway")
+    print(f"  {C}{3 if usable else 2}{N}  Go back and choose somewhere else")
+    a = ask("\nType a number and press Enter:")
+    if usable and a == "2":
+        return Path(usable[0].mount)
+    if a != "1":
+        return None
+    label = next((v.label for v in d.vols if v.label), "")
+    print(f"\n{R}{BOLD}Everything on {(label + ' - ') if label else ''}{d.name} ({d.size_text()}) will be deleted.{N}")
+    if ask("Type ERASE (in capitals) and press Enter to continue, or just press Enter to go back:") != "ERASE":
+        print("Not erased. Nothing was changed.")
+        return None
+    if D.SYS == "Windows":
+        print("  Windows will ask for permission to format the drive. Click Yes.")
+    print(f"  Formatting as exFAT, named {D.LABEL} ...")
+    path, msg = D.format_exfat(d)
+    if msg == "needs-exfatprogs":
+        print("\n  This computer needs a small tool (exfatprogs) to make exFAT drives.")
+        if ask("  Install it now? It needs internet and your password. [Y/n]", "y").lower() in ("y", "yes") \
+                and D.install_exfat_tools():
+            path, msg = D.format_exfat(d)
+        else:
+            msg = "Install it with:  sudo apt install exfatprogs   then run setup again."
+    if not path:
+        fail(f"The drive wasn't formatted. {msg}")
+        return None
+    ok(f"Formatted as exFAT: {path}")
+    return Path(path)
+
+
 # ---- questions ----------------------------------------------------------------------
 def choose_target():
     print(f"\n{BOLD}Where should the Meshtastic kit go?{N}\n")
     opts = []
-    for label, path in find_drives():
-        opts.append((label + (f"   {gb(free_mb(path))} free" if free_mb(path) is not None else ""), Path(path)))
+    disks = D.list_disks(exclude_paths=[str(KIT), str(Path.home())])
+    if disks is None:       # couldn't ask this computer about its disks: list mounted drives instead
+        for label, path in find_drives():
+            opts.append((label + (f"   {gb(free_mb(path))} free" if free_mb(path) is not None else ""), Path(path)))
+    else:
+        for d in disks:
+            opts.append((disk_label(d), d))
     home = Path.home() / "Meshtastic-Emergency"
     here_label = "This Raspberry Pi" if is_pi() else "This computer"
     opts.append((f"{here_label}  ({home})", home))
@@ -137,13 +207,17 @@ def choose_target():
     opts.append(("Somewhere else (type a folder)", None))
     for i, (label, _) in enumerate(opts, 1):
         print(f"  {C}{i}{N}  {label}")
-    if not find_drives():
+    if not (disks if disks is not None else find_drives()):
         print(f"\n  {Y}No USB drive found. To use one, plug it in and run setup again.{N}")
     while True:
         a = ask(f"\nType a number and press Enter:")
         if a.isdigit() and 1 <= int(a) <= len(opts):
             label, path = opts[int(a) - 1]
-            if path is None:
+            if isinstance(path, D.Disk):
+                path = prepare_disk(path)
+                if path is None:
+                    return choose_target()
+            elif path is None:
                 path = Path(os.path.expanduser(ask("Folder path:"))).resolve()
             return path
 
