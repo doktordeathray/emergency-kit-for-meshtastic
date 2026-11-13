@@ -85,11 +85,27 @@ port_in_use() {
 start_server() {  # start_server <port> <folder> <extra args...>
   local port="$1" dir="$2"; shift 2
   if port_in_use "$port"; then return 0; fi    # already running (another window)
-  "$MINISERVE" -i 127.0.0.1 -p "$port" --index index.html -t "Meshtastic USB" "$@" "$dir" \
+  # no-cache: browsers always check for a newer page, so an updated drive shows up at once
+  "$MINISERVE" -i 127.0.0.1 -p "$port" --index index.html -t "Meshtastic USB" \
+      --header "Cache-Control: no-cache" "$@" "$dir" \
       >"$WORK/server-$port.log" 2>&1 &
   PIDS="$PIDS $!"
 }
 
+# Another start window (maybe from another copy of the kit, or an older version) may already
+# be serving on these ports. Then this window's pages wouldn't be the ones shown: say so.
+stale_server_check() {
+  command -v curl >/dev/null 2>&1 || return 0
+  local tmp="$WORK/hub-check.html"
+  curl -s -m 3 -o "$tmp" "http://127.0.0.1:$HUB_PORT/index.html" || return 0
+  if ! cmp -s "$tmp" "$SYS/hub/index.html"; then
+    warn "Another Meshtastic window is already running, from a different copy of this kit."
+    warn "The browser will show that copy's pages. Close the other window, then choose 1 again."
+  fi
+  rm -f "$tmp"
+}
+
+KITVER="$(head -1 "$USB/VERSION" 2>/dev/null | tr -cd '0-9.')"
 start_all() {
   get_miniserve || return 1
   start_server $HUB_PORT     "$SYS/hub"
@@ -97,6 +113,7 @@ start_all() {
       --header "Cross-Origin-Opener-Policy: same-origin" \
       --header "Cross-Origin-Embedder-Policy: require-corp"
   start_server $FLASHER_PORT "$SYS/flasher"
+  stale_server_check
   local i=0
   while ! port_in_use $HUB_PORT && [ $i -lt 30 ]; do sleep 0.2; i=$((i+1)); done
   if port_in_use $HUB_PORT; then ok "Meshtastic is running on this computer (no internet needed)."
@@ -216,8 +233,8 @@ do_chromium() {
   say "Only needed if this computer has no Chrome or Edge."
   say
   if install_chromium; then
-    if [ "$OS" = "Darwin" ]; then open -a Chromium "http://localhost:$HUB_PORT/"
-    else run_linux_chromium "http://localhost:$HUB_PORT/"; fi
+    if [ "$OS" = "Darwin" ]; then open -a Chromium "http://localhost:$HUB_PORT/?v=$KITVER"
+    else run_linux_chromium "http://localhost:$HUB_PORT/?v=$KITVER"; fi
   fi
   pause
 }
@@ -241,7 +258,7 @@ not_included() {   # not_included "<what>" "<extra name in setup>"
 }
 
 do_open() {
-  start_all && open_url "http://localhost:$HUB_PORT/"
+  start_all && open_url "http://localhost:$HUB_PORT/?v=$KITVER"
   linux_serial_check
 }
 

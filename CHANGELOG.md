@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.6 (2026-11-13)
+
+- Fixed: after an update, the browser could keep showing an old copy of the start page for days, so changes (like opening the web app in a new tab) didn't appear. The kit's local web server now tells the browser to always check for a newer page, and the start window opens the start page at an address that includes the kit version.
+- **Use Meshtastic**, the **web flasher** and **Firmware files** open in a new tab, so the start page stays open in its own tab. (0.2.5's separate pop-up windows are replaced by plain new tabs.)
+- If another start window is already running from a different copy of the kit, the start window now says so, instead of quietly showing that copy's pages.
+
 ## 0.2.5 (2026-11-13)
 
 - On the start page, **Use Meshtastic** and the **web flasher** now open in their own browser windows, not as tabs, so the start page stays where it is. If the browser blocks new windows, they open as a new tab instead.

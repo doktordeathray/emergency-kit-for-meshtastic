@@ -55,11 +55,29 @@ function Test-Port($port) {
 
 function Start-Server($port, $dir, [string[]]$extra) {
     if (Test-Port $port) { return }
-    $argList = @('-i', '127.0.0.1', '-p', "$port", '--index', 'index.html', '-t', '"Meshtastic USB"') + $extra + @("`"$dir`"")
+    # no-cache: browsers always check for a newer page, so an updated drive shows up at once
+    $argList = @('-i', '127.0.0.1', '-p', "$port", '--index', 'index.html', '-t', '"Meshtastic USB"',
+                 '--header', '"Cache-Control: no-cache"') + $extra + @("`"$dir`"")
     $p = Start-Process -FilePath $script:Miniserve -ArgumentList $argList -NoNewWindow -PassThru `
          -RedirectStandardOutput (Join-Path $WORK "server-$port.log") -RedirectStandardError (Join-Path $WORK "server-$port.err")
     $script:Servers += $p
 }
+
+# Another start window (maybe from another copy of the kit) may already be serving on these
+# ports; then this window's pages wouldn't be the ones shown. Say so.
+function Test-StaleServer {
+    try {
+        $served = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 3 "http://127.0.0.1:$HUB_PORT/index.html").Content
+        $mine = [IO.File]::ReadAllText((Join-Path $SYS 'hub\index.html'))
+        if ($served -ne $mine) {
+            Warn 'Another Meshtastic window is already running, from a different copy of this kit.'
+            Warn "The browser will show that copy's pages. Close the other window, then choose 1 again."
+        }
+    } catch { }
+}
+
+$KitVer = ''
+try { $KitVer = ((Get-Content (Join-Path $USB 'VERSION') -TotalCount 1 -ErrorAction Stop) -replace '[^0-9.]', '') } catch { }
 
 function Start-All {
     if (-not (Get-Miniserve)) { return $false }
@@ -68,6 +86,7 @@ function Start-All {
         '--header', '"Cross-Origin-Opener-Policy: same-origin"',
         '--header', '"Cross-Origin-Embedder-Policy: require-corp"')
     Start-Server $FLASHER_PORT (Join-Path $SYS 'flasher') @()
+    Test-StaleServer
     for ($i = 0; $i -lt 30 -and -not (Test-Port $HUB_PORT); $i++) { Start-Sleep -Milliseconds 200 }
     if (Test-Port $HUB_PORT) { Ok 'Meshtastic is running on this computer (no internet needed).'; return $true }
     Fail "The local server didn't start. Details: $WORK"; return $false
@@ -92,7 +111,7 @@ function Open-Url($url) {
 
 function Open-Folder($path) { Start-Process explorer.exe "`"$path`"" }
 
-function Do-Open { if (Start-All) { Open-Url "http://localhost:$HUB_PORT/" } }
+function Do-Open { if (Start-All) { Open-Url "http://localhost:$HUB_PORT/?v=$KitVer" } }
 
 function Not-Included($what, $extra) {
     Warn "$what isn't included in this kit."

@@ -83,17 +83,6 @@
   document.getElementById('go-flasher').href = url(8472);
   document.getElementById('go-files').href = url(8472, '/release/');
 
-  // Open the web app and the flasher in their own browser windows (not tabs). Each keeps
-  // its own window: clicking again brings it back instead of opening another copy.
-  [['go-client', 'meshtastic-web-app'], ['go-flasher', 'meshtastic-flasher']].forEach(function (p) {
-    var a = document.getElementById(p[0]);
-    a.addEventListener('click', function (e) {
-      var w = Math.min(screen.availWidth || 1280, 1280), h = Math.min(screen.availHeight || 900, 900);
-      var win = window.open(a.href, p[1], 'popup,width=' + w + ',height=' + h);
-      if (win) { e.preventDefault(); try { win.focus(); } catch (x) {} }
-      // if the browser blocked the window, the link still opens as a new tab
-    });
-  });
 
   if (!('serial' in navigator)) {
     document.getElementById('browser-warn').hidden = false;
