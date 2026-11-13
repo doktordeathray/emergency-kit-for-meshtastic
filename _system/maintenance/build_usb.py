@@ -950,6 +950,10 @@ COMPONENTS = {
 
 def write_versions():
     manifest["built"] = time.strftime("%Y-%m-%d %H:%M")
+    try:
+        manifest["kit"] = (ROOT / "VERSION").read_text().strip()
+    except OSError:
+        pass
     (SYS / "VERSIONS.json").write_text(json.dumps(manifest, indent=2))
     (SYS / "hub" / "versions.js").write_text(
         "window.MESH_VERSIONS = " + json.dumps(manifest, indent=2) + ";\n")
@@ -962,6 +966,8 @@ def main():
     ap.add_argument("--check", action="store_true",
                     help="only report what's out of date (exit 0 = up to date, 3 = updates, 1 = offline)")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--update-kit", action="store_true",
+                    help="also update the kit itself (start windows, setup, updater) first; used by U")
     args = ap.parse_args()
     if args.list:
         for k, f in COMPONENTS.items():
@@ -978,6 +984,13 @@ def main():
         except Exception as e:
             warn(f"Couldn't check for updates - is this computer online? ({e})")
             sys.exit(1)
+        try:
+            import kit_update as K
+            have, (latest_kit, _, _) = K.current_version(ROOT), K.latest()
+            rows.insert(0, ("Emergency kit (start window, setup, updater)", have, latest_kit,
+                            K.vtuple(latest_kit) > K.vtuple(have)))
+        except Exception:
+            pass
         w = max(len(r[0]) for r in rows)
         print()
         for name, have, latest, new in rows:
@@ -1003,6 +1016,28 @@ def main():
              "Connect and run the update again to download the rest.")
         write_versions()
         sys.exit(2)
+
+    # The kit itself first, so the newest updater does the rest.
+    if args.update_kit and not os.environ.get("MESH_KIT_UPDATED"):
+        log("Emergency kit")
+        import kit_update as K
+        try:
+            new = K.update(ROOT)
+            if not new:
+                print(f"    v{K.current_version(ROOT)} is the newest")
+        except Exception as e:
+            warn(f"Couldn't update the kit itself ({e}). Updating the parts with this version.")
+            new = None
+        if new:
+            manifest["kit"] = new
+            write_versions()
+            print("\n    Continuing with the new updater ...")
+            env = dict(os.environ, MESH_KIT_UPDATED="1")
+            argv = [a for a in sys.argv[1:] if a != "--update-kit"]
+            rc = subprocess.run([sys.executable, "-u", str(Path(__file__).resolve()), *argv], env=env).returncode
+            print(f"\n\033[1;33m  The kit was updated to v{new}. Close this window and start the drive again "
+                  "to use the new start window.\033[0m")
+            sys.exit(rc)
 
     # This drive's parts, in a sensible order (flasher rebuild only if it was chosen).
     names = [n for n in COMPONENTS if n in parts or (n == "firmware")]

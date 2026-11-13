@@ -500,8 +500,8 @@ get_python() {   # prints a runnable python3, using the copy on the drive if pos
 do_update() {
   clear
   say "${B}Update this drive${N}  (needs internet)"
-  say "Gets the newest firmware, web app, phone & desktop apps and Raspberry Pi images,"
-  say "and replaces the old ones on this USB drive."
+  say "Gets the newest version of this kit, firmware, web app, phone & desktop apps and"
+  say "Raspberry Pi images, and replaces the old ones on this USB drive."
   say
   local py; py="$(get_python)" || { fail "Couldn't start the updater on this computer. Try a different computer."; pause; return; }
   say "Checking what's new..."
@@ -513,7 +513,7 @@ do_update() {
   printf 'Download the updates now? [Y/n] '; read -r a
   case "$a" in n|N|no|No) return ;; esac
   say
-  if "$py" "$SYS/maintenance/build_usb.py"; then
+  if "$py" "$SYS/maintenance/build_usb.py" --update-kit; then
     ok "This drive is up to date."
   else
     fail "Some parts didn't update (see above). Run the update again to retry - the drive still works."

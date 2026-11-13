@@ -124,6 +124,12 @@
       }),
       get('https://api.github.com/repos/meshtastic/Meshtastic-Android/releases/latest').then(function (d) {
         if (d && v.android && d.tag_name !== v.android) found.push('Android & desktop apps ' + d.tag_name);
+      }),
+      get('https://api.github.com/repos/doktordeathray/emergency-kit-for-meshtastic/releases/latest').then(function (d) {
+        function n(s) { return String(s || '').replace(/^v/, '').split('.').map(function (x) { return parseInt(x, 10) || 0; }); }
+        if (!d || !v.kit) return;
+        var a = n(d.tag_name), b = n(v.kit);
+        for (var i = 0; i < 3; i++) { if (a[i] !== b[i]) { if (a[i] > b[i]) found.push('this kit ' + d.tag_name); return; } }
       })
     ].map(function (p) { return p.catch(function () {}); });
     Promise.all(checks).then(function () {

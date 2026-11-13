@@ -380,8 +380,8 @@ function Get-Python {
 function Do-Update {
     Clear-Host
     Say 'Update this drive  (needs internet)'
-    Say 'Gets the newest firmware, web app, phone & desktop apps and Raspberry Pi images,'
-    Say 'and replaces the old ones on this USB drive.'; Say ''
+    Say 'Gets the newest version of this kit, firmware, web app, phone & desktop apps and'
+    Say 'Raspberry Pi images, and replaces the old ones on this USB drive.'; Say ''
     $py = Get-Python
     if (-not $py) { Fail "Couldn't start the updater on this computer (needs Windows 10 or newer)."; Pause-Menu; return }
     $script = Join-Path $SYS 'maintenance\build_usb.py'
@@ -394,7 +394,7 @@ function Do-Update {
     $a = Read-Host 'Download the updates now? [Y/n]'
     if ($a -match '^(n|no)$') { return }
     Say ''
-    & $py $script
+    & $py $script --update-kit
     if ($LASTEXITCODE -eq 0) { Ok 'This drive is up to date.' }
     else { Fail 'Some parts did not update (see above). Run the update again to retry - the drive still works.' }
     Pause-Menu

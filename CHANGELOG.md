@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.1 (2026-11-13)
+
+- U now updates the kit itself too: the start windows, setup, the updater and the guides. It downloads the newest release, checks it against the SHA-256 fingerprint GitHub publishes (and refuses it if it doesn't match), replaces only the kit's own files that changed, keeps this drive's settings and downloads, shows what's new, then updates the parts with the new updater.
+- The start page's update notice also says when a newer kit is out.
+- Drives made with a kit older than 0.2.1 can't do this yet: download the newest kit once, run its setup and pick the drive. From then on, U keeps the kit current.
+
 ## 0.2.0 (2026-11-13)
 
 - New optional extra: **offline map**. In setup, type a town or city (or coordinates) and how far around it; setup shows the size, then saves a map of that area on the drive. The web app then shows your nodes on that map with no internet. Pressing U refreshes the map every few months. Map data © OpenStreetMap contributors, via Protomaps.
