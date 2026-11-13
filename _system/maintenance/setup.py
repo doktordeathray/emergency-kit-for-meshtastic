@@ -322,7 +322,11 @@ def main():
     ap.add_argument("--yes", action="store_true", help="don't ask for confirmation")
     args = ap.parse_args()
 
-    print(f"\n{G}  MESHTASTIC EMERGENCY KIT - SETUP{N}")
+    try:
+        kit_ver = (KIT / "VERSION").read_text().strip()
+    except OSError:
+        kit_ver = "?"
+    print(f"\n{G}  MESHTASTIC EMERGENCY KIT - SETUP   v{kit_ver}{N}")
     print("  Builds an offline Meshtastic toolkit: web app, radio flasher + firmware,")
     print("  Android app and more (about 1.5 GB). Needs internet now; never again after.")
 

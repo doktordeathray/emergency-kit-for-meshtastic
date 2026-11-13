@@ -513,7 +513,7 @@ menu() {
   say "${G}  |  \\/  | ___  ___| |__ | |_ __ _ ___| |_(_) ___ ${N}"
   say "${G}  | |\\/| |/ _ \\/ __| '_ \\| __/ _\` / __| __| |/ __|${N}"
   say "${G}  | |  | |  __/\\__ \\ | | | || (_| \\__ \\ |_| | (__ ${N}"
-  say "${G}  |_|  |_|\\___||___/_| |_|\\__\\__,_|___/\\__|_|\\___|${N}  ${B}EMERGENCY USB${N}"
+  say "${G}  |_|  |_|\\___||___/_| |_|\\__\\__,_|___/\\__|_|\\___|${N}  ${B}EMERGENCY USB${N}  v$(head -1 "$USB/VERSION" 2>/dev/null || echo '?')"
   say
   say "  ${C}1${N}  Open Meshtastic in the browser  (talk on the mesh / flash a radio)"
   say "  ${C}2${N}  Install the Meshtastic app on this computer"

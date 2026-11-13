@@ -403,7 +403,9 @@ function Do-Update {
 function Show-Menu {
     Clear-Host
     Write-Host ''
-    Write-Host '   MESHTASTIC  EMERGENCY USB' -ForegroundColor Green
+    $kitVer = '?'
+    try { $kitVer = (Get-Content (Join-Path $USB 'VERSION') -TotalCount 1 -ErrorAction Stop).Trim() } catch { }
+    Write-Host ('   MESHTASTIC  EMERGENCY USB   v' + $kitVer) -ForegroundColor Green
     Write-Host '   =========================' -ForegroundColor Green
     Write-Host ''
     Say '   1  Open Meshtastic in the browser  (talk on the mesh / flash a radio)'
