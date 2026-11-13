@@ -15,7 +15,10 @@ SAFETY: before installing, the START-HERE window checks each driver's digital
 signature (WCH for CH340, Microsoft WHQL for CP210x) and refuses one that fails.
 That works for any version. VirusTotal results and checksums: SECURITY-REPORT.txt
 
-IF THIS FOLDER IS MISSING A FILE, download it (while you have internet) and save it here
+IF THIS FOLDER IS MISSING A FILE: the makers' websites block automatic downloads, so
+SETUP offers to open both download pages in your browser. Download the files, then
+drag them into the setup window and press Enter; setup puts them here. (Run SETUP
+again on this drive any time to do this.) Or download it yourself and save it here
 with exactly the name shown above:
   CH340:  https://www.wch-ic.com/downloads/CH341SER_EXE.html
   CP210x: https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers

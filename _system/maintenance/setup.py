@@ -188,6 +188,114 @@ def prepare_disk(d):
     return Path(path)
 
 
+# ---- Windows drivers by hand (their makers' sites block automatic downloads) ------------
+DRIVERS = [   # (name on the drive, what it is, page to open, what to click there)
+    ("CH341SER.EXE", "CH340 / CH9102 driver, from WCH",
+     "https://www.wch-ic.com/downloads/CH341SER_EXE.html", "click Download (the file is CH341SER.EXE)"),
+    ("CP210x_Universal_Windows_Driver.zip", "CP210x driver, from Silicon Labs",
+     "https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads",
+     'download "CP210x Universal Windows Driver" (a .zip file)'),
+]
+
+
+def dropped_paths(line):
+    """Turn what a drag-and-drop typed into this window into file paths."""
+    from urllib.parse import unquote
+    line = line.strip()
+    if not line:
+        return []
+    if Path(line.strip('"\'')).expanduser().is_file():          # one file, any quoting
+        return [Path(line.strip('"\'')).expanduser()]
+    import shlex
+    try:
+        parts = shlex.split(line, posix=(os.name != "nt"))
+    except ValueError:
+        parts = line.split()
+    out = []
+    for t in parts:
+        t = t.strip('"\'')
+        if t.startswith("file://"):
+            t = unquote(t[7:])
+        out.append(Path(t).expanduser())
+    return out
+
+
+def which_driver(path: Path):
+    """(name on the drive, None) if this is one of the two drivers, else (None, reason)."""
+    if not path.is_file():
+        return None, "file not found"
+    head = path.read_bytes()[:4]
+    low = path.name.lower()
+    if head[:2] == b"MZ":
+        if "ch34" in low:
+            return "CH341SER.EXE", None
+        return None, "that's a program, but not CH341SER.EXE"
+    if head[:2] == b"PK":
+        import zipfile
+        try:
+            names = " ".join(zipfile.ZipFile(path).namelist()).lower()
+        except zipfile.BadZipFile:
+            return None, "the zip file is damaged; download it again"
+        if "cp210x" in low or "silabser" in names:
+            return "CP210x_Universal_Windows_Driver.zip", None
+        return None, "that zip file isn't the CP210x driver"
+    if head[:1] == b"<" or b"html" in path.read_bytes()[:512].lower():
+        return None, "that's a web page, not the driver; download it again"
+    return None, "that isn't one of the two driver files"
+
+
+def add_drivers_by_hand(target: Path):
+    d = target / "5-Windows-USB-Drivers"
+    missing = [x for x in DRIVERS if not (d / x[0]).exists()]
+    if not missing:
+        return
+    print(f"\n{BOLD}Windows USB drivers{N}")
+    print("  Their makers' websites don't allow automatic downloads, so they need saving by hand")
+    print("  (about a minute). They're only needed to connect radios to Windows computers.")
+    for name, what, url, how in missing:
+        print(f"    {name}  ({what})")
+    if not sys.stdin.isatty() or ask("\nOpen the download pages in your browser now? [Y/n]", "y").lower() not in ("y", "yes"):
+        print("  Skipped. The links are in 5-Windows-USB-Drivers/READ-ME.txt for later.")
+        return
+    import webbrowser
+    for name, what, url, how in missing:
+        print(f"  Opening {url}\n    -> {how}")
+        webbrowser.open(url)
+    d.mkdir(parents=True, exist_ok=True)
+    added = []
+    while missing:
+        print(f"\n  When a file has downloaded, drag it from your Downloads folder into this window")
+        print(f"  and press Enter. You can drag both at once. Press Enter on its own to finish.")
+        line = ask(f"  {C}Drop driver file(s) here:{N}")
+        if not line:
+            break
+        for path in dropped_paths(line):
+            name, why = which_driver(path)
+            if not name:
+                fail(f"{path.name}: {why}")
+                continue
+            shutil.copyfile(path, d / name)
+            ok(f"Added {name}")
+            added.append(name)
+            missing = [x for x in missing if x[0] != name]
+    if added:
+        B.write_driver_report(d)
+        vp = target / "_system" / "VERSIONS.json"
+        try:
+            v = json.loads(vp.read_text())
+        except Exception:
+            v = {}
+        v["drivers"] = sorted(set(v.get("drivers") or []) | set(added) |
+                              {x[0] for x in DRIVERS if (d / x[0]).exists()})
+        vp.write_text(json.dumps(v, indent=2))
+        B.remove_appledouble(d)
+    if missing:
+        print(f"  Still missing: {', '.join(x[0] for x in missing)}. Run setup again later to add it,")
+        print("  or save it into the drive's 5-Windows-USB-Drivers folder yourself.")
+    else:
+        ok("Both Windows drivers are on the drive. The Windows start window checks their signatures before installing.")
+
+
 # ---- questions ----------------------------------------------------------------------
 def choose_target():
     print(f"\n{BOLD}Where should the Meshtastic kit go?{N}\n")
@@ -381,12 +489,10 @@ def main():
     else:
         warn("Some parts didn't finish (see above). Everything else works. Run setup again - "
              "or later, press U in the kit's start window - to finish the rest.")
+    if "drivers" in parts and rc != 2 and not args.yes:
+        add_drivers_by_hand(target)
     print(f"\n{BOLD}To use it:{N} open that folder and double-click the START-HERE file for your computer.")
     print("Works with no internet from now on. To refresh it later, start it and type U.")
-    if "drivers" in parts and not any((target / "5-Windows-USB-Drivers").glob("*.EXE")) \
-            and not any((target / "5-Windows-USB-Drivers").glob("*.zip")):
-        print(f"\n{Y}Windows radio drivers couldn't be downloaded automatically.{N} "
-              "See 5-Windows-USB-Drivers/READ-ME.txt for the two links (1 minute, optional).")
     sys.exit(0 if rc == 0 else 1)
 
 

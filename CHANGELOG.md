@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.1.6 (2026-11-13)
+
+- Windows USB drivers: their makers' websites block automatic downloads, so at the end setup now offers to open both download pages in your browser. Download the files, drag them into the setup window and press Enter, and setup puts them on the drive. You can drag both at once.
+- Setup checks each dropped file is really the driver (not a web page or another file) and saves it with the name the Windows start window expects, even if your browser renamed it (for example `CH341SER (1).EXE`).
+- Skipped it, or only got one file? Run setup again on the drive any time to add the rest.
+
 ## 0.1.5 (2026-11-13)
 
 - The kit now has a version number. It's in the file `VERSION`, in the name of the download (`Meshtastic-Emergency-Kit-Setup-v0.1.5.zip`) and of the folder inside it, and setup and the start window show it.
