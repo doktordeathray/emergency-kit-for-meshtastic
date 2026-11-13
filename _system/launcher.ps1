@@ -102,7 +102,7 @@ function Not-Included($what, $extra) {
 
 function Do-Desktop {
     Clear-Host; Say 'Install the Meshtastic app on this computer'; Say ''
-    $msi = Get-ChildItem (Join-Path $USB '1-Desktop-App\Windows') -Filter *.msi -ErrorAction SilentlyContinue | Select-Object -First 1
+    $msi = Get-ChildItem (Join-Path $USB '1-Desktop-App\Windows') -Filter *.msi -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
     if (-not $msi) { Not-Included 'The desktop app' 'Desktop apps'; Say '   Meanwhile, option 1 (the web app) does the same job.'; Pause-Menu; return }
     Say 'The installer is opening. Click Next / Install. If Windows asks "Do you want to allow", click Yes.'
     Start-Process msiexec.exe -ArgumentList "/i `"$($msi.FullName)`"" -Wait
@@ -155,8 +155,8 @@ function Do-Drivers {
     Say 'Not sure which? Install both - it does no harm.'
     Say 'Each driver is checked for a valid digital signature from its maker before it installs.'; Say ''
     $d = Join-Path $USB '5-Windows-USB-Drivers'
-    $ch = Get-ChildItem $d -Filter 'CH34*.EXE' -ErrorAction SilentlyContinue | Select-Object -First 1
-    $cp = Get-ChildItem $d -Filter 'CP210x*.zip' -ErrorAction SilentlyContinue | Select-Object -First 1
+    $ch = Get-ChildItem $d -Filter 'CH34*.EXE' -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
+    $cp = Get-ChildItem $d -Filter 'CP210x*.zip' -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
     Say '  1  CH340 / CH9102 driver  (Heltec V3/V4, many cheap ESP32 boards)'
     Say '  2  CP210x driver          (T-Beam, LILYGO, Station G2, older Heltec)'
     Say '  B  Back'
@@ -176,8 +176,8 @@ function Do-Drivers {
                 $x = Join-Path $WORK 'cp210x'
                 if (Test-Path $x) { Remove-Item -Recurse -Force $x }
                 Expand-Archive -Force $cp.FullName $x
-                $cat = Get-ChildItem $x -Recurse -Filter *.cat | Select-Object -First 1
-                $inf = Get-ChildItem $x -Recurse -Filter *.inf | Select-Object -First 1
+                $cat = Get-ChildItem $x -Recurse -Filter *.cat | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
+                $inf = Get-ChildItem $x -Recurse -Filter *.inf | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
                 if (-not $cat -or -not $inf) { Fail 'The CP210x driver package looks incomplete. Get a fresh copy from Silicon Labs.' }
                 elseif (Test-Signature $cat.FullName 'Microsoft Windows Hardware Compatibility Publisher' 'Microsoft (WHQL-certified driver)' 'The CP210x driver') {
                     Show-VirusTotal $cp
@@ -193,7 +193,7 @@ function Do-Drivers {
 }
 
 function Do-Android {
-    $apk = Get-ChildItem (Join-Path $USB '2-Android-Phone') -Filter *.apk -ErrorAction SilentlyContinue | Select-Object -First 1
+    $apk = Get-ChildItem (Join-Path $USB '2-Android-Phone') -Filter *.apk -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
     if (-not $apk) { Fail 'The Android app is missing from the USB drive.'; Pause-Menu; return }
     while ($true) {
         Clear-Host
@@ -278,7 +278,7 @@ function Run-Imager {
     $installed = @("$env:ProgramFiles\Raspberry Pi Imager\rpi-imager.exe", "${env:ProgramFiles(x86)}\Raspberry Pi Imager\rpi-imager.exe") |
         Where-Object { Test-Path $_ } | Select-Object -First 1
     if ($installed) { Start-Process $installed; return }
-    $exe = Get-ChildItem (Join-Path $USB '3-Raspberry-Pi\SD-Card-Writer\Windows') -Filter *.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+    $exe = Get-ChildItem (Join-Path $USB '3-Raspberry-Pi\SD-Card-Writer\Windows') -Filter *.exe -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith('._') } | Select-Object -First 1
     if (-not $exe) { Fail 'Raspberry Pi Imager is missing from the USB drive.'; return }
     Say 'Installing Raspberry Pi Imager - click Yes / Install, and tick "Run" at the end.'
     Start-Process $exe.FullName -Wait
@@ -332,7 +332,7 @@ function Pi-CopyPackage {
 }
 
 function Do-Pi {
-    if (-not (Get-ChildItem (Join-Path $USB '3-Raspberry-Pi') -Recurse -Filter *.img.xz -ErrorAction SilentlyContinue)) {
+    if (-not (Get-ChildItem (Join-Path $USB '3-Raspberry-Pi') -Recurse -Filter *.img.xz -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith('._') })) {
         Clear-Host; Not-Included 'Raspberry Pi SD card making' 'the Raspberry Pi images and SD card writer'; Pause-Menu; return
     }
     while ($true) {

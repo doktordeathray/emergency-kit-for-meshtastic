@@ -163,18 +163,37 @@ def download(url, dest: Path, size=None):
 def fetch_asset(a, dest: Path):
     return download(a["browser_download_url"], dest, a["size"])
 
+def junk(p: Path) -> bool:
+    """macOS writes hidden '._name' helper files on exFAT/FAT drives. They come and go
+    with their partner file, so never process them; remove_appledouble() clears them."""
+    return p.name.startswith("._")
+
+def remove_appledouble(top: Path):
+    for dirpath, dirnames, filenames in os.walk(top):
+        for f in filenames:
+            if f.startswith("._"):
+                try:
+                    os.unlink(os.path.join(dirpath, f))
+                except OSError:
+                    pass
+
 def clean_dir(d: Path, keep=()):
     d.mkdir(parents=True, exist_ok=True)
-    for p in d.iterdir():
-        if p.name in keep:
+    for p in list(d.iterdir()):
+        if p.name in keep or not (p.exists() or p.is_symlink()):
             continue
-        shutil.rmtree(p) if p.is_dir() else p.unlink()
+        if junk(p):
+            p.unlink(missing_ok=True)
+            continue
+        shutil.rmtree(p) if p.is_dir() else p.unlink(missing_ok=True)
 
 def remove_stale(folder: Path, keep_names):
     """Delete files in folder that are not in keep_names (old versions)."""
     if not folder.exists():
         return
     for p in folder.iterdir():
+        if junk(p):
+            continue
         if p.is_file() and p.name not in keep_names and not p.name.startswith("_") \
                 and not p.name.lower().startswith("read") and p.suffix not in (".txt", ".md", ".html"):
             print(f"    removing old {p.name}")
@@ -289,7 +308,10 @@ def c_webclient():
     clean_dir(out)
     with tarfile.open(tarp) as t:
         t.extractall(out, filter="data") if sys.version_info >= (3, 12) else t.extractall(out)
+    remove_appledouble(out)
     for gz in list(out.rglob("*.gz")):        # shipped gzip-only (for devices); unpack
+        if junk(gz) or not gz.exists():
+            continue
         with gzip.open(gz) as src, open(gz.with_suffix(""), "wb") as dst:
             shutil.copyfileobj(src, dst)
         gz.unlink()
@@ -311,7 +333,7 @@ FLASHER_DELETE = ["plugins/analytics.clients.ts", "plugins/datadog-rum.client.ts
 def scrub_paths(folder: Path, local_path: str, neutral: str = "/web-flasher"):
     n = 0
     for f in folder.rglob("*"):
-        if not f.is_file() or f.suffix not in (".html", ".js", ".json", ".css", ".mjs", ".txt"):
+        if junk(f) or not f.is_file() or f.suffix not in (".html", ".js", ".json", ".css", ".mjs", ".txt"):
             continue
         try:
             t = f.read_text(encoding="utf-8")
@@ -505,7 +527,7 @@ def c_esptool():
             for item in src.iterdir():
                 shutil.move(str(item), out / item.name)
         for f in out.rglob("*"):
-            if f.is_file() and not f.suffix:
+            if not junk(f) and f.is_file() and not f.suffix:
                 f.chmod(0o755)
     manifest["esptool"] = v
 
@@ -680,7 +702,7 @@ def write_driver_report(d: Path):
          "uploaded). A newer version simply shows as not looked up; it is still signature-checked.",
          ""]
     for f in sorted(d.iterdir()):
-        if f.suffix.lower() not in (".exe", ".zip"):
+        if junk(f) or f.suffix.lower() not in (".exe", ".zip"):
             continue
         sha = hashlib.sha256(f.read_bytes()).hexdigest()
         r = rec.get(f.name, {})
@@ -918,6 +940,7 @@ def main():
     for n in names:
         try:
             COMPONENTS[n]()
+            remove_appledouble(ROOT)
             write_versions()          # save progress after each part
         except KeyboardInterrupt:
             warn("Stopped. Run the update again to finish - nothing is broken.")
@@ -927,6 +950,7 @@ def main():
             warn(f"{n} FAILED: {e}")
             failed.append(n)
     write_versions()
+    remove_appledouble(ROOT)
     if not KEEP_CACHE and not failed:
         shutil.rmtree(CACHE, ignore_errors=True)
     if failed:

@@ -257,7 +257,7 @@ def copy_kit(target: Path, parts):
     print(f"\nCopying the kit to {target} ...")
     for src in KIT.rglob("*"):
         rel = src.relative_to(KIT).as_posix()
-        if any(part in SKIP_NAMES for part in src.relative_to(KIT).parts):
+        if any(part in SKIP_NAMES or part.startswith("._") for part in src.relative_to(KIT).parts):
             continue
         if any(rel == bp or rel.startswith(bp + "/") for bp in BIG_PATHS):
             continue
@@ -272,7 +272,8 @@ def copy_kit(target: Path, parts):
             src = KIT / rel
             if src.exists() and any(src.rglob("*")):
                 print(f"    copying {B.PARTS[p][0]} from this kit (no download needed)")
-                shutil.copytree(src, target / rel, dirs_exist_ok=True)
+                shutil.copytree(src, target / rel, dirs_exist_ok=True,
+                                ignore=shutil.ignore_patterns("._*", ".DS_Store"))
     # Merge version info: keep what the target already records, add what was copied.
     def read(p):
         try:
@@ -286,6 +287,7 @@ def copy_kit(target: Path, parts):
 
 
 def finish(target: Path):
+    B.remove_appledouble(target)      # macOS '._' helper files on exFAT drives
     for f in ("START-HERE-MAC.command", "START-HERE-LINUX.sh", "SETUP-MAC.command", "SETUP-LINUX.sh",
               "_system/launcher.sh", "_system/maintenance/bootstrap.sh"):
         try:
