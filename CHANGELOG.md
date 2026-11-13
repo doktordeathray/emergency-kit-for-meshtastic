@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.5 (2026-11-13)
+
+- On the start page, **Use Meshtastic** and the **web flasher** now open in their own browser windows, not as tabs, so the start page stays where it is. If the browser blocks new windows, they open as a new tab instead.
+- The firmware pages now list the ESP32 radios too (Heltec V3/V4, T-Beam, T-Deck, Station G2 and the rest: 77 in stable, 92 in alpha), each with a link to the web flasher, which is how they're installed, and the file for esptool. The search box finds radios in both lists.
+- Builds are explained where a radio has more than one: MUI (full colour touch-screen interface), InkHUD (for e-ink screens), OLED/TFT/e-ink display versions, battery sizes and board revisions. Boards newer than the flasher's device list still get a readable name.
+
 ## 0.2.4 (2026-11-13)
 
 - Firmware files: instead of a bare list of hundreds of files, **Firmware files** on the start page now opens a page for each firmware version (stable first). It lists every drag-and-drop radio (nRF52 and Raspberry Pi Pico) by its real name, with its chip and a Download button, plus a search box, step-by-step instructions, which factory-erase file fits your radio, and what the other kinds of files are for. Radios with several builds (e.g. RAK4631 normal / e-ink / Ethernet, InkHUD versions) say which is which.

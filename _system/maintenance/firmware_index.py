@@ -11,9 +11,12 @@ downloaded from api.meshtastic.org with the firmware). Made by build_usb.py afte
 step; safe to run again at any time.
 """
 import html, json, re
+from collections import Counter
 from pathlib import Path
 
-CHIP = {"nrf52840": "nRF52840", "rp2040": "RP2040", "rp2350": "RP2350"}
+CHIP = {"nrf52840": "nRF52840", "rp2040": "RP2040", "rp2350": "RP2350", "esp32": "ESP32",
+        "esp32s3": "ESP32-S3", "esp32-s3": "ESP32-S3", "esp32c3": "ESP32-C3", "esp32-c3": "ESP32-C3",
+        "esp32c6": "ESP32-C6", "esp32-c6": "ESP32-C6"}
 HOW = {
     "nrf52840": "Plug it in, then <b>double-press the reset button</b> quickly. A drive appears "
                 "(named like <code>RAK4631</code>, <code>TECHOBOOT</code>, <code>T1000-E</code> or <code>HT-n5262</code>).",
@@ -35,8 +38,32 @@ EXTRA = {
     "heltec-mesh-solar-eink": ("Heltec MeshSolar", "version with an e-ink display", "nrf52840"),
     "heltec-mesh-solar-oled": ("Heltec MeshSolar", "version with an OLED display", "nrf52840"),
     "heltec-mesh-solar-tft": ("Heltec MeshSolar", "version with a colour TFT display", "nrf52840"),
+    # ESP32 builds not in the device list
+    "chatter2": ("Chatter 2", "", "esp32"),
+    "hackaday-communicator": ("Hackaday Communicator", "", "esp32s3"),
+    "heltec-hru-3601": ("Heltec HRU-3601", "", "esp32c3"),
+    "heltec-v4-r8": ("Heltec V4 R8", "", "esp32s3"),
+    "heltec-v4-r8-oled": ("Heltec V4 R8", "OLED display version", "esp32s3"),
+    "heltec_capsule_sensor_v3": ("Heltec Capsule Sensor V3", "", "esp32s3"),
+    "heltec_sensor_hub": ("Heltec Sensor Hub", "", "esp32s3"),
+    "m5stack-coreink": ("M5Stack CoreInk", "", "esp32"),
+    "m5stack-cores3": ("M5Stack CoreS3", "", "esp32s3"),
+    "radiomaster_900_bandit": ("RadioMaster 900 Bandit", "", "esp32"),
+    "radiomaster_900_bandit_micro": ("RadioMaster 900 Bandit Micro", "", "esp32"),
+    "t-deck-pro-v1_1": ("LILYGO T-Deck Pro", "board version 1.1", "esp32s3"),
+    "t-eth-elite": ("LILYGO T-ETH Elite", "", "esp32s3"),
+    "thinknode_g3": ("Elecrow ThinkNode G3", "", "esp32s3"),
+    "tlora-v3-3-0-tcxo": ("LILYGO T3 LoRa", "board version 3.3.0 with TCXO", "esp32"),
+    "rak_wismesh_dongle": ("RAK WisMesh Dongle", "", ""),
+    "rak_wismesh_sensorhub": ("RAK WisMesh SensorHub", "", ""),
+    "seeed_xiao_rp2040": ("Seeed XIAO RP2040", "with a LoRa module", "rp2040"),
+    "seeed_xiao_rp2350": ("Seeed XIAO RP2350", "with a LoRa module", "rp2350"),
+    "makerfabs-nomad-terminal": ("Makerfabs Nomad Terminal", "", "esp32s3"),
+    "t-connect-pro": ("LILYGO T-Connect Pro", "", "esp32s3"),
+    "t5s3_epaper": ("LilyGo T5 E-paper S3 Pro", "", "esp32s3"),
 }
 INKHUD = "InkHUD: a simpler screen layout made for e-ink displays"
+MUI = "MUI: full colour touch-screen interface"
 
 PAGE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -110,8 +137,9 @@ def _channel_of(flasher: Path):
 
 def _describe(target, devices, folder: Path, ver):
     """(radio name, note, chip, maker) for a firmware target name."""
-    inkhud = target.endswith("-inkhud")
-    base = target[:-len("-inkhud")] if inkhud else target
+    inkhud = target.endswith(("-inkhud", "_inkhud"))
+    mui = target.endswith("-tft") and target not in EXTRA and target not in devices
+    base = target[:-len("-inkhud")] if inkhud else target[:-len("-tft")] if mui else target
     d = devices.get(target) or devices.get(base)
     name, note, chip = None, "", None
     if base in EXTRA:
@@ -126,10 +154,15 @@ def _describe(target, devices, folder: Path, ver):
         pass
     if inkhud:
         note = (note + "; " if note else "") + INKHUD
+    if mui:
+        note = (note + "; " if note else "") + MUI
     if d and not d.get("activelySupported", True):
         note = (note + "; " if note else "") + "not actively supported"
     maker = (d.get("tags") or [""])[0] if d else ""
-    return name or target.replace("_", " ").replace("-", " "), note, (chip or "").lower(), maker
+    if not name:       # a board newer than the device list: tidy up its build name
+        name = " ".join(w.upper() if any(c.isdigit() for c in w) else w.capitalize()
+                        for w in re.split(r"[_-]+", base) if w)
+    return name, note, (chip or "").lower(), maker
 
 
 def write_version_page(folder: Path, devices, channel):
@@ -142,7 +175,6 @@ def write_version_page(folder: Path, devices, channel):
         name, note, chip, maker = _describe(target, devices, folder, ver)
         rows.append((name.lower(), f, name, note, chip, maker))
     rows.sort()
-    from collections import Counter
     many = Counter(r[2] for r in rows)
     rows = [(k, f, name, note or ("standard version" if many[name] > 1 else ""), chip, maker)
             for k, f, name, note, chip, maker in rows]
@@ -154,6 +186,24 @@ def write_version_page(folder: Path, devices, channel):
                    f'<td class="chip">{CHIP.get(chip, html.escape(chip) or "?")}</td>'
                    f'<td class="dl"><a href="{html.escape(f.name)}" download>Download</a>'
                    f'<div class="muted"><code>{html.escape(f.name)}</code> · {f.stat().st_size / 1e6:.1f} MB</div></td></tr>')
+    esp = []
+    for f in sorted(folder.glob(f"firmware-*-{ver}.factory.bin"), key=lambda p: p.name.lower()):
+        if f.name.startswith("._"):
+            continue
+        target = f.name[len("firmware-"):-len(f"-{ver}.factory.bin")]
+        name, note, chip, maker = _describe(target, devices, folder, ver)
+        esp.append((name.lower(), f, name, note, chip, maker))
+    esp.sort()
+    many_e = Counter(r[2] for r in esp)
+    esp_trs = []
+    for _, f, name, note, chip, maker in esp:
+        note = note or ("standard version" if many_e[name] > 1 else "")
+        mk = f'<span class="tag">{html.escape(maker)}</span>' if maker else ""
+        nt = f'<div class="muted">{html.escape(note)}</div>' if note else ""
+        esp_trs.append(f'<tr><td><b>{html.escape(name)}</b>{mk}{nt}</td>'
+                       f'<td class="chip">{CHIP.get(chip, html.escape(chip) or "ESP32")}</td>'
+                       f'<td class="dl"><a href="/" target="_blank" rel="noopener">Use the web flasher</a>'
+                       f'<div class="muted">For esptool: <a href="{html.escape(f.name)}" download><code>{html.escape(f.name)}</code></a></div></td></tr>')
     erase = sorted(p.name for p in folder.glob("Meshtastic_nRF52_factory_erase*.uf2") if not p.name.startswith("._"))
     erase_html = "".join(f'<li><a href="{html.escape(n)}" download><code>{html.escape(n)}</code></a></li>' for n in erase)
     label = {"stable": "stable", "alpha": "alpha (experimental)"}.get(channel, "")
@@ -166,10 +216,15 @@ def write_version_page(folder: Path, devices, channel):
       Pico (RP2040 / RP2350): hold <b>BOOTSEL</b> while plugging it in (drive <code>RPI-RP2</code> or <code>RP2350</code>).</li>
   <li><b>Drag the downloaded <code>.uf2</code> file onto that drive.</b> The radio restarts by itself when it's done. A "disk not ejected properly" message is normal.</li>
 </ol>
-<input type="search" id="q" placeholder="Type to find your radio (e.g. RAK, T-Echo, T1000, Pico)" aria-label="Find your radio">
+<input type="search" id="q" placeholder="Type to find your radio (e.g. RAK, T-Echo, Heltec V3, T-Beam, Pico)" aria-label="Find your radio">
+<p class="muted">Searches both lists: drag-and-drop radios here, and <a href="#esp32">ESP32 radios</a> further down.</p>
 <table><thead><tr><th>Radio</th><th class="chip">Chip</th><th>Firmware file</th></tr></thead>
 <tbody>{''.join(trs) or '<tr><td colspan="3">No drag-and-drop files in this version.</td></tr>'}</tbody></table>
-<p class="muted">ESP32 radios (Heltec V3/V4, T-Beam, T-Deck, Station G2 and others) aren't in this list: use the <a href="/">web flasher</a>, which picks the right file for you.</p>
+
+<h2 id="esp32">ESP32 radios: use the web flasher</h2>
+<p>These radios (Heltec V3/V4, T-Beam, T-Deck, Station G2 and others) can't be updated by drag and drop. Open the <a href="/" target="_blank" rel="noopener">web flasher</a>, plug the radio in by USB, choose it there and click Flash: it picks the right file for you. The file next to each radio is only for the <code>esptool</code> command line (see the offline guide).</p>
+<table><thead><tr><th>Radio</th><th class="chip">Chip</th><th>How to install</th></tr></thead>
+<tbody>{''.join(esp_trs) or '<tr><td colspan="3">No ESP32 files in this version.</td></tr>'}</tbody></table>
 
 <h2>nRF52 radio acting strangely?</h2>
 <div class="tip">A <b>factory erase</b> file wipes the radio's settings so you can start clean. Copy it to the radio's drive the same way, wait for it to finish, then copy the firmware again.
@@ -191,7 +246,7 @@ To choose between them, open <code>INFO_UF2.TXT</code> on the radio's drive: if 
                        subtitle="Meshtastic firmware on this drive. Works with no internet.",
                        body=body, script=FILTER_JS)
     (folder / "index.html").write_text(page, encoding="utf-8")
-    return len(rows)
+    return len(rows), len(esp)
 
 
 def write_all(flasher: Path):
@@ -211,12 +266,12 @@ def write_all(flasher: Path):
         ch = chans.get(v.name)
         what = {"stable": "Stable: use this one", "alpha": "Alpha: newest, experimental"}.get(ch, "")
         cards.append(f'<a class="card" href="{html.escape(v.name)}/"><b>Firmware {html.escape(v.name)}</b>'
-                     f'<div class="muted">{what}{" · " if what else ""}{done[v.name]} drag-and-drop radios</div></a>')
+                     f'<div class="muted">{what}{" · " if what else ""}{done[v.name][0]} drag-and-drop radios, {done[v.name][1]} ESP32 radios</div></a>')
     body = (f'<p><a href="/">← Back to the web flasher</a></p><h2>Choose a firmware version</h2>'
             f'<div class="cards">{"".join(cards)}</div>'
             f'<p class="muted">Not sure? Pick <b>stable</b>. Alpha is the newest firmware and may have bugs.</p>')
     (rel_root / "index.html").write_text(
-        PAGE.format(title="Firmware files", subtitle="For radios you update by drag and drop (nRF52, Raspberry Pi Pico).",
+        PAGE.format(title="Firmware files", subtitle="Which firmware file is for which radio, for every radio on this drive.",
                     body=body, script=""), encoding="utf-8")
     return done
 
