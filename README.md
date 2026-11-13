@@ -8,7 +8,7 @@ Meshtastic radios talk to each other without the internet. Setting them up usual
 
 ## Download
 
-**[Meshtastic-Emergency-Kit-Setup-v0.1.6.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.1.6/Meshtastic-Emergency-Kit-Setup-v0.1.6.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
+**[Meshtastic-Emergency-Kit-Setup-v0.1.7.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.1.7/Meshtastic-Emergency-Kit-Setup-v0.1.7.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
 
 Before opening it, compare its SHA-256 fingerprint with the one in the release notes:
 
@@ -59,7 +59,7 @@ Plug the drive into any computer and double-click `START-HERE-WINDOWS.bat` or `S
 - Newest alpha firmware
 - [esptool](https://github.com/espressif/esptool)
 
-**Windows USB drivers** (CH340, CP210x): their makers' sites (WCH and Silicon Labs) block automatic downloads, so at the end setup opens both download pages in your browser. Download the two files and drag them into the setup window; setup checks they're the real driver files (not a web page) and puts them on the drive. Before installing, the kit checks each driver's digital signature (WCH, and Microsoft WHQL for CP210x) and won't install one that fails.
+**Windows USB drivers** (CH340, CP210x): their makers' sites (WCH and Silicon Labs) block automatic downloads, so at the end setup opens both download pages in your browser. Download the two files and drag them into the setup window (on a Mac, Safari unzips the CP210x .zip by itself: Control-click the link and choose Download Linked File to keep it, or just drag in the unzipped folder); setup checks they're the real driver files (not a web page) and puts them on the drive. Before installing, the kit checks each driver's digital signature (WCH, and Microsoft WHQL for CP210x) and won't install one that fails.
 
 Nothing from those projects is stored in this repository. Each person's computer downloads them from the official source.
 

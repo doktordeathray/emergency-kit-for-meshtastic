@@ -2,6 +2,11 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.1.7 (2026-11-13)
+
+- Windows drivers on a Mac: Safari unzips the CP210x driver's .zip into a folder by itself. Setup now says so when it opens the download page, and explains how to keep the .zip: Control-click (or right-click) the download link and choose Download Linked File.
+- If it was already unzipped, drag the `CP210x_Universal_Windows_Driver` folder into setup instead. Setup checks the folder is complete and puts it back into a .zip, with exactly the same files.
+
 ## 0.1.6 (2026-11-13)
 
 - Windows USB drivers: their makers' websites block automatic downloads, so at the end setup now offers to open both download pages in your browser. Download the files, drag them into the setup window and press Enter, and setup puts them on the drive. You can drag both at once.

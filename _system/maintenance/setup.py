@@ -196,6 +196,9 @@ DRIVERS = [   # (name on the drive, what it is, page to open, what to click ther
      "https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads",
      'download "CP210x Universal Windows Driver" (a .zip file)'),
 ]
+MAC_ZIP_NOTE = ("On a Mac, Safari unzips downloads into a folder by itself. To keep the .zip, Control-click\n"
+                "          (or right-click) the download link and choose Download Linked File. If it was\n"
+                "          already unzipped, that's fine: drag the CP210x_Universal_Windows_Driver folder in instead.")
 
 
 def dropped_paths(line):
@@ -204,7 +207,7 @@ def dropped_paths(line):
     line = line.strip()
     if not line:
         return []
-    if Path(line.strip('"\'')).expanduser().is_file():          # one file, any quoting
+    if Path(line.strip('"\'')).expanduser().exists():           # one file or folder, any quoting
         return [Path(line.strip('"\'')).expanduser()]
     import shlex
     try:
@@ -222,6 +225,14 @@ def dropped_paths(line):
 
 def which_driver(path: Path):
     """(name on the drive, None) if this is one of the two drivers, else (None, reason)."""
+    if path.is_dir():       # the CP210x zip, already unzipped (Safari does this by itself)
+        files = {f.relative_to(path).as_posix().lower() for f in path.rglob("*")
+                 if f.is_file() and not f.name.startswith("._")}
+        if {"silabser.inf", "silabser.cat"} <= files and any(f.endswith("silabser.sys") for f in files):
+            return "CP210x_Universal_Windows_Driver.zip", None
+        if any(f.endswith("silabser.inf") for f in files):
+            return None, "this CP210x folder is incomplete; download the .zip again"
+        return None, "that folder isn't the unzipped CP210x driver"
     if not path.is_file():
         return None, "file not found"
     head = path.read_bytes()[:4]
@@ -260,6 +271,8 @@ def add_drivers_by_hand(target: Path):
     import webbrowser
     for name, what, url, how in missing:
         print(f"  Opening {url}\n    -> {how}")
+        if name.endswith(".zip") and platform.system() == "Darwin":
+            print(f"    {Y}Note:{N} {MAC_ZIP_NOTE}")
         webbrowser.open(url)
     d.mkdir(parents=True, exist_ok=True)
     added = []
@@ -274,7 +287,14 @@ def add_drivers_by_hand(target: Path):
             if not name:
                 fail(f"{path.name}: {why}")
                 continue
-            shutil.copyfile(path, d / name)
+            if path.is_dir():       # put the unzipped CP210x folder back into a .zip
+                import zipfile
+                with zipfile.ZipFile(d / name, "w", zipfile.ZIP_DEFLATED) as z:
+                    for f in sorted(path.rglob("*")):
+                        if f.is_file() and not f.name.startswith("._") and f.name != ".DS_Store":
+                            z.write(f, f.relative_to(path).as_posix())
+            else:
+                shutil.copyfile(path, d / name)
             ok(f"Added {name}")
             added.append(name)
             missing = [x for x in missing if x[0] != name]

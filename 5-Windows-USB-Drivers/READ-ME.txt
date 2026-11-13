@@ -18,7 +18,11 @@ That works for any version. VirusTotal results and checksums: SECURITY-REPORT.tx
 IF THIS FOLDER IS MISSING A FILE: the makers' websites block automatic downloads, so
 SETUP offers to open both download pages in your browser. Download the files, then
 drag them into the setup window and press Enter; setup puts them here. (Run SETUP
-again on this drive any time to do this.) Or download it yourself and save it here
+again on this drive any time to do this.)
+MAC NOTE: Safari unzips the CP210x .zip into a folder by itself. To keep the .zip,
+Control-click (or right-click) the download link and choose Download Linked File.
+If it was already unzipped, drag that folder into setup instead; setup zips it again.
+Or download it yourself and save it here
 with exactly the name shown above:
   CH340:  https://www.wch-ic.com/downloads/CH341SER_EXE.html
   CP210x: https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers
