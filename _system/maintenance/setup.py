@@ -188,6 +188,57 @@ def prepare_disk(d):
     return Path(path)
 
 
+# ---- offline map: which area ------------------------------------------------------------
+def ask_map_area():
+    """Ask for a place and a distance around it. Returns the area, or None to skip the map."""
+    import offline_map as M
+    import tempfile
+    print(f"\n{BOLD}Offline map{N}")
+    print("  The web app can show your nodes on a map with no internet. Choose the area to save:")
+    print("  a town or city and how far around it. (Map data: OpenStreetMap contributors.)")
+    while True:
+        q = ask(f"\n  Type a town or city (e.g. Toronto), or coordinates like 43.65, -79.38\n"
+                f"  (or just press Enter to skip the map):")
+        if not q:
+            return None
+        ll = M.parse_latlon(q)
+        if ll:
+            name, (lat, lon) = f"{ll[0]:.3f}, {ll[1]:.3f}", ll
+        else:
+            try:
+                hits = M.search_place(q)
+            except Exception:
+                warn("Couldn't search for places (no internet?). Try coordinates instead.")
+                continue
+            if not hits:
+                warn(f"Nothing found for '{q}'. Try another spelling, a bigger town nearby, or coordinates.")
+                continue
+            for i, (n, _, _) in enumerate(hits, 1):
+                print(f"    {C}{i}{N}  {n}")
+            a = ask("  Which one? [1]", "1")
+            if not (a.isdigit() and 1 <= int(a) <= len(hits)):
+                continue
+            name, lat, lon = hits[int(a) - 1]
+            name = name.split(",")[0]
+        km = ask("  How far around it, in km? (e.g. 10 for a town, 50 for a region) [25]", "25")
+        try:
+            km = max(1.0, min(float(km), 500.0))
+        except ValueError:
+            km = 25.0
+        bbox = M.bbox_around(lat, lon, km)
+        print("  Checking the size of that map ...")
+        mb = None
+        try:
+            tool = M.get_tool(Path(tempfile.gettempdir()) / "meshtastic-kit-map-tool")
+            mb = M.estimate_mb(tool, bbox)
+        except Exception as e:
+            warn(f"Couldn't check the size ({e}).")
+        size = f"about {gb(int(mb) + 1)}" if mb is not None else "unknown size"
+        if ask(f"  {name}, {km:g} km around: {size}. Use this area? [Y/n]", "y").lower() in ("y", "yes"):
+            return {"name": name, "bbox": bbox, "maxzoom": 15, "km": km,
+                    "mb": int(mb) + 1 if mb is not None else None}
+
+
 # ---- Windows drivers by hand (their makers' sites block automatic downloads) ------------
 DRIVERS = [   # (name on the drive, what it is, page to open, what to click there)
     ("CH341SER.EXE", "CH340 / CH9102 driver, from WCH",
@@ -362,7 +413,8 @@ def choose_parts():
     print(f"\nOptional extras (add as many as you like):\n")
     for i, k in enumerate(keys, 1):
         label, mb, _ = B.PARTS[k]
-        print(f"  {C}{i:2d}{N}  {label}  (~{gb(mb)})")
+        size = "size depends on the area" if k == "offline_map" else f"~{gb(mb)}"
+        print(f"  {C}{i:2d}{N}  {label}  ({size})")
     a = ask("\nType the numbers you want, separated by spaces (e.g. 1 3), or press Enter for none:")
     for tok in a.replace(",", " ").split():
         if tok.isdigit() and 1 <= int(tok) <= len(keys) and keys[int(tok) - 1] not in kit:
@@ -448,6 +500,7 @@ def main():
     ap.add_argument("--profile", choices=list(B.PROFILES))
     ap.add_argument("--parts", help="comma-separated part names")
     ap.add_argument("--yes", action="store_true", help="don't ask for confirmation")
+    ap.add_argument("--map", help="offline map area: 'lat,lon,km' (with --parts ...,offline_map)")
     args = ap.parse_args()
 
     try:
@@ -469,7 +522,19 @@ def main():
     else:
         parts = choose_parts()
 
+    area = None
+    if "offline_map" in parts:
+        if args.map:
+            import offline_map as M
+            lat, lon, km = (float(x) for x in args.map.split(","))
+            area = {"name": f"{lat:.3f}, {lon:.3f}", "bbox": M.bbox_around(lat, lon, km), "maxzoom": 15, "km": km}
+        elif not args.yes:
+            area = ask_map_area()
+        if not area:
+            parts.remove("offline_map")
     need = parts_mb(parts)
+    if area and area.get("mb"):
+        need += area["mb"] - B.PARTS["offline_map"][1]
     free = free_mb(target)
     print(f"\n{BOLD}Ready to set up:{N}")
     print(f"  Where:  {target}")
@@ -491,7 +556,10 @@ def main():
 
     copy_kit(target, parts)
     (target / "_system").mkdir(parents=True, exist_ok=True)
-    (target / "_system" / "settings.json").write_text(json.dumps({"parts": parts}, indent=2))
+    settings = {"parts": parts}
+    if area:
+        settings["map"] = area
+    (target / "_system" / "settings.json").write_text(json.dumps(settings, indent=2))
     finish(target)
 
     print(f"\n{BOLD}Downloading (keep this window open; you can use the computer meanwhile)...{N}\n")

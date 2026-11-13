@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.0 (2026-11-13)
+
+- New optional extra: **offline map**. In setup, type a town or city (or coordinates) and how far around it; setup shows the size, then saves a map of that area on the drive. The web app then shows your nodes on that map with no internet. Pressing U refreshes the map every few months. Map data © OpenStreetMap contributors, via Protomaps.
+- Fixed the web app's map, with or without the offline map: the Meshtastic web client release (v2.7.2) bundles MapLibre 6 but leaves out the worker files it needs, so its map couldn't draw anything. Setup and U now add the official MapLibre files for that exact version. The changes are listed in `_system/webclient/CHANGES-BY-THE-KIT.txt` on the drive.
+- The web app's own offline cache is switched off on the drive, so it always uses the files on the drive.
+
 ## 0.1.9 (2026-11-13)
 
 - Fixed: if the start window had been open a while, sending the Android app over Wi-Fi (or reopening the browser pages) could fail with `miniserve-mac-arm64: No such file or directory`. macOS clears temporary folders, and the start window kept using a copy of the web server that was gone. It now checks the copy is still there and makes a new one if not.

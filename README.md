@@ -8,7 +8,7 @@ Meshtastic radios talk to each other without the internet. Setting them up usual
 
 ## Download
 
-**[Meshtastic-Emergency-Kit-Setup-v0.1.9.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.1.9/Meshtastic-Emergency-Kit-Setup-v0.1.9.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
+**[Meshtastic-Emergency-Kit-Setup-v0.2.0.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.0/Meshtastic-Emergency-Kit-Setup-v0.2.0.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
 
 Before opening it, compare its SHA-256 fingerprint with the one in the release notes:
 
@@ -58,6 +58,9 @@ Plug the drive into any computer and double-click `START-HERE-WINDOWS.bat` or `S
 - Raspberry Pi Imager
 - Newest alpha firmware
 - [esptool](https://github.com/espressif/esptool)
+- Offline map of an area you choose (a town or city and a distance around it), so the web app shows nodes on a map with no internet. Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), via [Protomaps](https://protomaps.com).
+
+The kit also fixes the web app's map: the Meshtastic web client release bundles MapLibre 6 without the worker files it needs, so its map can't draw. Setup adds the official files for that MapLibre version (see `_system/webclient/CHANGES-BY-THE-KIT.txt` on a finished drive).
 
 **Windows USB drivers** (CH340, CP210x): their makers' sites (WCH and Silicon Labs) block automatic downloads, so at the end setup opens both download pages in your browser. Download the two files and drag them into the setup window (on a Mac, Safari unzips the CP210x .zip by itself: Control-click the link and choose Download Linked File to keep it, or just drag in the unzipped folder); setup checks they're the real driver files (not a web page) and puts them on the drive. Before installing, the kit checks each driver's digital signature (WCH, and Microsoft WHQL for CP210x) and won't install one that fails.
 

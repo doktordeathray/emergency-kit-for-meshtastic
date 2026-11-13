@@ -47,6 +47,7 @@ PARTS = {
     "pi_mpwrd":      ("Raspberry Pi image A: mPWRD-OS", 470, False),
     "pi_raspios":    ("Raspberry Pi image B: Raspberry Pi OS + Meshtastic", 630, False),
     "alpha":         ("Also keep the newest alpha (experimental) firmware", 760, False),
+    "offline_map":   ("Offline map of an area you choose, for the web app", 150, False),
     "flasher":       ("Rebuild the web flasher (only with developer tools)", 0, False),
 }
 PROFILES = {
@@ -67,7 +68,20 @@ def load_settings():
     return parts
 
 def save_settings(parts):
-    SETTINGS_FILE.write_text(json.dumps({"parts": parts}, indent=2))
+    try:
+        st = json.loads(SETTINGS_FILE.read_text())
+    except Exception:
+        st = {}
+    st["parts"] = parts
+    SETTINGS_FILE.write_text(json.dumps(st, indent=2))
+
+def map_area():
+    """The offline-map area chosen in setup: {"name","bbox","maxzoom"} or None."""
+    try:
+        a = json.loads(SETTINGS_FILE.read_text()).get("map")
+        return a if a and len(a.get("bbox", [])) == 4 else None
+    except Exception:
+        return None
 FIRMWARE_PLATFORMS = ["esp32", "esp32s3", "esp32c3", "esp32c6", "nrf52840",
                       "rp2040", "rp2350", "stm32"]
 WEB_FLASHER_REPO = "https://github.com/meshtastic/web-flasher.git"
@@ -301,11 +315,12 @@ def c_webclient():
     rel = gh_latest("meshtastic/web")
     if manifest.get("webclient") == rel["tag_name"] and (SYS / "webclient" / "index.html").exists():
         print(f"    {rel['tag_name']} already on the drive")
+        webclient_map_fixes(SYS / "webclient")     # drives made before these fixes
         return
     a = asset(rel, r"^build\.tar$")
     tarp = fetch_asset(a, CACHE / "web" / f"build-{rel['tag_name']}.tar")
     out = SYS / "webclient"
-    clean_dir(out)
+    clean_dir(out, keep=("maps",))           # the offline map stays
     with tarfile.open(tarp) as t:
         t.extractall(out, filter="data") if sys.version_info >= (3, 12) else t.extractall(out)
     remove_appledouble(out)
@@ -316,6 +331,61 @@ def c_webclient():
             shutil.copyfileobj(src, dst)
         gz.unlink()
     manifest["webclient"] = rel["tag_name"]
+    webclient_map_fixes(out)
+
+
+def webclient_map_fixes(web: Path):
+    """Make the web app's map work (its release leaves out MapLibre's worker files), and
+    point it at the offline map when this drive has one. See offline_map.py."""
+    import offline_map as M
+    try:
+        v = M.fix_maplibre(web, CACHE)
+        if v:
+            print(f"    map fix: official MapLibre {v} files added")
+        if (web / "maps" / "area.pmtiles").exists():
+            changed = M.patch_webclient(web)
+            if changed:
+                print("    offline map connected to the web app")
+    except Exception as e:
+        warn(f"couldn't fix the web app's map ({e}). Everything else in the web app works.")
+
+
+def c_offline_map():
+    """Offline map of the area chosen in setup (OpenStreetMap data via Protomaps)."""
+    import offline_map as M
+    log("Offline map")
+    area = map_area()
+    if not area:
+        print("    no area chosen (run setup again to pick one)")
+        return
+    maps = SYS / "webclient" / "maps"
+    have = {}
+    try:
+        have = json.loads((maps / "area.json").read_text())
+    except Exception:
+        pass
+    same = have.get("bbox") == area["bbox"] and have.get("maxzoom", 15) == area.get("maxzoom", 15)
+    fresh = same and (maps / "area.pmtiles").exists() and _days_old(have.get("build")) < MAP_REFRESH_DAYS
+    if fresh:
+        print(f"    {area.get('name', 'area')} (map of {have.get('build', '?')[:8]}) already on the drive")
+    else:
+        print(f"    {area.get('name', 'area')}: downloading the map ...")
+        key = M.build_area(maps, CACHE, area)
+        print(f"    map of {key[:8]} saved ({(maps / 'area.pmtiles').stat().st_size >> 20} MB)")
+        have = {"build": key}
+    if (SYS / "webclient" / "index.html").exists():
+        webclient_map_fixes(SYS / "webclient")
+    manifest["offline_map"] = {"name": area.get("name"), "build": have.get("build")}
+
+
+MAP_REFRESH_DAYS = 90       # map data changes slowly; refresh the area every few months
+
+def _days_old(build_key):
+    try:
+        t = time.mktime(time.strptime((build_key or "")[:8], "%Y%m%d"))
+        return (time.time() - t) / 86400
+    except ValueError:
+        return 10 ** 6
 
 
 FLASHER_PATCHES = [
@@ -862,6 +932,10 @@ def _check_rest(rows, row, m, want):
         row("Chromium browser (Mac)", ch.get("mac"), gh_latest(CHROMIUM["Mac"][0])["tag_name"])
         row("Chromium browser (Linux)", ch.get("linux"), gh_latest(CHROMIUM["Linux"][0])["tag_name"])
     row("Local web server", m.get("miniserve"), gh_latest("svenstaro/miniserve")["tag_name"].lstrip("v"))
+    if "offline_map" in want and map_area():
+        have = ((m.get("offline_map") or {}).get("build") or "")
+        latest = have if have and _days_old(have) < MAP_REFRESH_DAYS else "newer map"
+        row("Offline map", have[:8] or None, latest[:8] if latest == have else latest)
     return rows
 
 
@@ -870,7 +944,7 @@ COMPONENTS = {
     "flasher": c_flasher, "desktop": c_desktop, "android": c_android,
     "esptool": c_esptool, "pi_imager": c_pi_imager, "pi_mpwrd": c_pi_mpwrd,
     "pi_raspios": c_pi_raspios, "drivers": c_drivers, "python": c_python, "chromium": c_chromium,
-    "flasher_models": c_flasher_models,
+    "flasher_models": c_flasher_models, "offline_map": c_offline_map,
 }
 
 
