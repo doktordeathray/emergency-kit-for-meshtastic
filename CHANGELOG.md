@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.4 (2026-11-13)
+
+- Firmware files: instead of a bare list of hundreds of files, **Firmware files** on the start page now opens a page for each firmware version (stable first). It lists every drag-and-drop radio (nRF52 and Raspberry Pi Pico) by its real name, with its chip and a Download button, plus a search box, step-by-step instructions, which factory-erase file fits your radio, and what the other kinds of files are for. Radios with several builds (e.g. RAK4631 normal / e-ink / Ethernet, InkHUD versions) say which is which.
+- On the start page, **Use Meshtastic**, the **flasher** and **Firmware files** now open in a new window, so the start page stays open.
+- The pages are made on the drive from the flasher's device list, and are rebuilt whenever U updates the firmware.
+
 ## 0.2.3 (2026-11-13)
 
 - Fixed (Mac and Linux): in 0.2.2, sending the Android app over Wi-Fi didn't show the QR codes. They're back. The server's own "Quit by pressing CTRL-C" line shows again too, but Ctrl+C (like Enter) still only stops sharing and goes back to the menu, and the last line says so.

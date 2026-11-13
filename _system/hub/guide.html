@@ -75,10 +75,10 @@
   <h3>B. nRF52 and RP2040 radios: drag and drop</h3>
   <ol>
     <li>Plug the radio in, then <b>double-press its reset button</b> quickly. A new drive appears (named like <code>RAK4631</code>, <code>TECHOBOOT</code>, <code>T1000-E</code> or <code>RPI-RP2</code>). On a Pico, hold <b>BOOTSEL</b> while plugging it in.</li>
-    <li>Start page → <b>Firmware files</b> → open the version folder, and download the file named <code>firmware-<i>your-radio</i>-<i>version</i>.uf2</code>. (You can also use the web flasher: it lets you download the right file.)</li>
+    <li>Start page → <b>Firmware files</b> → choose a version (pick <b>stable</b> if unsure). The page lists every drag-and-drop radio by name: type your radio's name in the search box and click <b>Download</b>. (You can also use the web flasher: it lets you download the right file.)</li>
     <li>Drag that <code>.uf2</code> file onto the new drive. The radio reboots by itself when it's done. A "disk not ejected" warning is normal.</li>
   </ol>
-  <div class="tip">nRF52 radio acting strangely after an update? Copy <code>Meshtastic_nRF52_factory_erase_v3_S140_*.uf2</code> (same folder) the same way, then copy the firmware again.</div>
+  <div class="tip">nRF52 radio acting strangely after an update? The firmware page has <b>factory erase</b> files and explains which one fits your radio. Copy it the same way, then copy the firmware again.</div>
 
   <h3>C. Backup method: command line (ESP32)</h3>
   <p>For experts, if the browser flasher can't be used: <code>esptool</code> for every OS is in <code>_system/tools/esptool</code>, and each firmware folder contains Meshtastic's <code>device-install</code> / <code>device-update</code> scripts.</p>

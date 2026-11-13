@@ -307,6 +307,11 @@ def c_firmware():
     (apid / "resource" / "eventFirmware.json").write_text(
         json.dumps({"version": 2, "source": "offline", "editions": []}))
     manifest["firmware"] = {ch: [r["id"] for r in rels] for ch, rels in chosen.items()}
+    try:                                      # pages that say which file is for which radio
+        import firmware_index
+        firmware_index.write_all(SYS / "flasher")
+    except Exception as e:
+        warn(f"couldn't write the firmware index pages ({e}); the files are all there")
 
 
 def c_webclient():
