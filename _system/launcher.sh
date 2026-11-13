@@ -37,8 +37,11 @@ PLAT="$(platform_suffix)"
 # quarantine files. So we copy small programs to a temp folder and run them there.
 prepare_bin() {   # prepare_bin <source file>  -> prints runnable path
   local src="$1" dst="$WORK/$(basename "$1")"
-  if [ ! -f "$dst" ] || [ "$src" -nt "$dst" ]; then
-    cp -f "$src" "$dst" 2>/dev/null || return 1
+  if [ ! -f "$dst" ] || [ "$src" -nt "$dst" ] || ! cmp -s "$src" "$dst"; then
+    # Copy to a new file, then swap it in. Never overwrite a program in place: macOS
+    # remembers a program it has run and kills it ("Killed: 9") if the file changes.
+    cp "$src" "$dst.new.$$" 2>/dev/null || return 1
+    mv -f "$dst.new.$$" "$dst" || return 1
   fi
   chmod +x "$dst" 2>/dev/null
   [ "$OS" = "Darwin" ] && xattr -d com.apple.quarantine "$dst" 2>/dev/null
@@ -46,6 +49,9 @@ prepare_bin() {   # prepare_bin <source file>  -> prints runnable path
 }
 
 MINISERVE=""
+server_runs() {   # quietly: does the prepared web server start at all?
+  bash -c '"$0" --version; exit $?' "$MINISERVE" >/dev/null 2>&1
+}
 get_miniserve() {
   [ -n "$MINISERVE" ] && return 0
   local src="$SYS/bin/miniserve-$PLAT"
@@ -60,6 +66,13 @@ get_miniserve() {
     return 1
   fi
   MINISERVE="$(prepare_bin "$src")" || { fail "Couldn't prepare the web server."; return 1; }
+  if ! server_runs; then   # e.g. a broken copy left by an older version
+    rm -f "$MINISERVE"
+    MINISERVE="$(prepare_bin "$src")" || { fail "Couldn't prepare the web server."; return 1; }
+    if ! server_runs; then
+      fail "This computer won't run the kit's web server."; MINISERVE=""; return 1
+    fi
+  fi
 }
 
 port_in_use() {

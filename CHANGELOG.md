@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.1.8 (2026-11-13)
+
+- Fixed: on a Mac, choosing 1 in the start window could fail with `Killed: 9` and no browser page. The start window copies the web server program to a temporary folder before running it, and replaced an older copy there in place, which macOS refuses to run. It now swaps in a fresh copy instead, and if a copy left by an older version won't start, it replaces it automatically.
+
 ## 0.1.7 (2026-11-13)
 
 - Windows drivers on a Mac: Safari unzips the CP210x driver's .zip into a folder by itself. Setup now says so when it opens the download page, and explains how to keep the .zip: Control-click (or right-click) the download link and choose Download Linked File.
