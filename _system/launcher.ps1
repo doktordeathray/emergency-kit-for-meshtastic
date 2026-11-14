@@ -570,7 +570,11 @@ try {
         Do-Open
     }
     Start-UpdateCheck
-    Start-Sleep 1
+    if ($RestartedFrom) {
+        # Keep the restart messages on screen until they've been read.
+        if ($RestartedFrom -ne $KitVer) { Ok "Now running version $KitVer of the kit." }
+        Read-Host "`nPress Enter to go to the menu" | Out-Null
+    } else { Start-Sleep 1 }
     while ($true) {
         Show-Menu
         $choice = Read-Choice

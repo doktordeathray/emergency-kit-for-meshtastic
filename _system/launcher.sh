@@ -668,7 +668,13 @@ else
   do_open
 fi
 start_update_check
-sleep 1
+if [ "$1" = "--restarted" ]; then
+  # Keep the restart messages on screen until they've been read.
+  [ "$2" != "$KITVER" ] && ok "Now running version $KITVER of the kit."
+  printf '\n%s' "Press Enter to go to the menu..."; read -r _
+else
+  sleep 1
+fi
 while true; do
   menu
   read_choice

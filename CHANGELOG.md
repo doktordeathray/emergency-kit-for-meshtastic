@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.16 (2026-11-14)
+
+- After **R** (restart), the start window's messages stay on screen until you press Enter ("Press Enter to go to the menu..."), instead of disappearing after a second. After a kit update it also says which version is now running.
+
 ## 0.2.15 (2026-11-13)
 
 - Test release to check the update notice and U: nothing about how the kit works has changed. Updating from 0.2.14 just changes the version number.
