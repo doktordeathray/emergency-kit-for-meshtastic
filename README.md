@@ -8,7 +8,7 @@ Meshtastic radios talk to each other without the internet. Setting them up usual
 
 ## Download
 
-**[Meshtastic-Emergency-Kit-Setup-v0.2.8.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.8/Meshtastic-Emergency-Kit-Setup-v0.2.8.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
+**[Meshtastic-Emergency-Kit-Setup-v0.2.9.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.9/Meshtastic-Emergency-Kit-Setup-v0.2.9.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
 
 Before opening it, compare its SHA-256 fingerprint with the one in the release notes:
 
@@ -46,7 +46,8 @@ Plug the drive into any computer and double-click `START-HERE-WINDOWS.bat` or `S
 
 ## What setup downloads
 
-**Standard kit (about 1.5 GB)**
+**Standard kit (about 1.7 GB)**
+- Meshtastic documentation: an offline copy of [meshtastic.org/docs](https://meshtastic.org/docs) (GPL-3.0), built by `make_docs.py` and published as the `offline-docs` download
 - Meshtastic firmware (stable) for every supported board, laid out for the offline flasher
 - Meshtastic web client
 - Meshtastic Android app (F-Droid build)

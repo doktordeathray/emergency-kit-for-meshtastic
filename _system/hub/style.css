@@ -81,3 +81,7 @@ footer { padding: 8px 0 40px; }
 .tip { border-left: 4px solid var(--accent); padding: 6px 12px; background: var(--accent-soft); border-radius: 0 8px 8px 0; margin: 10px 0; }
 .caution { border-left: 4px solid var(--warn-line); padding: 6px 12px; background: var(--warn-bg); color: var(--warn-ink); border-radius: 0 8px 8px 0; margin: 10px 0; }
 @media (max-width: 720px) { .guide { grid-template-columns: 1fr; } .toc { position: static; } }
+
+.docs { margin: 8px 0 20px; }
+.docs h2 { margin: 18px 0 2px; }
+.doclinks { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }

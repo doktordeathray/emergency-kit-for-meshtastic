@@ -7,7 +7,7 @@ SYS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 USB="$(dirname "$SYS")"
 OS="$(uname -s)"
 ARCH="$(uname -m)"
-HUB_PORT=8470; CLIENT_PORT=8471; FLASHER_PORT=8472; SHARE_PORT=8473
+HUB_PORT=8470; CLIENT_PORT=8471; FLASHER_PORT=8472; SHARE_PORT=8473; DOCS_PORT=8474
 WORK="${TMPDIR:-/tmp}/meshtastic-usb-$(id -u)"
 mkdir -p "$WORK"
 PIDS=""
@@ -113,6 +113,7 @@ start_all() {
       --header "Cross-Origin-Opener-Policy: same-origin" \
       --header "Cross-Origin-Embedder-Policy: require-corp"
   start_server $FLASHER_PORT "$SYS/flasher"
+  [ -f "$SYS/docs/index.html" ] && start_server $DOCS_PORT "$SYS/docs"
   stale_server_check
   local i=0
   while ! port_in_use $HUB_PORT && [ $i -lt 30 ]; do sleep 0.2; i=$((i+1)); done

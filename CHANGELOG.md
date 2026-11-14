@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.9 (2026-11-13)
+
+- New in the standard kit: the **Meshtastic documentation** (meshtastic.org/docs) as an offline copy, about 210 MB. The start page has a new **Meshtastic documentation** section with quick links (getting started, radio settings, modules, supported radios, apps, FAQ, everything). The flasher's links to the docs open the copy on the drive. Existing drives get it the next time you press U.
+- The docs are built from their open-source code (GPL-3.0) with usage tracking and the online search removed; inside them, links to Meshtastic's online flasher and web app go to the copies on the drive.
+- The web flasher, web app and docs on the drive show a small notice: "Offline copy from Emergency Kit for Meshtastic (independent project), modified to work from this drive. Not an official Meshtastic service." with a Details link to the list of changes. It can be closed.
+
 ## 0.2.8 (2026-11-13)
 
 - The kit is now called **Emergency Kit for Meshtastic** everywhere you see it: the start page, the guide, the start window's header and title, setup, and READ-ME-FIRST.txt (it used to say "Meshtastic Emergency USB" in places). It's an independent project, not made or endorsed by Meshtastic LLC, and the name makes that clearer.

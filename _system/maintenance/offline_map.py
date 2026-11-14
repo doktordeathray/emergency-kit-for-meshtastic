@@ -256,7 +256,9 @@ release as downloaded, with these changes made on this drive by the kit's update
    maplibre-gl.LICENSE.txt), and the bundled map file now loads them instead.
 2. The web client's offline cache (service worker) is switched off; the drive serves
    everything already.
-3. Only with an offline map (folder maps/): the map style address points at
+3. Every page loads kit-notice.js: a small notice that this is an offline copy made by
+   the Emergency Kit for Meshtastic, not an official Meshtastic service.
+4. Only with an offline map (folder maps/): the map style address points at
    maps/style.json, and index.html loads maps/pmtiles.js and maps/credit.js (the
    OpenStreetMap credit shown on the map).
 """

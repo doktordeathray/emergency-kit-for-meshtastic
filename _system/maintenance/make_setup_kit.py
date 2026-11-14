@@ -21,7 +21,7 @@ NAME = "Meshtastic-Emergency-Kit"
 
 # Folders whose contents are downloaded by setup (never shipped in the kit)
 EXCLUDE_DIRS = [
-    "_system/bin", "_system/tools", "_system/webclient", "_system/.update-cache",
+    "_system/bin", "_system/tools", "_system/webclient", "_system/docs", "_system/.update-cache",
     "_system/flasher/release", "_system/flasher/api", "_system/flasher/models",
     "3-Raspberry-Pi/Option-B-Raspberry-Pi-OS-plus-Meshtastic/meshtastic-offline/packages",
 ]

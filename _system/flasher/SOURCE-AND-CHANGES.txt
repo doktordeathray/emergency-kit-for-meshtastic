@@ -16,6 +16,10 @@ Changes made for offline use (nothing else was altered):
   3. Removed plugins/analytics.clients.ts and plugins/datadog-rum.client.ts
      (usage tracking, which can't work offline).
 
+Added by the kit (not part of the original):
+  4. kit-notice.js, loaded by each page: a small notice that this is an offline
+     copy made by the Emergency Kit for Meshtastic, not an official Meshtastic service.
+
 The exact changes are applied by _system/maintenance/build_usb.py
 (see FLASHER_PATCHES and FLASHER_DELETE), which rebuilds this folder from the
 original source when run on a computer with git and Node.js.

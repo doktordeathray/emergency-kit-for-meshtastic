@@ -49,6 +49,20 @@
     </a>
   </section>
 
+  <section class="docs" id="docs">
+    <h2>Meshtastic documentation</h2>
+    <p class="muted" id="docs-state">The full Meshtastic docs (meshtastic.org/docs), stored on this drive. Opens in a new tab.</p>
+    <div class="doclinks" id="docs-links">
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/getting-started/"><b>Getting started</b><span>First steps with a new radio</span></a>
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/configuration/radio/"><b>Radio settings</b><span>What every setting does</span></a>
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/configuration/module/"><b>Modules</b><span>MQTT, telemetry, store &amp; forward…</span></a>
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/hardware/devices/"><b>Supported radios</b><span>Every board and its details</span></a>
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/software/"><b>Apps &amp; software</b><span>Android, iPhone, web, desktop, CLI</span></a>
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/faq/"><b>FAQ</b><span>Common questions</span></a>
+      <a class="tile" target="_blank" rel="noopener" data-path="/docs/"><b>All docs</b><span>Browse everything</span></a>
+    </div>
+  </section>
+
   <section class="small">
     <a class="tile" href="guide.html#start"><b>First time?</b><span>5-minute quick start</span></a>
     <a class="tile" href="guide.html#flash"><b>How to flash</b><span>Step by step, every radio type</span></a>
@@ -82,6 +96,20 @@
   document.getElementById('go-client').href = url(8471);
   document.getElementById('go-flasher').href = url(8472);
   document.getElementById('go-files').href = url(8472, '/release/');
+
+  // Offline docs (an optional part): link them if this drive has them.
+  (function () {
+    var links = document.querySelectorAll('#docs-links a');
+    links.forEach(function (a) { a.href = url(8474, a.getAttribute('data-path')); });
+    function missing() {
+      document.getElementById('docs-links').hidden = true;
+      document.getElementById('docs-state').innerHTML = 'Not on this drive yet. To add them, press U in the black window while you have internet ' +
+        '(they come with the standard kit). Online: <a href="https://meshtastic.org/docs/" target="_blank" rel="noopener">meshtastic.org/docs</a>.';
+    }
+    if (!window.fetch) return;
+    var c = new AbortController(); setTimeout(function () { c.abort(); }, 3000);
+    fetch(url(8474, '/'), { mode: 'no-cors', signal: c.signal, cache: 'no-store' }).catch(missing);
+  })();
 
 
   if (!('serial' in navigator)) {

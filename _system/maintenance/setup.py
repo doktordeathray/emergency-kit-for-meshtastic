@@ -33,7 +33,7 @@ PART_PATHS = {
     "firmware": ["_system/flasher/release", "_system/flasher/api"],
     "flasher_models": ["_system/flasher/models"],
     "android": ["2-Android-Phone"], "chromium": ["4-Chromium-Browser"],
-    "drivers": ["5-Windows-USB-Drivers"], "desktop": ["1-Desktop-App"],
+    "drivers": ["5-Windows-USB-Drivers"], "desktop": ["1-Desktop-App"], "docs": ["_system/docs"],
     "esptool": ["_system/tools/esptool"], "pi_imager": ["3-Raspberry-Pi/SD-Card-Writer"],
     "pi_mpwrd": ["3-Raspberry-Pi/Option-A-Ready-Made-Meshtastic-Image"],
     "pi_raspios": ["3-Raspberry-Pi/Option-B-Raspberry-Pi-OS-plus-Meshtastic"],

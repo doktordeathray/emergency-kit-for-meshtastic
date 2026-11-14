@@ -41,6 +41,7 @@ PARTS = {
     "android":       ("Android app (.apk)", 65, True),
     "chromium":      ("Chromium browser for Mac & Linux", 610, True),
     "drivers":       ("Windows USB drivers (if they can be downloaded)", 1, True),
+    "docs":          ("Meshtastic documentation (offline copy of meshtastic.org/docs)", 210, True),
     "desktop":       ("Desktop apps for Windows, Mac, Linux", 840, False),
     "esptool":       ("esptool command-line flasher (backup)", 330, False),
     "pi_imager":     ("Raspberry Pi SD card writer", 70, False),
@@ -61,6 +62,11 @@ def load_settings():
     except Exception:
         st = {"parts": PROFILES["essentials"] + EXTRAS}    # drives made before settings existed
     parts = [p for p in st.get("parts", []) if p in PARTS]
+    # Parts added to the standard kit later (like the offline docs) come to existing drives too.
+    if "webclient" in parts:
+        for p in ("docs",):
+            if p not in parts and not p in st.get("removed", []):
+                parts.append(p)
     FIRMWARE_CHANNELS.clear()
     FIRMWARE_CHANNELS["stable"] = 1
     if "alpha" in parts:
@@ -351,6 +357,13 @@ def webclient_map_fixes(web: Path):
             changed = M.patch_webclient(web)
             if changed:
                 print("    offline map connected to the web app")
+        import offline_notice                 # "offline copy, not an official service" notice
+        offline_notice.add_notice(web, "/CHANGES-BY-THE-KIT.txt")
+        note = web / "CHANGES-BY-THE-KIT.txt"
+        if note.exists() and "kit-notice.js" not in note.read_text(encoding="utf-8"):
+            note.write_text(note.read_text(encoding="utf-8").rstrip() + "\n4. Every page loads kit-notice.js: a small notice that this is an offline copy\n"
+                            "   made by the Emergency Kit for Meshtastic, not an official Meshtastic service.\n",
+                            encoding="utf-8")
     except Exception as e:
         warn(f"couldn't fix the web app's map ({e}). Everything else in the web app works.")
 
@@ -381,6 +394,49 @@ def c_offline_map():
     if (SYS / "webclient" / "index.html").exists():
         webclient_map_fixes(SYS / "webclient")
     manifest["offline_map"] = {"name": area.get("name"), "build": have.get("build")}
+
+
+DOCS_BASE = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/offline-docs/"
+DOCS_PORT = 8474
+
+def c_docs():
+    """Meshtastic documentation (meshtastic.org/docs) as an offline website, GPL-3.0.
+    Built from the docs' source by the kit's maintainer (make_docs.py) and published on the
+    kit's GitHub as the "offline-docs" download, with its source and changes noted inside."""
+    log("Meshtastic documentation")
+    info = get_json(DOCS_BASE + "meshtastic-docs-offline.json")
+    out = SYS / "docs"
+    have = manifest.get("docs") or {}
+    if have.get("commit") == info["commit"] and (out / "index.html").exists():
+        print(f"    docs of {info['date']} already on the drive")
+    else:
+        z = download(DOCS_BASE + "meshtastic-docs-offline.zip", CACHE / "docs" / "meshtastic-docs-offline.zip",
+                     info.get("bytes"))
+        if hashlib.sha256(z.read_bytes()).hexdigest() != info["sha256"]:
+            raise SystemExit("the downloaded docs don't match their published fingerprint; not installed")
+        clean_dir(out)
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out)
+        remove_appledouble(out)
+        print(f"    docs of {info['date']} saved ({info.get('unpacked_mb', '?')} MB)")
+        manifest["docs"] = {"commit": info["commit"], "date": info["date"]}
+    docs_links(SYS / "flasher")
+
+
+def docs_links(flasher: Path):
+    """Point the flasher's links to meshtastic.org/docs at the offline docs on this drive."""
+    if not (SYS / "docs" / "index.html").exists():
+        return
+    for f in list(flasher.rglob("*.js")) + list(flasher.glob("*.html")):
+        if junk(f) or "release" in f.relative_to(flasher).parts:
+            continue
+        try:
+            t = f.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        if "https://meshtastic.org/docs" in t:
+            f.write_text(t.replace("https://meshtastic.org/docs", f"http://localhost:{DOCS_PORT}/docs"),
+                         encoding="utf-8")
 
 
 MAP_REFRESH_DAYS = 90       # map data changes slowly; refresh the area every few months
@@ -446,6 +502,10 @@ def write_flasher_notice(src: Path, full_commit: str):
         "  3. Removed plugins/analytics.clients.ts and plugins/datadog-rum.client.ts",
         "     (usage tracking, which can't work offline).",
         "",
+        "Added by the kit (not part of the original):",
+        "  4. kit-notice.js, loaded by each page: a small notice that this is an offline",
+        "     copy made by the Emergency Kit for Meshtastic, not an official Meshtastic service.",
+        "",
         "The exact changes are applied by _system/maintenance/build_usb.py",
         "(see FLASHER_PATCHES and FLASHER_DELETE), which rebuilds this folder from the",
         "original source when run on a computer with git and Node.js.",
@@ -497,6 +557,8 @@ def c_flasher():
     # The build records the source folder's absolute path (which includes the builder's
     # user name) in a few files. Replace it with a neutral path before shipping.
     scrub_paths(out, str(src))
+    import offline_notice                     # "offline copy, not an official service" notice
+    offline_notice.add_notice(out, "/SOURCE-AND-CHANGES.txt")
     manifest["flasher"] = f"web-flasher@{commit}"
     manifest["flasher_commit"] = full
     write_flasher_notice(src, full)
@@ -937,6 +999,12 @@ def _check_rest(rows, row, m, want):
         row("Chromium browser (Mac)", ch.get("mac"), gh_latest(CHROMIUM["Mac"][0])["tag_name"])
         row("Chromium browser (Linux)", ch.get("linux"), gh_latest(CHROMIUM["Linux"][0])["tag_name"])
     row("Local web server", m.get("miniserve"), gh_latest("svenstaro/miniserve")["tag_name"].lstrip("v"))
+    if "docs" in want:
+        try:
+            row("Meshtastic docs", (m.get("docs") or {}).get("date"),
+                get_json(DOCS_BASE + "meshtastic-docs-offline.json")["date"])
+        except Exception:
+            pass
     if "offline_map" in want and map_area():
         have = ((m.get("offline_map") or {}).get("build") or "")
         latest = have if have and _days_old(have) < MAP_REFRESH_DAYS else "newer map"
@@ -949,7 +1017,7 @@ COMPONENTS = {
     "flasher": c_flasher, "desktop": c_desktop, "android": c_android,
     "esptool": c_esptool, "pi_imager": c_pi_imager, "pi_mpwrd": c_pi_mpwrd,
     "pi_raspios": c_pi_raspios, "drivers": c_drivers, "python": c_python, "chromium": c_chromium,
-    "flasher_models": c_flasher_models, "offline_map": c_offline_map,
+    "flasher_models": c_flasher_models, "offline_map": c_offline_map, "docs": c_docs,
 }
 
 

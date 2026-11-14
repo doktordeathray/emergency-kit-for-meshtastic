@@ -5,7 +5,7 @@ param([string]$RestartedFrom = '')
 $ErrorActionPreference = 'Continue'
 $SYS = Split-Path -Parent $MyInvocation.MyCommand.Path
 $USB = Split-Path -Parent $SYS
-$HUB_PORT = 8470; $CLIENT_PORT = 8471; $FLASHER_PORT = 8472; $SHARE_PORT = 8473
+$HUB_PORT = 8470; $CLIENT_PORT = 8471; $FLASHER_PORT = 8472; $SHARE_PORT = 8473; $DOCS_PORT = 8474
 $WORK = Join-Path $env:TEMP 'meshtastic-usb'
 New-Item -ItemType Directory -Force -Path $WORK | Out-Null
 $script:Servers = @()
@@ -87,6 +87,7 @@ function Start-All {
         '--header', '"Cross-Origin-Opener-Policy: same-origin"',
         '--header', '"Cross-Origin-Embedder-Policy: require-corp"')
     Start-Server $FLASHER_PORT (Join-Path $SYS 'flasher') @()
+    if (Test-Path (Join-Path $SYS 'docs\index.html')) { Start-Server $DOCS_PORT (Join-Path $SYS 'docs') @() }
     Test-StaleServer
     for ($i = 0; $i -lt 30 -and -not (Test-Port $HUB_PORT); $i++) { Start-Sleep -Milliseconds 200 }
     if (Test-Port $HUB_PORT) { Ok 'Meshtastic is running on this computer (no internet needed).'; return $true }
