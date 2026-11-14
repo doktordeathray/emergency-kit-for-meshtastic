@@ -4,6 +4,8 @@
 
 Meshtastic radios talk to each other without the internet. Setting them up usually needs it: the web flasher, the firmware and the apps all download at the moment you use them. This kit puts them on a USB drive while you still have a connection, so you can flash radios and install the apps anywhere later.
 
+**Website: https://doktordeathray.github.io/emergency-kit-for-meshtastic/**
+
 > Independent community project. Not made or endorsed by Meshtastic LLC. Meshtastic® is a registered trademark of Meshtastic LLC.
 
 ## Download
