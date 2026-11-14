@@ -292,7 +292,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
     <div class="wrap">
       <div>
         <h1>Set up Meshtastic when there's <span class="hl">no internet.</span></h1>
-        <p class="lede">Flash new radios and install the Meshtastic app on phones and computers, with optional extras for building a Raspberry Pi node. This kit downloads what those jobs need onto a USB drive while you still have a connection, so you can do them anywhere later.</p>
+        <p class="lede">Flash new radios, install the Meshtastic app on phones and computers, and read the Meshtastic docs, with optional extras for building a Raspberry Pi node and an offline map. This kit downloads what those jobs need onto a USB drive while you still have a connection, so you can do them anywhere later.</p>
         <div class="actions">
           <a class="btn btn-dl dl" id="dl-btn" href="#before" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12M6 10l6 6 6-6M4 20h16"/></svg>
@@ -346,7 +346,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
       <p class="big">Meshtastic radios talk to each other without the internet. Getting them set up does need it: the flasher, the firmware and the apps all download at the moment you use them. When the network is down, or you're out of range, a new radio is a blank circuit board.</p>
       <aside>
         <p><b>What this kit does about it:</b> it saves the official tools and releases onto a USB drive ahead of time, and runs them from the drive.</p>
-        <p><b>What it changes:</b> nothing in the firmware or apps. They're official releases, used as published. The one exception is Meshtastic's web flasher, which is rebuilt with small changes so it reads firmware from the drive instead of the internet.</p>
+        <p><b>What it changes:</b> nothing in the firmware or the phone and desktop apps. They're official releases, used as published. Meshtastic's web flasher, web app and documentation get small changes so they work from the drive, and each shows a yellow "offline copy" banner saying so.</p>
       </aside>
     </div>
   </section>
@@ -375,14 +375,14 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <span class="n">2</span>
           <div>
             <h3>Answer two questions</h3>
-            <p><b>Where:</b> a USB drive (setup lists the ones plugged in), this computer, or this Raspberry Pi. <b>What:</b> the standard kit, or the standard kit plus extras you pick. Setup then downloads the current releases from their official sources. That takes 15 to 60 minutes, depending on your connection.</p>
+            <p><b>Where:</b> a USB drive (setup lists the ones plugged in, and offers to format one as exFAT so every computer can read it), this computer, or this Raspberry Pi. <b>What:</b> the standard kit, or the standard kit plus extras you pick. Setup then downloads the current releases from their official sources. That takes 15 to 60 minutes, depending on your connection. At the end it opens the two Windows driver pages; download them and drag the files into the window.</p>
           </div>
         </li>
         <li>
           <span class="n">3</span>
           <div>
             <h3>Make copies</h3>
-            <p>Run setup on a finished drive to copy it to another USB stick. Parts it already has are copied, so no download is needed. Give one to everyone in your group.</p>
+            <p>Plug another USB stick into the computer, start the finished drive and press <b>K</b> (copy this kit). Choose <b>The same as this drive</b>: everything is copied, with no download needed. Give one to everyone in your group.</p>
           </div>
         </li>
       </ol>
@@ -406,9 +406,13 @@ footer .wrap > p { overflow-wrap: anywhere; }
               <div><b>2</b><span>Install the Meshtastic app on this computer</span></div>
               <div><b>3</b><span>Put the Meshtastic app on an Android phone</span></div>
               <div><b>4</b><span>Make a Raspberry Pi SD card</span></div>
+              <div><b>5</b><span>Help guide</span></div>
               <div><b>6</b><span>Install USB drivers for radios (Windows)</span></div>
               <div><b>C</b><span>Install a browser that works with radios (Mac, Linux)</span></div>
+              <div><b>K</b><span>Copy this kit to another USB or external drive</span></div>
               <div><b>U</b><span>Update this drive (when you're online again)</span></div>
+              <div><b>R</b><span>Restart this window (after an update)</span></div>
+              <div><b>Q</b><span>Quit</span></div>
             </div>
           </div>
         </li>
@@ -416,7 +420,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <span class="n">2</span>
           <div>
             <h3>Flash the radio</h3>
-            <p>Plug the radio in with a data cable and pick it in the flasher, which runs from the drive. Boards such as the Heltec V3 and T-Beam flash in the browser. RAK4631, T-Echo and Pico boards take a .uf2 file dropped onto them.</p>
+            <p>Plug the radio in with a data cable and pick it in the flasher, which runs from the drive. Boards such as the Heltec V3 and T-Beam flash in the browser. RAK4631, T-Echo and Pico boards take a .uf2 file dropped onto them: the start page's <b>Firmware files</b> lists every radio by name, so you can find yours.</p>
           </div>
         </li>
         <li>
@@ -444,7 +448,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
             <li><span>Android app, F-Droid build (no Google services needed)</span><span class="mono">65 MB</span></li>
             <li><span>Chromium browser, for Macs and Linux PCs without Chrome or Edge</span><span class="mono">610 MB</span></li>
             <li><span>Device pictures for the flasher, the local web server and the updater</span><span class="mono">300 MB</span></li>
-            <li><span>Windows USB driver helper. You save the two drivers from the makers' sites yourself (about a minute; links included). Each is signature-checked before it installs.</span><span class="mono">1 MB</span></li>
+            <li><span>Windows USB driver helper. The makers' sites block automatic downloads, so setup opens their pages and you drag the two files into the window (about a minute). Each is signature-checked before it installs.</span><span class="mono">1 MB</span></li>
           </ul>
         </div>
         <div class="kit-col extra">
@@ -696,7 +700,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
       <div class="qa">
         <div>
           <h3>Is this an official Meshtastic product?</h3>
-          <p>No. It's an independent community project, not made or endorsed by Meshtastic LLC. Setup downloads official Meshtastic firmware and apps from Meshtastic's own releases and uses them unchanged. The web flasher is Meshtastic's, rebuilt to work offline (see below).</p>
+          <p>No. It's an independent community project, not made or endorsed by Meshtastic LLC. Setup downloads official Meshtastic firmware and apps from Meshtastic's own releases and uses them unchanged. The web flasher, web app and documentation are Meshtastic's, with small changes so they work offline (see below), and each shows a banner saying it's an offline copy.</p>
         </div>
         <div>
           <h3>Who made this?</h3>
@@ -712,11 +716,11 @@ footer .wrap > p { overflow-wrap: anywhere; }
         </div>
         <div>
           <h3>Why is the download so small?</h3>
-          <p>The setup kit holds the launchers, guides and scripts, plus one piece from another project: Meshtastic's web flasher, rebuilt for offline use. Firmware, apps, the browser and the Raspberry Pi images download on your own computer from each official source.</p>
+          <p>The setup kit holds the launchers, guides and scripts, plus one piece from another project: Meshtastic's web flasher, rebuilt for offline use. Firmware, apps, the documentation, the browser and the Raspberry Pi images download on your own computer from each official source.</p>
         </div>
         <div>
-          <h3>What was changed in the web flasher?</h3>
-          <p>Three things, all to make it work offline: it reads firmware and the board list from the drive instead of Meshtastic's servers, and its usage tracking is removed. The flasher is GPL-3.0 licensed. Its licence, the exact source version and a list of the changes are in the kit's <code>_system/flasher</code> folder.</p>
+          <h3>What was changed in the web flasher, web app and docs?</h3>
+          <p><b>Web flasher:</b> it reads firmware and the board list from the drive instead of Meshtastic's servers, its usage tracking is removed, and its links to the docs open the copy on the drive. <b>Web app:</b> its map gets the MapLibre files the release leaves out (so the map works at all), and the offline map if you chose one. <b>Docs:</b> built from their source without usage tracking or online search, with links to Meshtastic's online flasher and web app pointing at the drive. All three are GPL-3.0 and show a yellow "offline copy" banner. Each folder on the drive lists its exact source version and every change.</p>
         </div>
         <div>
           <h3>Is it finished?</h3>
@@ -724,7 +728,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
         </div>
         <div>
           <h3>How do I keep it current?</h3>
-          <p>Plug the drive into any computer that's online, start it and press U. It lists what's new, asks once, then downloads straight onto the drive. That includes the kit itself: its start windows, setup and guides update to the newest release (checked against the fingerprint GitHub publishes), and it shows what changed. Drives made with a kit older than 0.2.1 need one update by hand first: download the newest kit, run its setup and pick the drive.</p>
+          <p>When the start window opens on a computer that's online, it checks by itself and flashes "UPDATES AVAILABLE" if anything is newer. Press U: it lists what's new, asks once, then downloads straight onto the drive, and offers to restart the window (R) when it's done. That includes the kit itself: its start windows, setup and guides update to the newest release (checked against the fingerprint GitHub publishes), and it shows what changed. Drives made with a kit older than 0.2.1 need one update by hand first: download the newest kit, run its setup and pick the drive.</p>
         </div>
         <div>
           <h3>What size and format of USB drive?</h3>
@@ -784,6 +788,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
         <a href="https://protomaps.com" rel="noopener">Protomaps</a>
         <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap (map data)</a>
         <a href="https://maplibre.org" rel="noopener">MapLibre</a>
+        <a href="https://github.com/meshtastic/meshtastic" rel="noopener">Meshtastic documentation (GPL-3.0)</a>
       </div>
     </div>
   </div>
