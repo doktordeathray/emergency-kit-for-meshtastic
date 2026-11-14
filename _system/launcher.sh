@@ -523,6 +523,55 @@ get_python() {   # prints a runnable python3, using the copy on the drive if pos
   return 1
 }
 
+# ---- "updates available" notice ---------------------------------------------------
+# When the start window opens it asks, in the background, whether anything newer is out
+# (the same check U makes). The answer is kept for 6 hours so restarting doesn't ask again
+# (GitHub limits how often it may be asked). The menu then shows a flashing line.
+UPD_RC="$WORK/update-check.rc"; UPD_OUT="$WORK/update-check.txt"; UPD_SHOWN=""
+start_update_check() {
+  if [ -f "$UPD_RC" ] && [ -n "$(find "$UPD_RC" -mmin -360 2>/dev/null)" ] \
+     && [ "$(cat "$WORK/update-check.kit" 2>/dev/null)" = "$KITVER" ]; then return; fi
+  rm -f "$UPD_RC" "$UPD_OUT"
+  (
+    py="$(get_python)" || exit 0
+    rm -f "$UPD_OUT.part"
+    MESH_UPDATE_SUMMARY="$UPD_OUT.part" "$py" "$SYS/maintenance/build_usb.py" --check >/dev/null 2>&1
+    rc=$?
+    [ -f "$UPD_OUT.part" ] && mv -f "$UPD_OUT.part" "$UPD_OUT"
+    echo "$KITVER" > "$WORK/update-check.kit"; echo $rc > "$UPD_RC"
+  ) >/dev/null 2>&1 </dev/null &
+}
+update_summary() {   # prints "Firmware, Web app" when updates are available, else nothing
+  [ "$(cat "$UPD_RC" 2>/dev/null)" = "3" ] || return 0
+  cat "$UPD_OUT" 2>/dev/null || echo "new versions"
+}
+UPD_ROW=4   # the menu line the notice is drawn on (right under the 3 header lines)
+update_line() {   # update_line <bright|dim>
+  local s; s="$(update_summary)"; [ -n "$s" ] || return 0
+  if [ "$1" = bright ]; then printf '%s' "${B}"$'\033[30;43m'"  >> UPDATES AVAILABLE: $s.  Press U (needs internet) <<  ${N}"
+  else printf '%s' $'\033[1;33m'"  >> UPDATES AVAILABLE: $s.  Press U (needs internet) <<  ${N}"; fi
+}
+
+# Wait for the menu choice, flashing the update line meanwhile and showing it as soon as
+# the background check finishes. The first key stops the flashing; the line is read as usual.
+read_choice() {
+  local c rest tick=0
+  # Not a real Terminal (input piped in): just read a line. (bash 3.2's read reports a
+  # timeout the same way as end of input, so the timed loop below only runs in a Terminal.)
+  if [ ! -t 0 ]; then read -r choice || exit 0; return 0; fi
+  while :; do
+    if read -r -t 1 -n 1 c; then
+      if [ -z "$c" ]; then choice=""; return 0; fi
+      read -r rest; choice="$c$rest"; return 0
+    fi
+    if [ -n "$(update_summary)" ]; then
+      if [ -z "$UPD_SHOWN" ]; then UPD_SHOWN=1; menu; continue; fi
+      tick=$(( (tick + 1) % 2 ))
+      printf '\0337\033[%d;1H\033[2K%s\0338' "$UPD_ROW" "$(update_line "$([ $tick = 1 ] && echo bright || echo dim)")"
+    fi
+  done
+}
+
 # Restart: stop this window's servers and start the launcher again from the drive, so an
 # updated kit takes effect without closing the window. The browser is only reopened when the
 # kit's version changed (then it shows the new start page); otherwise its tabs keep working.
@@ -552,6 +601,7 @@ do_update() {
   say
   if "$py" "$SYS/maintenance/build_usb.py" --update-kit; then
     ok "This drive is up to date."
+    rm -f "$UPD_RC" "$UPD_OUT"; UPD_SHOWN=""     # no more "updates available" line
   else
     fail "Some parts didn't update (see above). Run the update again to retry - the drive still works."
   fi
@@ -569,6 +619,7 @@ menu() {
   say "${G}  =============================================${N}"
   say "${G}${B}   EMERGENCY KIT${N}${G} for Meshtastic${N}   v$(head -1 "$USB/VERSION" 2>/dev/null || echo '?')"
   say "${G}  =============================================${N}"
+  if [ -n "$(update_summary)" ]; then UPD_SHOWN=1; say "$(update_line bright)"; fi
   say
   say "  ${C}1${N}  Open Meshtastic in the browser  (talk on the mesh / flash a radio)"
   say "  ${C}2${N}  Install the Meshtastic app on this computer"
@@ -592,10 +643,11 @@ else
   say "Starting Meshtastic..."
   do_open
 fi
+start_update_check
 sleep 1
 while true; do
   menu
-  read -r choice || exit 0
+  read_choice
   case "$choice" in
     1|"") do_open ;;
     2) do_desktop ;;

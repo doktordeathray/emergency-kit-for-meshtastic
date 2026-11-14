@@ -654,6 +654,10 @@ def c_esptool():
                "mac-x64": r"macos-amd64\.tar\.gz$", "linux-x64": r"linux-amd64\.tar\.gz$",
                "linux-arm64": r"linux-aarch64\.tar\.gz$"}
     base = SYS / "tools" / "esptool"
+    have_all = all((base / n).is_dir() and any(f for f in (base / n).iterdir() if not junk(f)) for n in targets)
+    if manifest.get("esptool") == v and have_all:
+        print(f"    {v} already on the drive")
+        return
     for name, pat in targets.items():
         a = asset(rel, pat)
         arc = fetch_asset(a, CACHE / "esptool" / a["name"])
@@ -1077,6 +1081,9 @@ def main():
             mark = "\033[1;32mNEW\033[0m" if new else " ok"
             print(f"  {mark}  {name:{w}s}  {have}" + (f"  ->  {latest}" if new else ""))
         n = sum(r[3] for r in rows)
+        if os.environ.get("MESH_UPDATE_SUMMARY"):   # a plain list for the start window's notice
+            names = [("this kit" if r[0].startswith("Emergency kit") else r[0]) for r in rows if r[3]]
+            Path(os.environ["MESH_UPDATE_SUMMARY"]).write_text(", ".join(names), encoding="utf-8")
         print()
         print(f"  {n} update(s) available." if n else "  Everything on this drive is up to date.")
         sys.exit(3 if n else 0)

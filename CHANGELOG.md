@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.12 (2026-11-13)
+
+- The start window now checks for updates by itself when it opens (quietly, in the background, if the computer is online). If anything is newer, a flashing line appears right under the title, for example ">> UPDATES AVAILABLE: Firmware (stable), Web app. Press U (needs internet) <<". The answer is reused for 6 hours, so restarting doesn't ask GitHub again and again.
+- Fixed: every update downloaded esptool again (about 320 MB) even when that version was already on the drive. It's now skipped when it's up to date, like the other parts.
+- Start page: the Meshtastic documentation section is now below the quick links (First time, How to flash, Firmware files, Phones, Raspberry Pi, Something wrong?).
+
 ## 0.2.11 (2026-11-13)
 
 - Fixed: **All docs** on the start page and the flasher's docs links showed a list of folders instead of the Meshtastic docs. meshtastic.org sends /docs/ on to the Introduction page from its server, which a drive can't do, so the kit now adds a small page that does it. Press U to fix an existing drive (the docs aren't downloaded again).

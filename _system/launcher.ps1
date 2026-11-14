@@ -413,6 +413,68 @@ function Get-Python {
     return $exe
 }
 
+# ---- "updates available" notice ---------------------------------------------------
+# When the start window opens it asks, in the background, whether anything newer is out
+# (the same check U makes). The answer is kept for 6 hours (GitHub limits how often it may
+# be asked). The menu then shows a flashing line.
+$UpdRc = Join-Path $WORK 'update-check.rc'; $UpdOut = Join-Path $WORK 'update-check.txt'
+$UpdKit = Join-Path $WORK 'update-check.kit'
+$script:UpdProc = $null; $script:UpdShown = $false; $script:UpdRow = -1
+function Start-UpdateCheck {
+    try {
+        if ((Test-Path $UpdRc) -and ((Get-Date) - (Get-Item $UpdRc).LastWriteTime).TotalHours -lt 6 -and
+            (Get-Content $UpdKit -ErrorAction Stop) -eq $KitVer) { return }
+    } catch { }
+    Remove-Item $UpdRc, $UpdOut -ErrorAction SilentlyContinue
+    $py = Get-Python
+    if (-not $py) { return }
+    $env:MESH_UPDATE_SUMMARY = $UpdOut
+    try {
+        $script:UpdProc = Start-Process -FilePath $py -PassThru -WindowStyle Hidden `
+            -ArgumentList @("`"$(Join-Path $SYS 'maintenance\build_usb.py')`"", '--check') `
+            -RedirectStandardOutput (Join-Path $WORK 'update-check.log') -RedirectStandardError (Join-Path $WORK 'update-check.err')
+    } catch { $script:UpdProc = $null }
+    Remove-Item Env:\MESH_UPDATE_SUMMARY -ErrorAction SilentlyContinue
+}
+function Get-UpdateSummary {
+    if ($script:UpdProc -and $script:UpdProc.HasExited) {
+        try { Set-Content $UpdRc $script:UpdProc.ExitCode; Set-Content $UpdKit $KitVer } catch { }
+        $script:UpdProc = $null
+    }
+    try { if ((Get-Content $UpdRc -ErrorAction Stop) -ne '3') { return '' } } catch { return '' }
+    try { $s = (Get-Content $UpdOut -Raw -ErrorAction Stop).Trim() } catch { $s = '' }
+    if (-not $s) { $s = 'new versions' }
+    return $s
+}
+function Write-UpdateLine($bright) {
+    $s = Get-UpdateSummary
+    if (-not $s) { return }
+    $t = "  >> UPDATES AVAILABLE: $s.  Press U (needs internet) <<  "
+    if ($bright) { Write-Host $t -ForegroundColor Black -BackgroundColor Yellow -NoNewline }
+    else { Write-Host $t -ForegroundColor Yellow -NoNewline }
+}
+# Wait for the menu choice, flashing the update line meanwhile and showing it as soon as the
+# background check finishes. The first key stops the flashing; the line is then read as usual.
+function Read-Choice {
+    $prompt = "`nType a number and press Enter: "
+    Write-Host $prompt -NoNewline
+    try {
+        $tick = $false
+        while (-not [Console]::KeyAvailable) {
+            Start-Sleep -Milliseconds 500
+            if (Get-UpdateSummary) {
+                if (-not $script:UpdShown) { Show-Menu; Write-Host $prompt -NoNewline; continue }
+                $tick = -not $tick
+                $x = [Console]::CursorLeft; $y = [Console]::CursorTop
+                [Console]::SetCursorPosition(0, $script:UpdRow)
+                Write-UpdateLine $tick
+                [Console]::SetCursorPosition($x, $y)
+            }
+        }
+    } catch { }
+    return $Host.UI.ReadLine()
+}
+
 function Do-Update {
     Clear-Host
     Say 'Update this drive  (needs internet)'
@@ -431,7 +493,10 @@ function Do-Update {
     if ($a -match '^(n|no)$') { return }
     Say ''
     & $py $script --update-kit
-    if ($LASTEXITCODE -eq 0) { Ok 'This drive is up to date.' }
+    if ($LASTEXITCODE -eq 0) {
+        Ok 'This drive is up to date.'
+        Remove-Item $UpdRc, $UpdOut -ErrorAction SilentlyContinue; $script:UpdShown = $false
+    }
     else { Fail 'Some parts did not update (see above). Run the update again to retry - the drive still works.' }
     $now = ''
     try { $now = ((Get-Content (Join-Path $USB 'VERSION') -TotalCount 1 -ErrorAction Stop) -replace '[^0-9.]', '') } catch { }
@@ -450,6 +515,10 @@ function Show-Menu {
     Write-Host '   =============================================' -ForegroundColor Green
     Write-Host ('   EMERGENCY KIT for Meshtastic   v' + $kitVer) -ForegroundColor Green
     Write-Host '   =============================================' -ForegroundColor Green
+    if (Get-UpdateSummary) {
+        $script:UpdShown = $true; $script:UpdRow = [Console]::CursorTop
+        Write-UpdateLine $true; Write-Host ''
+    }
     Write-Host ''
     Say '   1  Open Meshtastic in the browser  (talk on the mesh / flash a radio)'
     Say '   2  Install the Meshtastic app on this computer'
@@ -472,10 +541,11 @@ try {
         Say 'Starting Meshtastic...'
         Do-Open
     }
+    Start-UpdateCheck
     Start-Sleep 1
     while ($true) {
         Show-Menu
-        $choice = Read-Host "`nType a number and press Enter"
+        $choice = Read-Choice
         switch ($choice) {
             '1' { Do-Open }
             ''  { Do-Open }
