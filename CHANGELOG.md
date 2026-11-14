@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.10 (2026-11-13)
+
+- The "offline copy" notice on the web flasher, web app and docs is now a yellow banner across the top of the page, in bold, so it's hard to miss: "OFFLINE COPY: from Emergency Kit for Meshtastic (an independent project), modified to work from this drive. Not an official Meshtastic service. Details". The page moves down to make room, so nothing is hidden behind it, and an × on the right closes it (until that browser tab is closed).
+
 ## 0.2.9 (2026-11-13)
 
 - New in the standard kit: the **Meshtastic documentation** (meshtastic.org/docs) as an offline copy, about 210 MB. The start page has a new **Meshtastic documentation** section with quick links (getting started, radio settings, modules, supported radios, apps, FAQ, everything). The flasher's links to the docs open the copy on the drive. Existing drives get it the next time you press U.
