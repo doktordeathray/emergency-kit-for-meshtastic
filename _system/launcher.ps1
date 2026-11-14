@@ -1,4 +1,4 @@
-# Meshtastic Emergency USB - launcher for Windows 10/11.
+# Emergency Kit for Meshtastic - launcher for Windows 10/11.
 # Started by START-HERE-WINDOWS.bat. Works fully offline. PowerShell 5.1 compatible.
 param([string]$RestartedFrom = '')
 
@@ -9,7 +9,7 @@ $HUB_PORT = 8470; $CLIENT_PORT = 8471; $FLASHER_PORT = 8472; $SHARE_PORT = 8473
 $WORK = Join-Path $env:TEMP 'meshtastic-usb'
 New-Item -ItemType Directory -Force -Path $WORK | Out-Null
 $script:Servers = @()
-$Host.UI.RawUI.WindowTitle = 'Meshtastic Emergency USB - keep this window open'
+$Host.UI.RawUI.WindowTitle = 'Emergency Kit for Meshtastic - keep this window open'
 
 function Say($t)  { Write-Host $t }
 function Ok($t)   { Write-Host "  [OK] $t" -ForegroundColor Green }
@@ -446,8 +446,9 @@ function Show-Menu {
     Write-Host ''
     $kitVer = '?'
     try { $kitVer = (Get-Content (Join-Path $USB 'VERSION') -TotalCount 1 -ErrorAction Stop).Trim() } catch { }
-    Write-Host ('   MESHTASTIC  EMERGENCY USB   v' + $kitVer) -ForegroundColor Green
-    Write-Host '   =========================' -ForegroundColor Green
+    Write-Host '   =============================================' -ForegroundColor Green
+    Write-Host ('   EMERGENCY KIT for Meshtastic   v' + $kitVer) -ForegroundColor Green
+    Write-Host '   =============================================' -ForegroundColor Green
     Write-Host ''
     Say '   1  Open Meshtastic in the browser  (talk on the mesh / flash a radio)'
     Say '   2  Install the Meshtastic app on this computer'

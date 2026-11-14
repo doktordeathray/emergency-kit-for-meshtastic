@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Meshtastic Emergency USB - builder / updater.
+Emergency Kit for Meshtastic - builder / updater.
 
 Everyday use: choose "U  Update this drive" in the START-HERE window. That runs
 this script with the copy of Python that lives on the drive.

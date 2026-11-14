@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Meshtastic Emergency Kit - setup.
+Emergency Kit for Meshtastic - setup.
 
 Started by SETUP-WINDOWS.bat / SETUP-MAC.command / SETUP-LINUX.sh. Asks where to
 install (a USB drive, this computer, or a folder) and which parts to include, then
@@ -483,7 +483,7 @@ def finish(target: Path):
     if platform.system() == "Linux" and str(target).startswith(str(Path.home())):
         apps = Path.home() / ".local/share/applications"
         apps.mkdir(parents=True, exist_ok=True)
-        entry = (f"[Desktop Entry]\nType=Application\nName=Meshtastic Emergency Kit\n"
+        entry = (f"[Desktop Entry]\nType=Application\nName=Emergency Kit for Meshtastic\n"
                  f"Exec=bash \"{target}/START-HERE-LINUX.sh\"\nTerminal=true\nCategories=Network;\n")
         (apps / "meshtastic-emergency-kit.desktop").write_text(entry)
         desk = Path.home() / "Desktop"
@@ -507,7 +507,7 @@ def main():
         kit_ver = (KIT / "VERSION").read_text().strip()
     except OSError:
         kit_ver = "?"
-    print(f"\n{G}  MESHTASTIC EMERGENCY KIT - SETUP   v{kit_ver}{N}")
+    print(f"\n{G}  EMERGENCY KIT FOR MESHTASTIC - SETUP   v{kit_ver}{N}")
     print("  Builds an offline Meshtastic toolkit: web app, radio flasher + firmware,")
     print("  Android app and more (about 1.5 GB). Needs internet now; never again after.")
 

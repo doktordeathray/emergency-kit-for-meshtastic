@@ -2,6 +2,12 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.8 (2026-11-13)
+
+- The kit is now called **Emergency Kit for Meshtastic** everywhere you see it: the start page, the guide, the start window's header and title, setup, and READ-ME-FIRST.txt (it used to say "Meshtastic Emergency USB" in places). It's an independent project, not made or endorsed by Meshtastic LLC, and the name makes that clearer.
+- New start page icon: a USB drive, replacing an "M" mark that looked like Meshtastic's own logo.
+- The download's file name is unchanged (Meshtastic-Emergency-Kit-Setup-…zip), so pressing U keeps working on existing drives.
+
 ## 0.2.7 (2026-11-13)
 
 - New in the start window's menu: **R  Restart this window**. It stops the start window's servers and starts it again from the drive, in the same window, so an updated kit takes over without closing the window and running the start file again. Browser tabs keep working; the browser only opens the start page again when the kit's version changed.

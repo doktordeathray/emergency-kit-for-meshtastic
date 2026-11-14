@@ -1,7 +1,7 @@
 # Finds (or downloads) a Python to run setup.py with. Windows 10/11.
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$Host.UI.RawUI.WindowTitle = 'Meshtastic Emergency Kit - Setup'
+$Host.UI.RawUI.WindowTitle = 'Emergency Kit for Meshtastic - Setup'
 $HERE = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SYS = Split-Path -Parent $HERE
 $WORK = Join-Path $env:TEMP 'meshtastic-setup'

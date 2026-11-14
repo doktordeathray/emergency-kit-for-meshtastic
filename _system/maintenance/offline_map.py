@@ -244,8 +244,8 @@ def disable_service_worker(web: Path):
                       f".then(function(r){{r.forEach(function(x){{x.unregister()}})}})}}\n", encoding="utf-8")
 
 
-CHANGES_NOTE = """CHANGES MADE BY THE MESHTASTIC EMERGENCY KIT
-============================================
+CHANGES_NOTE = """CHANGES MADE BY THE EMERGENCY KIT FOR MESHTASTIC
+================================================
 This folder is the Meshtastic web client (https://github.com/meshtastic/web, GPL-3.0),
 release as downloaded, with these changes made on this drive by the kit's updater
 (_system/maintenance/offline_map.py):
@@ -265,7 +265,7 @@ release as downloaded, with these changes made on this drive by the kit's update
 MAPLIBRE_TGZ = "https://registry.npmjs.org/maplibre-gl/-/maplibre-gl-{v}.tgz"
 MAPLIBRE_FILES = ["maplibre-gl.mjs", "maplibre-gl-shared.mjs", "maplibre-gl-worker.mjs"]
 CHUNK = r"""{mark}
-// Replaced by the Meshtastic Emergency Kit: loads the official MapLibre {ver} files (main +
+// Replaced by the Emergency Kit for Meshtastic: loads the official MapLibre {ver} files (main +
 // worker, which the web client release leaves out) and lets the map read files on this drive.
 import * as ml from "./maplibre-gl.mjs";
 export * from "./maplibre-gl.mjs";

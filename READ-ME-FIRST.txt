@@ -1,5 +1,5 @@
-MESHTASTIC EMERGENCY USB
-========================
+EMERGENCY KIT FOR MESHTASTIC
+============================
 Everything on this drive works with NO internet.
 
 FIRST TIME? If you downloaded the small setup kit (a few MB), run SETUP first

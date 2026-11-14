@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Meshtastic Emergency USB - launcher for Mac and Linux.
+# Emergency Kit for Meshtastic - launcher for Mac and Linux.
 # Started by START-HERE-MAC.command or START-HERE-LINUX.sh. Works fully offline.
 # Written for bash 3.2 (the version macOS ships).
 
@@ -565,11 +565,9 @@ do_update() {
 # ---- main ----------------------------------------------------------------------
 menu() {
   clear
-  say "${G}   __  __           _     _            _   _      ${N}"
-  say "${G}  |  \\/  | ___  ___| |__ | |_ __ _ ___| |_(_) ___ ${N}"
-  say "${G}  | |\\/| |/ _ \\/ __| '_ \\| __/ _\` / __| __| |/ __|${N}"
-  say "${G}  | |  | |  __/\\__ \\ | | | || (_| \\__ \\ |_| | (__ ${N}"
-  say "${G}  |_|  |_|\\___||___/_| |_|\\__\\__,_|___/\\__|_|\\___|${N}  ${B}EMERGENCY USB${N}  v$(head -1 "$USB/VERSION" 2>/dev/null || echo '?')"
+  say "${G}  =============================================${N}"
+  say "${G}${B}   EMERGENCY KIT${N}${G} for Meshtastic${N}   v$(head -1 "$USB/VERSION" 2>/dev/null || echo '?')"
+  say "${G}  =============================================${N}"
   say
   say "  ${C}1${N}  Open Meshtastic in the browser  (talk on the mesh / flash a radio)"
   say "  ${C}2${N}  Install the Meshtastic app on this computer"
