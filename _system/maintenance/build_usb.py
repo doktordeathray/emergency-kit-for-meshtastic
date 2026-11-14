@@ -422,6 +422,11 @@ def c_docs():
         manifest["docs"] = {"commit": info["commit"], "date": info["date"]}
     import offline_notice                     # the kit's current "offline copy" banner
     (out / "kit-notice.js").write_text(offline_notice.script_for("/SOURCE-AND-CHANGES.txt"), encoding="utf-8")
+    # meshtastic.org sends /docs/ on to /docs/introduction/ from its server; on the drive a
+    # small page does it, so the docs' front page opens instead of a list of folders.
+    front = out / "docs" / "index.html"
+    if (out / "docs" / "introduction" / "index.html").exists() and not front.exists():
+        front.write_text(offline_notice.redirect_page("/docs/introduction/"), encoding="utf-8")
     docs_links(SYS / "flasher")
 
 

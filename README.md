@@ -8,7 +8,7 @@ Meshtastic radios talk to each other without the internet. Setting them up usual
 
 ## Download
 
-**[Meshtastic-Emergency-Kit-Setup-v0.2.10.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.10/Meshtastic-Emergency-Kit-Setup-v0.2.10.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
+**[Meshtastic-Emergency-Kit-Setup-v0.2.11.zip](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.11/Meshtastic-Emergency-Kit-Setup-v0.2.11.zip)** (about 5 MB), from the [latest release](https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/latest).
 
 Before opening it, compare its SHA-256 fingerprint with the one in the release notes:
 

@@ -93,3 +93,17 @@ def add_notice(folder: Path, details_url: str):
             page.write_text(s, encoding="utf-8")
         n += MARK in s
     return n
+
+
+REDIRECT = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url={to}"><link rel="canonical" href="{to}">
+<title>Meshtastic docs</title><script>location.replace({to_js} + location.hash)</script></head>
+<body><p>Opening <a href="{to}">{to}</a>...</p></body></html>
+"""
+
+
+def redirect_page(to: str) -> str:
+    """A tiny page that sends the browser on to another address on the same site (used where
+    meshtastic.org redirects on its server, which a plain file server on the drive can't do)."""
+    return REDIRECT.format(to=to, to_js=json.dumps(to))
+

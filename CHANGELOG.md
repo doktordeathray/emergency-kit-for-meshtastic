@@ -2,6 +2,11 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.11 (2026-11-13)
+
+- Fixed: **All docs** on the start page and the flasher's docs links showed a list of folders instead of the Meshtastic docs. meshtastic.org sends /docs/ on to the Introduction page from its server, which a drive can't do, so the kit now adds a small page that does it. Press U to fix an existing drive (the docs aren't downloaded again).
+- Future offline docs builds also turn all of meshtastic.org's other redirects into pages, so old links inside the docs keep working.
+
 ## 0.2.10 (2026-11-13)
 
 - The "offline copy" notice on the web flasher, web app and docs is now a yellow banner across the top of the page, in bold, so it's hard to miss: "OFFLINE COPY: from Emergency Kit for Meshtastic (an independent project), modified to work from this drive. Not an official Meshtastic service. Details". The page moves down to make room, so nothing is hidden behind it, and an × on the right closes it (until that browser tab is closed).
