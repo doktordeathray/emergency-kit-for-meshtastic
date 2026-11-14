@@ -1070,9 +1070,22 @@ def main():
     ap.add_argument("--check", action="store_true",
                     help="only report what's out of date (exit 0 = up to date, 3 = updates, 1 = offline)")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--check-kit", action="store_true",
+                    help="only check for a newer kit (one request); exit 3 = newer kit, 0 = current, 1 = offline")
     ap.add_argument("--update-kit", action="store_true",
                     help="also update the kit itself (start windows, setup, updater) first; used by U")
     args = ap.parse_args()
+    if args.check_kit:
+        try:
+            import kit_update as K
+            have, latest = K.current_version(ROOT), K.latest()[0]
+        except Exception:
+            sys.exit(1)
+        newer = K.vtuple(latest) > K.vtuple(have)
+        if newer and os.environ.get("MESH_UPDATE_SUMMARY"):
+            Path(os.environ["MESH_UPDATE_SUMMARY"]).write_text(f"this kit (v{latest})", encoding="utf-8")
+        print(f"kit {have}, newest {latest}")
+        sys.exit(3 if newer else 0)
     if args.list:
         for k, f in COMPONENTS.items():
             print(f"  {k:12s} {(f.__doc__ or '').strip()}")

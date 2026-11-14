@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.14 (2026-11-13)
+
+- Fixed: after a new kit came out, restarting the start window could still say nothing, because it reused the "up to date" answer from its last check (kept for 6 hours). Now every time the start window opens it also asks, with one quick request, whether a newer kit is out, and shows "UPDATES AVAILABLE: this kit (v…)" straight away. The full check of firmware and apps is still reused for 6 hours.
+
 ## 0.2.13 (2026-11-13)
 
 - New in the start window's menu: **K  Copy this kit to another USB or external drive**. It copies everything on this drive to the other one (no internet needed), and offers "The same as this drive" so it copies the same parts and offline map area. It can format the other drive as exFAT first, like setup.

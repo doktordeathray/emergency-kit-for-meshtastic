@@ -530,7 +530,17 @@ get_python() {   # prints a runnable python3, using the copy on the drive if pos
 UPD_RC="$WORK/update-check.rc"; UPD_OUT="$WORK/update-check.txt"; UPD_SHOWN=""
 start_update_check() {
   if [ -f "$UPD_RC" ] && [ -n "$(find "$UPD_RC" -mmin -360 2>/dev/null)" ] \
-     && [ "$(cat "$WORK/update-check.kit" 2>/dev/null)" = "$KITVER" ]; then return; fi
+     && [ "$(cat "$WORK/update-check.kit" 2>/dev/null)" = "$KITVER" ]; then
+    # The full answer is recent; still ask (one quick request) whether a newer kit is out.
+    [ "$(cat "$UPD_RC")" = "3" ] && return
+    (
+      py="$(get_python)" || exit 0
+      rm -f "$UPD_OUT.kit"
+      MESH_UPDATE_SUMMARY="$UPD_OUT.kit" "$py" "$SYS/maintenance/build_usb.py" --check-kit >/dev/null 2>&1
+      if [ $? -eq 3 ] && [ -f "$UPD_OUT.kit" ]; then mv -f "$UPD_OUT.kit" "$UPD_OUT"; echo 3 > "$UPD_RC"; fi
+    ) >/dev/null 2>&1 </dev/null &
+    return
+  fi
   rm -f "$UPD_RC" "$UPD_OUT"
   (
     py="$(get_python)" || exit 0

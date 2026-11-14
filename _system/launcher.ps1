@@ -420,25 +420,39 @@ function Get-Python {
 $UpdRc = Join-Path $WORK 'update-check.rc'; $UpdOut = Join-Path $WORK 'update-check.txt'
 $UpdKit = Join-Path $WORK 'update-check.kit'
 $script:UpdProc = $null; $script:UpdShown = $false; $script:UpdRow = -1
+$script:UpdQuick = $false
 function Start-UpdateCheck {
+    $quick = $false
     try {
         if ((Test-Path $UpdRc) -and ((Get-Date) - (Get-Item $UpdRc).LastWriteTime).TotalHours -lt 6 -and
-            (Get-Content $UpdKit -ErrorAction Stop) -eq $KitVer) { return }
+            (Get-Content $UpdKit -ErrorAction Stop) -eq $KitVer) {
+            # The full answer is recent; still ask (one quick request) whether a newer kit is out.
+            if ((Get-Content $UpdRc) -eq '3') { return }
+            $quick = $true
+        }
     } catch { }
-    Remove-Item $UpdRc, $UpdOut -ErrorAction SilentlyContinue
+    if (-not $quick) { Remove-Item $UpdRc, $UpdOut -ErrorAction SilentlyContinue }
     $py = Get-Python
     if (-not $py) { return }
-    $env:MESH_UPDATE_SUMMARY = $UpdOut
+    $script:UpdQuick = $quick
+    $env:MESH_UPDATE_SUMMARY = $(if ($quick) { "$UpdOut.kit" } else { $UpdOut })
+    $mode = $(if ($quick) { '--check-kit' } else { '--check' })
     try {
         $script:UpdProc = Start-Process -FilePath $py -PassThru -WindowStyle Hidden `
-            -ArgumentList @("`"$(Join-Path $SYS 'maintenance\build_usb.py')`"", '--check') `
+            -ArgumentList @("`"$(Join-Path $SYS 'maintenance\build_usb.py')`"", $mode) `
             -RedirectStandardOutput (Join-Path $WORK 'update-check.log') -RedirectStandardError (Join-Path $WORK 'update-check.err')
     } catch { $script:UpdProc = $null }
     Remove-Item Env:\MESH_UPDATE_SUMMARY -ErrorAction SilentlyContinue
 }
 function Get-UpdateSummary {
     if ($script:UpdProc -and $script:UpdProc.HasExited) {
-        try { Set-Content $UpdRc $script:UpdProc.ExitCode; Set-Content $UpdKit $KitVer } catch { }
+        try {
+            if ($script:UpdQuick) {
+                if ($script:UpdProc.ExitCode -eq 3 -and (Test-Path "$UpdOut.kit")) {
+                    Move-Item -Force "$UpdOut.kit" $UpdOut; Set-Content $UpdRc 3
+                }
+            } else { Set-Content $UpdRc $script:UpdProc.ExitCode; Set-Content $UpdKit $KitVer }
+        } catch { }
         $script:UpdProc = $null
     }
     try { if ((Get-Content $UpdRc -ErrorAction Stop) -ne '3') { return '' } } catch { return '' }
