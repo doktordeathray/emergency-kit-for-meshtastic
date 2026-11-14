@@ -583,6 +583,19 @@ do_restart() {
   exec /bin/bash "$SYS/launcher.sh" --restarted "$KITVER"
 }
 
+# Copy the kit to another drive: runs setup from this drive, which copies everything it has
+# (no internet needed) and lists only other drives as the destination.
+do_copy() {
+  clear
+  say "${B}Copy this kit to another drive${N}"
+  say "Plug in the USB or external drive to copy to. Everything on this drive is copied;"
+  say "the other drive works on its own afterwards. (Setup can format it as exFAT if needed.)"
+  say
+  local py; py="$(get_python)" || { fail "Couldn't start the copier on this computer. Try a different computer."; pause; return; }
+  "$py" "$SYS/maintenance/setup.py"
+  pause
+}
+
 do_update() {
   clear
   say "${B}Update this drive${N}  (needs internet)"
@@ -627,6 +640,7 @@ menu() {
   say "  ${C}4${N}  Make a Raspberry Pi SD card"
   say "  ${C}5${N}  Help guide"
   say "  ${C}C${N}  Install the Chromium browser  (if this computer has no Chrome/Edge)"
+  say "  ${C}K${N}  Copy this kit to another USB or external drive  (no internet needed)"
   say "  ${C}U${N}  Update this drive  (needs internet)"
   say "  ${C}R${N}  Restart this window  (use after an update)"
   say "  ${C}Q${N}  Quit"
@@ -654,6 +668,7 @@ while true; do
     3) do_android ;;
     4) do_pi ;;
     5) start_all && open_url "http://localhost:$HUB_PORT/guide.html" ;;
+    k|K) do_copy ;;
     u|U) do_update ;;
     r|R) do_restart ;;
     c|C) start_all; do_chromium ;;

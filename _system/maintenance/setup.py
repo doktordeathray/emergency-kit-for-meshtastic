@@ -401,13 +401,34 @@ def choose_target():
             return path
 
 
+def this_drive():
+    """(parts, map area) when setup runs from a finished drive (to copy it), else (None, None)."""
+    try:
+        st = json.loads((KIT / "_system" / "settings.json").read_text())
+    except Exception:
+        return None, None
+    parts = [p for p in st.get("parts", []) if p in B.PARTS]
+    if not parts or not (KIT / "_system" / "webclient" / "index.html").exists():
+        return None, None
+    return parts, st.get("map")
+
+
 def choose_parts():
     kit = list(B.PROFILES["essentials"])
+    same, _ = this_drive()
     print(f"\n{BOLD}What should it include?{N}\n")
-    print(f"  {C}1{N}  The standard kit  (~{gb(parts_mb(kit))})  web app, flasher + firmware, Android app, browser")
-    print(f"  {C}2{N}  The standard kit, plus extras I pick  (desktop apps, Raspberry Pi images...)")
+    n = 1
+    if same:
+        names = ", ".join(B.PARTS[p][0].split(" (")[0] for p in same if p not in ("python", "miniserve"))
+        print(f"  {C}1{N}  The same as this drive  (~{gb(parts_mb(same))}, copied from it)")
+        print(f"       {names}")
+        n = 2
+    print(f"  {C}{n}{N}  The standard kit  (~{gb(parts_mb(kit))})  web app, flasher + firmware, Android app, browser")
+    print(f"  {C}{n + 1}{N}  The standard kit, plus extras I pick  (desktop apps, Raspberry Pi images...)")
     a = ask("\nType a number and press Enter [1]:", "1")
-    if a != "2":
+    if same and a == "1":
+        return list(same)
+    if a != str(n + 1):
         return kit
     keys = list(B.EXTRAS)
     print(f"\nOptional extras (add as many as you like):\n")
@@ -508,8 +529,12 @@ def main():
     except OSError:
         kit_ver = "?"
     print(f"\n{G}  EMERGENCY KIT FOR MESHTASTIC - SETUP   v{kit_ver}{N}")
-    print("  Builds an offline Meshtastic toolkit: web app, radio flasher + firmware,")
-    print("  Android app and more (about 1.5 GB). Needs internet now; never again after.")
+    if this_drive()[0]:
+        print("  Copies this kit to another drive or folder. Everything already on this drive is")
+        print("  copied, so no internet is needed (anything it doesn't have is downloaded if online).")
+    else:
+        print("  Builds an offline Meshtastic toolkit: web app, radio flasher + firmware,")
+        print("  Android app and more (about 1.7 GB). Needs internet now; never again after.")
 
     target = Path(os.path.expanduser(args.target)).resolve() if args.target else choose_target()
     if args.parts:
@@ -523,7 +548,11 @@ def main():
         parts = choose_parts()
 
     area = None
-    if "offline_map" in parts:
+    same, same_map = this_drive()
+    if "offline_map" in parts and same and parts == same and same_map:
+        area = same_map                                     # copying: keep this drive's map area
+        print(f"\n  Offline map: {area.get('name', 'same area as this drive')} (copied from this drive)")
+    elif "offline_map" in parts:
         if args.map:
             import offline_map as M
             lat, lon, km = (float(x) for x in args.map.split(","))
@@ -564,7 +593,8 @@ def main():
 
     print(f"\n{BOLD}Downloading (keep this window open; you can use the computer meanwhile)...{N}\n")
     t0 = time.time()
-    rc = subprocess.run([sys.executable, "-u", str(target / "_system" / "maintenance" / "build_usb.py")]).returncode
+    rc = subprocess.run([sys.executable, "-u", str(target / "_system" / "maintenance" / "build_usb.py")],
+                        env=dict(os.environ, MESH_FROM_SETUP="1")).returncode   # setup asks about drivers itself
     finish(target)
     mins = (time.time() - t0) / 60
     print()

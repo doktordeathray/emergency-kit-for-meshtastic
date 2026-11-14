@@ -2,6 +2,11 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.13 (2026-11-13)
+
+- New in the start window's menu: **K  Copy this kit to another USB or external drive**. It copies everything on this drive to the other one (no internet needed), and offers "The same as this drive" so it copies the same parts and offline map area. It can format the other drive as exFAT first, like setup.
+- Windows USB drivers during **U**: if both are already on the drive, the step is skipped ("both drivers already on the drive"). If one is missing, U no longer prints download errors; at the end it offers to open the download pages and lets you drag the files into the window, the same as setup.
+
 ## 0.2.12 (2026-11-13)
 
 - The start window now checks for updates by itself when it opens (quietly, in the background, if the computer is online). If anything is newer, a flashing line appears right under the title, for example ">> UPDATES AVAILABLE: Firmware (stable), Web app. Press U (needs internet) <<". The answer is reused for 6 hours, so restarting doesn't ask GitHub again and again.

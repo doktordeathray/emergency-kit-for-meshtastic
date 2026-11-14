@@ -39,6 +39,7 @@ From the black window you can also:
    5  Open the full help guide  (or double-click READ-ME-FIRST.html)
    6  (Windows) Install USB drivers if your radio isn't detected
    C  (Mac/Linux) Install the Chromium browser from this drive
+   K  Copy this kit to another USB or external drive (no internet needed)
    U  Update this drive (needs internet)
    R  Restart the start window (after an update)
 

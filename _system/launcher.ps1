@@ -475,6 +475,19 @@ function Read-Choice {
     return $Host.UI.ReadLine()
 }
 
+# Copy the kit to another drive: runs setup from this drive, which copies everything it has
+# (no internet needed) and lists only other drives as the destination.
+function Do-Copy {
+    Clear-Host
+    Say 'Copy this kit to another drive'
+    Say 'Plug in the USB or external drive to copy to. Everything on this drive is copied;'
+    Say 'the other drive works on its own afterwards. (Setup can format it as exFAT if needed.)'; Say ''
+    $py = Get-Python
+    if (-not $py) { Fail "Couldn't start the copier on this computer (needs Windows 10 or newer)."; Pause-Menu; return }
+    & $py (Join-Path $SYS 'maintenance\setup.py')
+    Pause-Menu
+}
+
 function Do-Update {
     Clear-Host
     Say 'Update this drive  (needs internet)'
@@ -526,6 +539,7 @@ function Show-Menu {
     Say '   4  Make a Raspberry Pi SD card'
     Say '   5  Help guide'
     Say '   6  Radio not detected? Install USB drivers'
+    Say '   K  Copy this kit to another USB or external drive  (no internet needed)'
     Say '   U  Update this drive  (needs internet)'
     Say '   R  Restart this window  (use after an update)'
     Say '   Q  Quit'
@@ -554,6 +568,7 @@ try {
             '4' { Do-Pi }
             '5' { if (Start-All) { Open-Url "http://localhost:$HUB_PORT/guide.html" } }
             '6' { Do-Drivers }
+            'k' { Do-Copy }
             'u' { Do-Update }
             'r' { $script:Restart = $true }
             { $_ -in 'q', 'Q' } { Say 'Stopping Meshtastic. Bye!'; break }

@@ -887,23 +887,43 @@ def c_drivers():
          "https://www.silabs.com/documents/public/software/CP210x_Universal_Windows_Driver.zip"),
         ("CH341SER.EXE", "https://www.wch-ic.com/downloads/file/65.html"),
     ]
-    got = []
-    for name, url in items:
-        if (d / name).exists():
-            got.append(name)
+    have = [name for name, _ in items if (d / name).exists()]
+    if len(have) == len(items):
+        print("    both drivers already on the drive")
+        manifest["drivers"] = have
+        if not (d / "SECURITY-REPORT.txt").exists():
+            write_driver_report(d)
+        return
+    got = list(have)
+    for name, url in items:                  # one quiet try; the makers' sites usually refuse
+        if name in got:
             continue
         try:
-            download(url, CACHE / "drivers" / name)
-            data = (CACHE / "drivers" / name).read_bytes()[:4]
+            data = get_bytes(url)
             if data[:2] not in (b"PK", b"MZ"):
-                raise ValueError("server returned a web page, not the driver")
-            shutil.copy2(CACHE / "drivers" / name, d / name)
+                raise ValueError("web page, not the driver")
+            (d / name).write_bytes(data)
             got.append(name)
-        except Exception as e:
-            (CACHE / "drivers" / name).unlink(missing_ok=True)
-            warn(f"could not download {name} ({e}). Download it by hand from {url} into {d}")
+            print(f"    {name} downloaded")
+        except Exception:
+            pass
+    missing = [name for name, _ in items if name not in got]
+    if missing:
+        print(f"    not on the drive yet: {', '.join(missing)} (the makers' sites don't allow automatic "
+              "downloads; you can add them by hand at the end)")
     manifest["drivers"] = got
     write_driver_report(d)
+
+
+def offer_drivers_by_hand():
+    """At the end of an update in a Terminal: if a Windows driver is missing, offer to open the
+    download pages and take the files dragged into the window (the same steps as setup)."""
+    if not sys.stdin.isatty() or os.environ.get("MESH_FROM_SETUP"):
+        return
+    if "drivers" not in load_settings():
+        return
+    import setup as S                         # the drag-and-drop helper lives in setup.py
+    S.add_drivers_by_hand(ROOT)
 
 
 # ---- Chromium browser (Mac + Linux; Windows always has Edge) --------------------
@@ -1147,6 +1167,11 @@ def main():
             failed.append(n)
     write_versions()
     remove_appledouble(ROOT)
+    if not args.only or "drivers" in args.only.split(","):
+        try:
+            offer_drivers_by_hand()
+        except (KeyboardInterrupt, EOFError):
+            print()
     if not KEEP_CACHE and not failed:
         shutil.rmtree(CACHE, ignore_errors=True)
     if failed:
