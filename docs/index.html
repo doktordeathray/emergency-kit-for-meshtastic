@@ -144,23 +144,6 @@ tbody th { font-weight: 600; white-space: nowrap; }
 .yes::before { content: "■ "; color: var(--ink); }
 .no { color: var(--ink-2); }
 
-/* ---- pack list ---- */
-.pack { padding-block: clamp(44px, 6vw, 72px); border-bottom: 2px solid var(--ink); }
-.pack .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(20px, 4vw, 56px); }
-.pack h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
-.pack .intro { margin-top: 12px; color: var(--ink-2); }
-.pack .count { margin-top: 18px; font: 600 .9rem var(--mono); }
-.checks { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--ink); }
-.checks li { border-bottom: 1px solid var(--hair); }
-.checks label { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 14px; padding-block: 13px; cursor: pointer; align-items: start; }
-.checks input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.checks .box { width: 26px; height: 26px; border: 3px solid var(--ink); display: grid; place-items: center; margin-top: 1px; }
-.checks input:checked + .box { background: var(--safety); border-color: var(--ink); }
-.checks input:checked + .box::after { content: ""; width: 12px; height: 7px; border-left: 3px solid var(--on-safety); border-bottom: 3px solid var(--on-safety); transform: rotate(-45deg) translate(1px, -2px); }
-.checks input:checked ~ .txt b { text-decoration: line-through; text-decoration-thickness: 2px; }
-.checks .txt b { display: block; font-weight: 600; }
-.checks .txt span { color: var(--ink-2); font-size: .93rem; }
-
 /* ---- check your download ---- */
 .verify { padding-block: clamp(44px, 6vw, 72px); border-bottom: 2px solid var(--ink); }
 .verify h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
@@ -252,7 +235,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
 
 @media (prefers-reduced-motion: reduce) { .btn-dl { transition: none; } }
 @media (max-width: 860px) {
-  .hero .wrap, .statement .wrap, .phase-head, .pack .wrap, footer .wrap { grid-template-columns: minmax(0, 1fr); }
+  .hero .wrap, .statement .wrap, .phase-head, footer .wrap { grid-template-columns: minmax(0, 1fr); }
   .kit-grid, .qa, .os, .verify .explain { grid-template-columns: minmax(0, 1fr); }
   .os > div + div { border-left: 0; border-top: 3px solid var(--ink); }
   .kit-col + .kit-col { border-left: 0; border-top: 3px solid var(--ink); }
@@ -279,7 +262,6 @@ footer .wrap > p { overflow-wrap: anywhere; }
       <a href="#during">No internet</a>
       <a href="#kit">The kit</a>
       <a href="#check">Check download</a>
-      <a href="#pack">Pack list</a>
       <a href="#changes">What's new</a>
       <a href="#faq">Questions</a>
       <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">GitHub</a>
@@ -558,26 +540,6 @@ footer .wrap > p { overflow-wrap: anywhere; }
     </div>
   </section>
 
-  <section class="pack" id="pack">
-    <div class="wrap">
-      <div>
-        <h2>Pack list</h2>
-        <p class="intro">The kit only helps if the rest of the setup is with it. Tick items off as you pack. Your ticks are saved in this browser.</p>
-        <p class="count" id="pack-count" aria-live="polite">0 of 8 packed</p>
-      </div>
-      <ul class="checks" id="checks">
-        <li><label><input type="checkbox" id="p-drive"><span class="box"></span><span class="txt"><b>USB drive with the kit on it</b><span>Tested once on each kind of computer you might use.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-radios"><span class="box"></span><span class="txt"><b>Radios, with antennas attached</b><span>Never power a LoRa radio on without its antenna. It can damage the radio.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-cables"><span class="box"></span><span class="txt"><b>USB data cables, USB-C and micro-USB</b><span>Charge-only cables can't flash anything. Label the ones that carry data.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-power"><span class="box"></span><span class="txt"><b>Power bank and chargers</b><span>One power bank keeps a node running for days.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-phone"><span class="box"></span><span class="txt"><b>Phones with the Meshtastic app already installed</b><span>Essential for iPhones, which can't install it from the drive.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-settings"><span class="box"></span><span class="txt"><b>Printed channel settings</b><span>Your region, channel name and key, or the QR code, on paper.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-adapter"><span class="box"></span><span class="txt"><b>USB-A to USB-C adapter</b><span>For laptops that only have USB-C ports.</span></span></label></li>
-        <li><label><input type="checkbox" id="p-sd"><span class="box"></span><span class="txt"><b>Spare microSD card (8 GB or more)</b><span>Only if you use the Raspberry Pi extras.</span></span></label></li>
-      </ul>
-    </div>
-  </section>
-
   <section class="changes" id="changes">
     <div class="wrap">
       <h2>What's new</h2>
@@ -817,26 +779,6 @@ footer .wrap > p { overflow-wrap: anywhere; }
       });
     }
   });
-
-  // Pack list: ticks remembered in this browser only
-  var KEY = "mesh-kit-pack";
-  var boxes = Array.prototype.slice.call(document.querySelectorAll("#checks input"));
-  var saved = {};
-  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
-  function count() {
-    var n = boxes.filter(function (b) { return b.checked; }).length;
-    document.getElementById("pack-count").textContent =
-      n === boxes.length ? "All " + n + " packed. Ready." : n + " of " + boxes.length + " packed";
-  }
-  boxes.forEach(function (b) {
-    b.checked = !!saved[b.id];
-    b.addEventListener("change", function () {
-      saved[b.id] = b.checked;
-      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
-      count();
-    });
-  });
-  count();
 
   var EXPECTED = document.getElementById("sha").textContent.trim().toLowerCase();
 
