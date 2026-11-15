@@ -136,15 +136,44 @@ chromium_bin() {   # Linux: the copy we unpacked from the drive
   find "$CHROMIUM_HOME" -maxdepth 3 -type f -name chrome -perm -u+x 2>/dev/null | head -1
 }
 
-run_linux_chromium() {   # run_linux_chromium <url>
+# Ubuntu 23.10+ (and some others) don't let programs from outside the package manager use
+# Chromium's sandbox: it then stops at once with "No usable sandbox" and no window appears.
+# So Chromium is started through a small script that checks first and, when the sandbox
+# can't work, adds --no-sandbox (only our own local pages are opened). The menu entry uses
+# the same script, so starting Chromium from the applications menu works too.
+CHROMIUM_RUN="$CHROMIUM_HOME/run-chromium.sh"
+write_chromium_runner() {   # (re)writes the start script and the applications-menu entry
   local bin; bin="$(chromium_bin)"; [ -n "$bin" ] || return 1
-  local opts=(--user-data-dir="$CHROMIUM_HOME/profile" --no-first-run --no-default-browser-check)
-  nohup "$bin" "${opts[@]}" "$1" >"$WORK/chromium.log" 2>&1 &
-  local pid=$!; sleep 4
+  cat > "$CHROMIUM_RUN.new" <<RUNNER || return 1
+#!/bin/sh
+# Starts the Chromium that the Emergency Kit for Meshtastic unpacked here.
+flag=""
+if command -v unshare >/dev/null 2>&1; then
+  unshare -Ur true >/dev/null 2>&1 || flag="--no-sandbox"
+elif [ "\$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/null)" = "1" ] \\
+  || [ "\$(cat /proc/sys/kernel/unprivileged_userns_clone 2>/dev/null)" = "0" ]; then
+  flag="--no-sandbox"
+fi
+[ "\$1" = "--no-sandbox" ] && { flag="--no-sandbox"; shift; }
+exec "$bin" --user-data-dir="$CHROMIUM_HOME/profile" --no-first-run --no-default-browser-check \$flag "\$@"
+RUNNER
+  chmod +x "$CHROMIUM_RUN.new" && mv -f "$CHROMIUM_RUN.new" "$CHROMIUM_RUN" || return 1
+  mkdir -p "$HOME/.local/share/applications"
+  printf '%s\n' "[Desktop Entry]" "Type=Application" "Name=Chromium (Meshtastic USB)" \
+    "Exec=sh \"$CHROMIUM_RUN\" %U" \
+    "Terminal=false" "Categories=Network;WebBrowser;" \
+    > "$HOME/.local/share/applications/meshtastic-usb-chromium.desktop"
+}
+
+run_linux_chromium() {   # run_linux_chromium <url>
+  [ -n "$(chromium_bin)" ] || return 1
+  write_chromium_runner || return 1     # also repairs copies installed by an older kit
+  nohup sh "$CHROMIUM_RUN" "$1" >"$WORK/chromium.log" 2>&1 &
+  local pid=$! i=0
+  # Backstop: if it still stops within a few seconds, try once more without the sandbox.
+  while [ $i -lt 8 ] && kill -0 $pid 2>/dev/null; do sleep 0.5; i=$((i+1)); done
   if ! kill -0 $pid 2>/dev/null; then
-    # Some Linux setups (e.g. Ubuntu 24.04) block Chromium's sandbox for apps outside the
-    # package manager. Only our own local pages are opened, so run without it.
-    nohup "$bin" "${opts[@]}" --no-sandbox "$1" >"$WORK/chromium.log" 2>&1 &
+    nohup sh "$CHROMIUM_RUN" --no-sandbox "$1" >"$WORK/chromium.log" 2>&1 &
   fi
   return 0
 }
@@ -178,11 +207,7 @@ install_chromium() {   # returns 0 when a Chromium is ready to use
     say "Unpacking (about a minute)..."
     tar xJf "$tarf" -C "$CHROMIUM_HOME" || { fail "Unpacking failed - is the disk full?"; return 1; }
     local bin; bin="$(chromium_bin)"; [ -z "$bin" ] && { fail "Chromium didn't unpack correctly."; return 1; }
-    mkdir -p "$HOME/.local/share/applications"
-    printf '%s\n' "[Desktop Entry]" "Type=Application" "Name=Chromium (Meshtastic USB)" \
-      "Exec=$bin --user-data-dir=$CHROMIUM_HOME/profile --no-first-run %U" \
-      "Terminal=false" "Categories=Network;WebBrowser;" \
-      > "$HOME/.local/share/applications/meshtastic-usb-chromium.desktop"
+    write_chromium_runner || { fail "Couldn't finish installing Chromium."; return 1; }
     ok "Chromium is ready (installed just for you, in your home folder)."
     return 0
   fi

@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.18 (2026-11-15)
+
+- Fixed on Linux: the kit's Chromium browser didn't open on Ubuntu 23.10 and newer (and similar systems). Those systems block the browser's sandbox for programs that don't come from their app store, so Chromium stopped at once and no window appeared. The kit now checks first and starts Chromium in a way that works there. This also fixes **Chromium (Meshtastic USB)** in the applications menu, which never opened on those systems. An existing copy of Chromium repairs itself the next time the start window opens it.
+
 ## 0.2.17 (2026-11-15)
 
 - If you open **START HERE** before running setup, the start window now stops on a clear **RUN SETUP FIRST** screen that names the setup file, and pressing Enter runs setup straight from there. Before, the "isn't set up yet" message disappeared after a second, the menu appeared, and the update line flashed everything as missing.
