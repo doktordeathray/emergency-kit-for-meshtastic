@@ -659,6 +659,29 @@ menu() {
   printf '\nType a number and press Enter: '
 }
 
+# Not set up yet (START HERE was run before SETUP): nothing has been downloaded, so nothing
+# in the menu can work. Stop here and say so, instead of showing the menu and an
+# "updates available" line that lists everything as missing.
+if ! ls "$SYS/bin/"miniserve-* >/dev/null 2>&1; then
+  case "$OS" in Darwin) setup_file="SETUP-MAC.command" ;; *) setup_file="SETUP-LINUX.sh" ;; esac
+  clear
+  say "${Y}  =============================================${N}"
+  say "${Y}${B}   RUN SETUP FIRST${N}"
+  say "${Y}  =============================================${N}"
+  say
+  say "  This kit isn't set up yet, so START HERE can't do anything."
+  say "  Setup downloads everything the kit needs (needs internet, once)."
+  say "  After that, START HERE works with no internet."
+  say
+  say "  The setup file is next to this one:  ${B}$setup_file${N}"
+  say
+  printf '%s' "  Press Enter to run setup now, or type Q and press Enter to close: "
+  read -r a || exit 1
+  case "$a" in q|Q) exit 0 ;; esac
+  clear
+  exec bash "$SYS/maintenance/bootstrap.sh"
+fi
+
 clear
 if [ "$1" = "--restarted" ] && [ "$2" = "$KITVER" ]; then
   say "Restarted. Your browser tabs keep working (reload a page if it shows an error)."

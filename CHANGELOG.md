@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.17 (2026-11-15)
+
+- If you open **START HERE** before running setup, the start window now stops on a clear **RUN SETUP FIRST** screen that names the setup file, and pressing Enter runs setup straight from there. Before, the "isn't set up yet" message disappeared after a second, the menu appeared, and the update line flashed everything as missing.
+
 ## 0.2.16 (2026-11-14)
 
 - After **R** (restart), the start window's messages stay on screen until you press Enter ("Press Enter to go to the menu..."), instead of disappearing after a second. After a kit update it also says which version is now running.

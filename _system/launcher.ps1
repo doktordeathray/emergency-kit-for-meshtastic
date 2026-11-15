@@ -561,6 +561,29 @@ function Show-Menu {
     Write-Host '   Keep this window open while you use Meshtastic. Closing it stops everything.' -ForegroundColor Yellow
 }
 
+# Not set up yet (START HERE was run before SETUP): nothing has been downloaded, so nothing
+# in the menu can work. Stop here and say so, instead of showing the menu and an
+# "updates available" line that lists everything as missing.
+if (-not (Test-Path (Join-Path $SYS 'bin\miniserve-*'))) {
+    Clear-Host
+    Write-Host '  =============================================' -ForegroundColor Yellow
+    Write-Host '   RUN SETUP FIRST' -ForegroundColor Yellow
+    Write-Host '  =============================================' -ForegroundColor Yellow
+    Say ''
+    Say "  This kit isn't set up yet, so START HERE can't do anything."
+    Say '  Setup downloads everything the kit needs (needs internet, once).'
+    Say '  After that, START HERE works with no internet.'
+    Say ''
+    Say '  The setup file is next to this one:  SETUP-WINDOWS.bat'
+    Say ''
+    $a = Read-Host '  Press Enter to run setup now, or type Q and press Enter to close'
+    if ($a -in 'q', 'Q') { exit 0 }
+    Clear-Host
+    $Host.UI.RawUI.WindowTitle = 'Emergency Kit for Meshtastic - Setup'
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $SYS 'maintenance\bootstrap.ps1')
+    exit 0
+}
+
 try {
     if ($RestartedFrom -and $RestartedFrom -eq $KitVer) {
         Say 'Restarted. Your browser tabs keep working (reload a page if it shows an error).'
