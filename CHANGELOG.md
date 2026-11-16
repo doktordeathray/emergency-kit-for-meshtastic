@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.20 (2026-11-15)
+
+- Linux: if this computer doesn't let you use USB radios (your user isn't in the "dialout" group), the start window's menu now keeps a red line saying so, and a new option **F** fixes it: it asks for your password, adds you to the group, and lets you use a radio that's already plugged in straight away. Before, the warning was on screen for about a second and then the menu covered it. The line and **F** only appear while there is something to fix.
+
 ## 0.2.19 (2026-11-15)
 
 - The start page in the browser now shows the kit's version after the title, for example "Emergency Kit for Meshtastic v0.2.19", in the heading and on the browser tab.

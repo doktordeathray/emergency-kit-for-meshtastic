@@ -282,7 +282,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
           </a>
           <a class="btn btn-line" href="#before">How it works</a>
         </div>
-        <p class="dl-meta"><span class="kitver">Version 0.2.19</span> · <a href="#changes">what's new</a><br>Meshtastic-Emergency-Kit-Setup-v0.2.19.zip · 5.3 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
+        <p class="dl-meta"><span class="kitver">Version 0.2.20</span> · <a href="#changes">what's new</a><br>Meshtastic-Emergency-Kit-Setup-v0.2.20.zip · 5.3 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
         <p class="dl-status" id="dl-status" role="status" aria-live="polite"></p>
       </div>
 
@@ -473,9 +473,9 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <p>So if your file's fingerprint matches the one published here, you have exactly the file we published. This takes about a minute and you only need one of the three ways below.</p>
         </div>
         <div class="fingerprint">
-          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup-v0.2.19.zip</span>
-          <code id="sha">a7ed75782e405f1325c1ec6a3db13da360147f8cf1fb2eaabc54442a95961767</code>
-          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,304,539 bytes · SHA-256</span></div>
+          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup-v0.2.20.zip</span>
+          <code id="sha">049559e43834d8740111d7242037c01cf2ed5076e54dc2dfc06a663d3b2a3cc0</code>
+          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,305,734 bytes · SHA-256</span></div>
         </div>
       </div>
 
@@ -499,7 +499,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
               <li>Open your <b>Downloads</b> folder in File Explorer.</li>
               <li>Click in the address bar at the top, type <b>powershell</b> and press <b>Enter</b>. A blue or black window opens in that folder.</li>
               <li>Paste this and press <b>Enter</b>:
-                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.19.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.19.zip">Copy</button></div>
+                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.20.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.20.zip">Copy</button></div>
               </li>
               <li>The long code under <b>Hash</b> is the fingerprint. Capital letters don't matter.</li>
             </ol>
@@ -520,7 +520,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
             <ol>
               <li>Open your Downloads folder, right-click an empty spot and choose <b>Open in Terminal</b>. (Or open a terminal and type <b>cd ~/Downloads</b>.)</li>
               <li>Paste this and press <b>Enter</b>:
-                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.19.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.19.zip">Copy</button></div>
+                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.20.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.20.zip">Copy</button></div>
               </li>
               <li>The long code at the start of the line is the fingerprint.</li>
             </ol>
@@ -546,10 +546,14 @@ footer .wrap > p { overflow-wrap: anywhere; }
       <p class="intro">Every version of the setup kit. The same list is in <code>CHANGELOG.md</code> inside the kit, and the kit's version is in its <code>VERSION</code> file.</p>
       <!-- CHANGELOG:START -->
       <div class="rel">
-        <h3>Version 0.2.19 <small>2026-11-15</small></h3>
-        <ul><li>The start page in the browser now shows the kit's version after the title, for example "Emergency Kit for Meshtastic v0.2.19", in the heading and on the browser tab.</li></ul>
+        <h3>Version 0.2.20 <small>2026-11-15</small></h3>
+        <ul><li>Linux: if this computer doesn't let you use USB radios (your user isn't in the "dialout" group), the start window's menu now keeps a red line saying so, and a new option <b>F</b> fixes it: it asks for your password, adds you to the group, and lets you use a radio that's already plugged in straight away. Before, the warning was on screen for about a second and then the menu covered it. The line and <b>F</b> only appear while there is something to fix.</li></ul>
       </div>
       <details class="older"><summary>Older versions</summary>
+        <div class="rel">
+          <h3>Version 0.2.19 <small>2026-11-15</small></h3>
+          <ul><li>The start page in the browser now shows the kit's version after the title, for example "Emergency Kit for Meshtastic v0.2.19", in the heading and on the browser tab.</li></ul>
+        </div>
         <div class="rel">
           <h3>Version 0.2.18 <small>2026-11-15</small></h3>
           <ul><li>Fixed on Linux: the kit's Chromium browser didn't open on Ubuntu 23.10 and newer (and similar systems). Those systems block the browser's sandbox for programs that don't come from their app store, so Chromium stopped at once and no window appeared. The kit now checks first and starts Chromium in a way that works there. This also fixes <b>Chromium (Meshtastic USB)</b> in the applications menu, which never opened on those systems. An existing copy of Chromium repairs itself the next time the start window opens it.</li></ul>
@@ -775,7 +779,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
 <script>
 (function () {
   // Where the setup zip is hosted (e.g. a GitHub release asset). Empty = not published yet.
-  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.19/Meshtastic-Emergency-Kit-Setup-v0.2.19.zip";
+  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.20/Meshtastic-Emergency-Kit-Setup-v0.2.20.zip";
   document.querySelectorAll("a.dl").forEach(function (a, i) {
     var status = document.getElementById(i === 0 ? "dl-status" : "dl-status-2");
     if (DOWNLOAD_URL) {

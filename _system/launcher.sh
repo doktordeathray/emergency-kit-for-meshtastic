@@ -267,13 +267,79 @@ do_chromium() {
 
 open_folder() { if [ "$OS" = "Darwin" ]; then open "$1"; else xdg-open "$1" >/dev/null 2>&1 & fi; }
 
+# ---- Linux: is this user allowed to use USB radios? ------------------------------
+# On Linux a radio's USB port (/dev/ttyACM0, /dev/ttyUSB0) belongs to a group, usually
+# "dialout". A user who isn't in it can't connect over USB from any browser. The menu shows
+# a line about it for as long as it's true, and F fixes it.
+serial_group() {   # the group that owns radio ports on this computer
+  local d g
+  for d in /dev/ttyACM* /dev/ttyUSB*; do
+    [ -e "$d" ] || continue
+    g="$(stat -c %G "$d" 2>/dev/null)"
+    case "$g" in ""|root|UNKNOWN) ;; *) echo "$g"; return ;; esac
+  done
+  if getent group dialout >/dev/null 2>&1; then echo dialout
+  elif getent group uucp >/dev/null 2>&1; then echo uucp
+  else echo dialout; fi
+}
+serial_blocked() {   # true when this user can't use USB radios
+  [ "$OS" = "Linux" ] || return 1
+  [ "$(id -u)" = "0" ] && return 1
+  local d found=""
+  for d in /dev/ttyACM* /dev/ttyUSB*; do
+    [ -e "$d" ] || continue
+    found=1
+    [ -r "$d" ] && [ -w "$d" ] && return 1      # a radio is plugged in and usable
+  done
+  [ -n "$found" ] && return 0                   # plugged in, but not allowed
+  # Nothing plugged in: go by the group list (the saved one, so it counts right after F)
+  id -nG "$(id -un)" 2>/dev/null | grep -qwE "dialout|uucp|$(serial_group)" && return 1
+  return 0
+}
 linux_serial_check() {
-  [ "$OS" = "Linux" ] || return 0
-  if ! id -nG 2>/dev/null | grep -qwE 'dialout|uucp'; then
-    warn "Your Linux user may not be allowed to use USB radios."
-    say  "   If the radio won't connect, run this once, then log out and back in:"
-    say  "   ${B}sudo usermod -aG dialout \$USER${N}"
+  serial_blocked || return 0
+  warn "This computer doesn't let you use USB radios yet. Type F in the menu to fix it."
+}
+
+do_serial_fix() {
+  clear
+  say "${B}Allow USB radios on this computer${N}"; say
+  if ! serial_blocked; then ok "Nothing to fix: you're allowed to use USB radios."; pause; return; fi
+  local grp user d did_now="" plugged=""
+  grp="$(serial_group)"; user="$(id -un)"
+  say "Linux only lets members of the group \"$grp\" use USB radios, and you aren't one yet."
+  say "This adds you to it. It asks for your password (the one you log in with)."
+  say
+  say "  ${B}sudo usermod -aG $grp $user${N}"
+  say
+  if ! command -v sudo >/dev/null 2>&1; then
+    fail "This computer has no 'sudo'. Ask its administrator to run the line above as root."
+    pause; return
   fi
+  printf 'Do it now? [Y/n] '; local a; read -r a
+  case "$a" in n|N|no|No) return ;; esac
+  if ! sudo usermod -aG "$grp" "$user"; then
+    fail "That didn't work (wrong password, or this user may not use sudo)."
+    pause; return
+  fi
+  ok "Added you to \"$grp\"."
+  # Group changes only count after logging in again. So a radio that's plugged in right
+  # now is also opened up for you directly; that lasts until it's unplugged.
+  for d in /dev/ttyACM* /dev/ttyUSB*; do
+    [ -e "$d" ] || continue
+    plugged=1
+    command -v setfacl >/dev/null 2>&1 && sudo setfacl -m "u:$user:rw" "$d" 2>/dev/null && did_now=1
+  done
+  if [ -n "$plugged" ] && ! serial_blocked; then
+    ok "The radio that's plugged in works now: choose 1 and connect."
+    say "   To keep it working after you unplug it, log out and back in once (or restart)."
+  elif [ -n "$plugged" ]; then
+    warn "Now log out and back in (or restart the computer), then start the kit again."
+  else
+    warn "Now log out and back in (or restart the computer) before you plug in a radio."
+    say  "   Or plug the radio in and type F again to use it straight away."
+  fi
+  pause
 }
 
 # ---- menu actions -------------------------------------------------------------
@@ -675,11 +741,13 @@ menu() {
   say "  ${C}4${N}  Make a Raspberry Pi SD card"
   say "  ${C}5${N}  Help guide"
   say "  ${C}C${N}  Install the Chromium browser  (if this computer has no Chrome/Edge)"
+  serial_blocked && say "  ${C}F${N}  Fix: let this computer use USB radios  (asks for your password)"
   say "  ${C}K${N}  Copy this kit to another USB or external drive  (no internet needed)"
   say "  ${C}U${N}  Update this drive  (needs internet)"
   say "  ${C}R${N}  Restart this window  (use after an update)"
   say "  ${C}Q${N}  Quit"
   say
+  serial_blocked && say "  ${R}! USB radios can't connect on this computer yet. Type F to fix it.${N}"
   say "  ${Y}Keep this window open while you use Meshtastic. Closing it stops everything.${N}"
   printf '\nType a number and press Enter: '
 }
@@ -736,6 +804,7 @@ while true; do
     u|U) do_update ;;
     r|R) do_restart ;;
     c|C) start_all; do_chromium ;;
+    f|F) do_serial_fix ;;
     q|Q) say "Stopping Meshtastic. Bye!"; exit 0 ;;
   esac
 done
