@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.22 (2026-11-15)
+
+- Fixed: the web app couldn't connect to a radio over Wi-Fi (HTTP). **Test connection** always said "Not reachable", even for a radio that was working, because of a security setting on the kit's own web server that made the browser block the test. Radios on Wi-Fi can now be added by their address (for example 192.168.1.50 or meshtastic.local). Leave **Use HTTPS** off, and if the first test fails, press it once more: some radios take a few seconds to answer the first time. After updating, restart the start window (**R**).
+
 ## 0.2.21 (2026-11-15)
 
 - Linux: the kit's Chromium browser now starts with Web Bluetooth switched on, so the web app can connect to a radio over Bluetooth. Chromium leaves it off on Linux (it's on by default on Windows and Mac). An existing copy of Chromium picks this up the next time the start window opens it; close all Chromium windows first. Note: radios like the T-Deck and Heltec V3 turn their own Bluetooth off while Wi-Fi is switched on.

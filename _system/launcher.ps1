@@ -85,7 +85,7 @@ function Start-All {
     Start-Server $HUB_PORT (Join-Path $SYS 'hub') @()
     Start-Server $CLIENT_PORT (Join-Path $SYS 'webclient') @('--spa',
         '--header', '"Cross-Origin-Opener-Policy: same-origin"',
-        '--header', '"Cross-Origin-Embedder-Policy: require-corp"')
+        '--header', '"Cross-Origin-Embedder-Policy: credentialless"')
     Start-Server $FLASHER_PORT (Join-Path $SYS 'flasher') @()
     if (Test-Path (Join-Path $SYS 'docs\index.html')) { Start-Server $DOCS_PORT (Join-Path $SYS 'docs') @() }
     Test-StaleServer

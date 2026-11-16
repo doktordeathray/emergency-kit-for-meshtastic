@@ -111,7 +111,7 @@ start_all() {
   start_server $HUB_PORT     "$SYS/hub"
   start_server $CLIENT_PORT  "$SYS/webclient" --spa \
       --header "Cross-Origin-Opener-Policy: same-origin" \
-      --header "Cross-Origin-Embedder-Policy: require-corp"
+      --header "Cross-Origin-Embedder-Policy: credentialless"
   start_server $FLASHER_PORT "$SYS/flasher"
   [ -f "$SYS/docs/index.html" ] && start_server $DOCS_PORT "$SYS/docs"
   stale_server_check
