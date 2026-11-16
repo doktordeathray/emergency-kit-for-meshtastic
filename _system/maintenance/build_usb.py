@@ -327,6 +327,7 @@ def c_webclient():
     if manifest.get("webclient") == rel["tag_name"] and (SYS / "webclient" / "index.html").exists():
         print(f"    {rel['tag_name']} already on the drive")
         webclient_map_fixes(SYS / "webclient")     # drives made before these fixes
+        webclient_db_fix(SYS / "webclient", rel["tag_name"])
         return
     a = asset(rel, r"^build\.tar$")
     tarp = fetch_asset(a, CACHE / "web" / f"build-{rel['tag_name']}.tar")
@@ -343,6 +344,7 @@ def c_webclient():
         gz.unlink()
     manifest["webclient"] = rel["tag_name"]
     webclient_map_fixes(out)
+    webclient_db_fix(out, rel["tag_name"])
 
 
 def webclient_map_fixes(web: Path):
@@ -366,6 +368,67 @@ def webclient_map_fixes(web: Path):
                             encoding="utf-8")
     except Exception as e:
         warn(f"couldn't fix the web app's map ({e}). Everything else in the web app works.")
+
+
+SQLITE_WASM_NPM = "https://registry.npmjs.org/@sqlite.org/sqlite-wasm/"
+SQLITE_WASM_KNOWN = "3.51.2-build9"       # what web client 2.7.x was built with
+
+def _is_wasm(p: Path) -> bool:
+    try:
+        with open(p, "rb") as f:
+            return f.read(4) == b"\0asm"
+    except OSError:
+        return False
+
+def webclient_db_fix(web: Path, tag: str):
+    """The web app keeps its messages in a small database (SQLite, built as WebAssembly).
+    Its release leaves the .wasm file out, so the database never starts: no message
+    history. Add the official file from the SQLite package the web app was built with."""
+    try:
+        names = set()
+        for js in web.glob("*.js"):
+            if not junk(js):
+                names.update(re.findall(r"sqlite3-[A-Za-z0-9_-]+\.wasm",
+                                        js.read_text(encoding="utf-8", errors="ignore")))
+        missing = [n for n in sorted(names) if not _is_wasm(web / n)]
+        if not missing:
+            return                         # not used, or already there
+        ver = None
+        try:                               # the exact version this release was built with
+            lock = get_bytes(f"https://raw.githubusercontent.com/meshtastic/web/{tag}/pnpm-lock.yaml")
+            m = re.search(r"@sqlite\.org/sqlite-wasm@(\d[0-9A-Za-z.\-]*)", lock.decode("utf-8", "replace"))
+            ver = m.group(1) if m else None
+        except Exception:
+            pass
+        ver = ver or SQLITE_WASM_KNOWN
+        dist = get_json(SQLITE_WASM_NPM + ver)["dist"]
+        tgz = download(dist["tarball"], CACHE / "web" / f"sqlite-wasm-{ver}.tgz")
+        algo, _, want = dist.get("integrity", "").partition("-")     # e.g. sha512-<base64>
+        if algo in hashlib.algorithms_available and want:
+            import base64
+            got = base64.b64encode(hashlib.new(algo, tgz.read_bytes()).digest()).decode()
+            if got != want:
+                tgz.unlink()
+                raise RuntimeError("the downloaded SQLite package doesn't match its published checksum")
+        with tarfile.open(tgz) as t:
+            member = next((m for m in t.getmembers() if m.isfile() and m.name.endswith("/sqlite3.wasm")), None)
+            data = t.extractfile(member).read() if member else b""
+        if data[:4] != b"\0asm":
+            raise RuntimeError("no sqlite3.wasm in the SQLite package")
+        for n in missing:
+            (web / n).write_bytes(data)
+        note = web / "CHANGES-BY-THE-KIT.txt"
+        if note.exists() and "sqlite3.wasm" not in note.read_text(encoding="utf-8"):
+            note.write_text(note.read_text(encoding="utf-8").rstrip() +
+                            f"\n5. Message database fix. The release leaves out the SQLite WebAssembly file its\n"
+                            f"   message database needs ({', '.join(missing)}). It is the official sqlite3.wasm\n"
+                            f"   from the npm package @sqlite.org/sqlite-wasm {ver} (Apache-2.0; SQLite itself\n"
+                            f"   is public domain), the version the web client was built with. Added by\n"
+                            f"   _system/maintenance/build_usb.py.\n", encoding="utf-8")
+        print(f"    message database fix: SQLite {ver} file added")
+    except Exception as e:
+        warn(f"couldn't add the web app's message database file ({e}). "
+             "The web app works, but it won't keep message history.")
 
 
 def c_offline_map():

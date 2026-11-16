@@ -2,6 +2,11 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.23 (2026-11-15)
+
+- Fixed: the web app didn't keep message history. Its official download leaves out a file its message database needs, so messages were only held until the page was reloaded. The kit now adds that file (the official SQLite file, the same version the web app was built with). Press **U** to fix an existing drive (needs internet; the web app isn't downloaded again).
+- Good to know when connecting to a radio over Wi-Fi (HTTP): loading can take a minute or more on a radio that knows many nodes, and the web app may say "Taking longer than usual" while it does. Leave it running; don't press Cancel. Only one browser tab or app can use a radio's Wi-Fi connection at a time.
+
 ## 0.2.22 (2026-11-15)
 
 - Fixed: the web app couldn't connect to a radio over Wi-Fi (HTTP). **Test connection** always said "Not reachable", even for a radio that was working, because of a security setting on the kit's own web server that made the browser block the test. Radios on Wi-Fi can now be added by their address (for example 192.168.1.50 or meshtastic.local). Leave **Use HTTPS** off, and if the first test fails, press it once more: some radios take a few seconds to answer the first time. After updating, restart the start window (**R**).

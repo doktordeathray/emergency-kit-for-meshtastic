@@ -282,7 +282,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
           </a>
           <a class="btn btn-line" href="#before">How it works</a>
         </div>
-        <p class="dl-meta"><span class="kitver">Version 0.2.22</span> · <a href="#changes">what's new</a><br>Meshtastic-Emergency-Kit-Setup-v0.2.22.zip · 5.3 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
+        <p class="dl-meta"><span class="kitver">Version 0.2.23</span> · <a href="#changes">what's new</a><br>Meshtastic-Emergency-Kit-Setup-v0.2.23.zip · 5.3 MB<br>Windows 10/11 · macOS · Linux · Raspberry Pi<br>Source and releases: <a href="https://github.com/doktordeathray/emergency-kit-for-meshtastic" rel="noopener">github.com/doktordeathray/emergency-kit-for-meshtastic</a></p>
         <p class="dl-status" id="dl-status" role="status" aria-live="polite"></p>
       </div>
 
@@ -473,9 +473,9 @@ footer .wrap > p { overflow-wrap: anywhere; }
           <p>So if your file's fingerprint matches the one published here, you have exactly the file we published. This takes about a minute and you only need one of the three ways below.</p>
         </div>
         <div class="fingerprint">
-          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup-v0.2.22.zip</span>
-          <code id="sha">6eb4632314831bff225e35d00d7420121bbbe53b50855aad617377fe8415ba96</code>
-          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,306,165 bytes · SHA-256</span></div>
+          <span class="label">Published fingerprint · Meshtastic-Emergency-Kit-Setup-v0.2.23.zip</span>
+          <code id="sha">e6b989a9318b3396b5cf5002797d6b7ddcad9948a3a762b3e991e4d5facf64b3</code>
+          <div class="row"><button class="copy" id="copy-sha" type="button">Copy</button><span>5,307,443 bytes · SHA-256</span></div>
         </div>
       </div>
 
@@ -499,7 +499,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
               <li>Open your <b>Downloads</b> folder in File Explorer.</li>
               <li>Click in the address bar at the top, type <b>powershell</b> and press <b>Enter</b>. A blue or black window opens in that folder.</li>
               <li>Paste this and press <b>Enter</b>:
-                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.22.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.22.zip">Copy</button></div>
+                <div class="cmd"><code>Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.23.zip</code><button type="button" data-copy="Get-FileHash .\Meshtastic-Emergency-Kit-Setup-v0.2.23.zip">Copy</button></div>
               </li>
               <li>The long code under <b>Hash</b> is the fingerprint. Capital letters don't matter.</li>
             </ol>
@@ -520,7 +520,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
             <ol>
               <li>Open your Downloads folder, right-click an empty spot and choose <b>Open in Terminal</b>. (Or open a terminal and type <b>cd ~/Downloads</b>.)</li>
               <li>Paste this and press <b>Enter</b>:
-                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.22.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.22.zip">Copy</button></div>
+                <div class="cmd"><code>sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.23.zip</code><button type="button" data-copy="sha256sum Meshtastic-Emergency-Kit-Setup-v0.2.23.zip">Copy</button></div>
               </li>
               <li>The long code at the start of the line is the fingerprint.</li>
             </ol>
@@ -546,10 +546,14 @@ footer .wrap > p { overflow-wrap: anywhere; }
       <p class="intro">Every version of the setup kit. The same list is in <code>CHANGELOG.md</code> inside the kit, and the kit's version is in its <code>VERSION</code> file.</p>
       <!-- CHANGELOG:START -->
       <div class="rel">
-        <h3>Version 0.2.22 <small>2026-11-15</small></h3>
-        <ul><li>Fixed: the web app couldn't connect to a radio over Wi-Fi (HTTP). <b>Test connection</b> always said "Not reachable", even for a radio that was working, because of a security setting on the kit's own web server that made the browser block the test. Radios on Wi-Fi can now be added by their address (for example 192.168.1.50 or meshtastic.local). Leave <b>Use HTTPS</b> off, and if the first test fails, press it once more: some radios take a few seconds to answer the first time. After updating, restart the start window (<b>R</b>).</li></ul>
+        <h3>Version 0.2.23 <small>2026-11-15</small></h3>
+        <ul><li>Fixed: the web app didn't keep message history. Its official download leaves out a file its message database needs, so messages were only held until the page was reloaded. The kit now adds that file (the official SQLite file, the same version the web app was built with). Press <b>U</b> to fix an existing drive (needs internet; the web app isn't downloaded again).</li><li>Good to know when connecting to a radio over Wi-Fi (HTTP): loading can take a minute or more on a radio that knows many nodes, and the web app may say "Taking longer than usual" while it does. Leave it running; don't press Cancel. Only one browser tab or app can use a radio's Wi-Fi connection at a time.</li></ul>
       </div>
       <details class="older"><summary>Older versions</summary>
+        <div class="rel">
+          <h3>Version 0.2.22 <small>2026-11-15</small></h3>
+          <ul><li>Fixed: the web app couldn't connect to a radio over Wi-Fi (HTTP). <b>Test connection</b> always said "Not reachable", even for a radio that was working, because of a security setting on the kit's own web server that made the browser block the test. Radios on Wi-Fi can now be added by their address (for example 192.168.1.50 or meshtastic.local). Leave <b>Use HTTPS</b> off, and if the first test fails, press it once more: some radios take a few seconds to answer the first time. After updating, restart the start window (<b>R</b>).</li></ul>
+        </div>
         <div class="rel">
           <h3>Version 0.2.21 <small>2026-11-15</small></h3>
           <ul><li>Linux: the kit's Chromium browser now starts with Web Bluetooth switched on, so the web app can connect to a radio over Bluetooth. Chromium leaves it off on Linux (it's on by default on Windows and Mac). An existing copy of Chromium picks this up the next time the start window opens it; close all Chromium windows first. Note: radios like the T-Deck and Heltec V3 turn their own Bluetooth off while Wi-Fi is switched on.</li></ul>
@@ -787,7 +791,7 @@ footer .wrap > p { overflow-wrap: anywhere; }
 <script>
 (function () {
   // Where the setup zip is hosted (e.g. a GitHub release asset). Empty = not published yet.
-  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.22/Meshtastic-Emergency-Kit-Setup-v0.2.22.zip";
+  var DOWNLOAD_URL = "https://github.com/doktordeathray/emergency-kit-for-meshtastic/releases/download/v0.2.23/Meshtastic-Emergency-Kit-Setup-v0.2.23.zip";
   document.querySelectorAll("a.dl").forEach(function (a, i) {
     var status = document.getElementById(i === 0 ? "dl-status" : "dl-status-2");
     if (DOWNLOAD_URL) {
