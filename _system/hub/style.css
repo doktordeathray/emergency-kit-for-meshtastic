@@ -25,6 +25,8 @@ a { color: var(--accent); }
 .brand { display: flex; gap: 16px; align-items: center; }
 .logo { width: 56px; height: 32px; color: var(--accent); flex: none; }
 h1 { font-size: 1.5rem; margin: 0; letter-spacing: -0.01em; }
+h1 .kitver { font-size: 0.8em; font-weight: 500; opacity: 0.75; white-space: nowrap; margin-left: 0.25em; }
+h1 .kitver:empty { display: none; }
 h2 { font-size: 1.15rem; margin: 0 0 8px; }
 .sub { margin: 2px 0 0; color: var(--muted); }
 .muted { color: var(--muted); font-size: 0.9rem; }

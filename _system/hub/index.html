@@ -12,7 +12,7 @@
     <div class="brand">
       <svg class="logo" viewBox="0 0 100 55" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="18" width="13" height="19" rx="2"/><rect x="19" y="10" width="46" height="35" rx="7"/><path d="M76 18 a14 14 0 0 1 0 19"/><path d="M85 11 a24 24 0 0 1 0 33"/></svg>
       <div>
-        <h1>Emergency Kit for Meshtastic</h1>
+        <h1>Emergency Kit for Meshtastic <span class="kitver" id="kitver"></span></h1>
         <p class="sub">Everything runs from this drive. No internet needed.</p>
       </div>
     </div>
@@ -123,6 +123,15 @@
   }
 
   var v = window.MESH_VERSIONS;
+  // The kit's version, shown after the title. The start window puts it in the address
+  // (?v=0.2.18, straight from the VERSION file); otherwise use what setup recorded.
+  (function () {
+    var m = /[?&]v=([0-9][0-9.]*)/.exec(location.search);
+    var kv = m ? m[1] : (v && v.kit);
+    if (!kv) return;
+    document.getElementById('kitver').textContent = 'v' + kv;
+    document.title += ' v' + kv;
+  })();
   if (v) {
     var fw = v.firmware || {};
     var bits = [];

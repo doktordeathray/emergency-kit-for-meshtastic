@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.19 (2026-11-15)
+
+- The start page in the browser now shows the kit's version after the title, for example "Emergency Kit for Meshtastic v0.2.19", in the heading and on the browser tab.
+
 ## 0.2.18 (2026-11-15)
 
 - Fixed on Linux: the kit's Chromium browser didn't open on Ubuntu 23.10 and newer (and similar systems). Those systems block the browser's sandbox for programs that don't come from their app store, so Chromium stopped at once and no window appeared. The kit now checks first and starts Chromium in a way that works there. This also fixes **Chromium (Meshtastic USB)** in the applications menu, which never opened on those systems. An existing copy of Chromium repairs itself the next time the start window opens it.
