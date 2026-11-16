@@ -141,6 +141,8 @@ chromium_bin() {   # Linux: the copy we unpacked from the drive
 # So Chromium is started through a small script that checks first and, when the sandbox
 # can't work, adds --no-sandbox (only our own local pages are opened). The menu entry uses
 # the same script, so starting Chromium from the applications menu works too.
+# It also switches on Web Bluetooth, which Chromium leaves off on Linux (it's on by default
+# on Windows and Mac), so radios can be reached over Bluetooth from the web app.
 CHROMIUM_RUN="$CHROMIUM_HOME/run-chromium.sh"
 write_chromium_runner() {   # (re)writes the start script and the applications-menu entry
   local bin; bin="$(chromium_bin)"; [ -n "$bin" ] || return 1
@@ -155,7 +157,7 @@ elif [ "\$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/nul
   flag="--no-sandbox"
 fi
 [ "\$1" = "--no-sandbox" ] && { flag="--no-sandbox"; shift; }
-exec "$bin" --user-data-dir="$CHROMIUM_HOME/profile" --no-first-run --no-default-browser-check \$flag "\$@"
+exec "$bin" --user-data-dir="$CHROMIUM_HOME/profile" --no-first-run --no-default-browser-check --enable-features=WebBluetooth \$flag "\$@"
 RUNNER
   chmod +x "$CHROMIUM_RUN.new" && mv -f "$CHROMIUM_RUN.new" "$CHROMIUM_RUN" || return 1
   mkdir -p "$HOME/.local/share/applications"

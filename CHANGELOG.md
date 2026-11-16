@@ -2,6 +2,10 @@
 
 Every release of the Emergency Kit for Meshtastic, newest first. The version of the kit you have is in the file `VERSION`.
 
+## 0.2.21 (2026-11-15)
+
+- Linux: the kit's Chromium browser now starts with Web Bluetooth switched on, so the web app can connect to a radio over Bluetooth. Chromium leaves it off on Linux (it's on by default on Windows and Mac). An existing copy of Chromium picks this up the next time the start window opens it; close all Chromium windows first. Note: radios like the T-Deck and Heltec V3 turn their own Bluetooth off while Wi-Fi is switched on.
+
 ## 0.2.20 (2026-11-15)
 
 - Linux: if this computer doesn't let you use USB radios (your user isn't in the "dialout" group), the start window's menu now keeps a red line saying so, and a new option **F** fixes it: it asks for your password, adds you to the group, and lets you use a radio that's already plugged in straight away. Before, the warning was on screen for about a second and then the menu covered it. The line and **F** only appear while there is something to fix.
